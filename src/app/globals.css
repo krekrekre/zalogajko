@@ -1,0 +1,378 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* Color palette & design tokens */
+:root {
+  --color-primary: #202557;
+  --color-accent: #46deb6;
+  --color-orange: #46deb6;
+  --color-white: #ffffff;
+  --ar-primary: #46deb6;
+  --ar-primary-hover: #3bc4a5;
+  --ar-accent: #46deb6;
+  --ar-accent-hover: #3bc4a5;
+  --ar-primary-light: #ffffff;
+  --ar-gray-100: #ffffff;
+  --ar-gray-200: #ebebeb;
+  --ar-gray-500: #6b6b6b;
+  --ar-gray-700: #202557;
+  --footer-text: #f1f1e6;
+  --ar-card-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --ar-card-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.12);
+  --radius: 0.625rem;
+  --background: #ffffff;
+  --foreground: #202557;
+  --card: #ffffff;
+  --card-foreground: #202557;
+  --popover: #ffffff;
+  --popover-foreground: #202557;
+  --primary: #202557;
+  --primary-foreground: #ffffff;
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: #202557;
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: #202557;
+  --accent: #46deb6;
+  --accent-foreground: #ffffff;
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: #202557;
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --sidebar: #ffffff;
+  --sidebar-foreground: #202557;
+  --sidebar-primary: #202557;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: #202557;
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: #202557;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-accent: var(--accent);
+  --color-ar-primary: var(--ar-primary);
+  --color-ar-primary-hover: var(--ar-primary-hover);
+  --color-ar-accent: var(--ar-accent);
+  --color-ar-accent-hover: var(--ar-accent-hover);
+  --color-ar-primary-light: var(--ar-primary-light);
+  --font-sans: var(--font-playpen-sans);
+  --font-dynapuff: var(--font-dynapuff);
+  --font-mono: var(--font-geist-mono);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+}
+
+body {
+  font-family: var(--font-playpen-sans), "Playpen Sans", system-ui, sans-serif;
+  color: var(--color-primary);
+  background-color: var(--background);
+}
+
+/* Ensure text uses primary color by default */
+* {
+  color: inherit;
+}
+
+/* Set default text color to primary */
+p, span, a, h1, h2, h3, h4, h5, h6, li, td, th, label, input, textarea, select, button, div {
+  color: var(--color-primary);
+}
+
+/* Links that opt in to custom color (e.g. search pills) – more specific so they win without !important */
+a[data-text-tint="light"] {
+  color: #f1f1e6;
+}
+
+/* Footer: light text on primary background */
+footer,
+footer p,
+footer span,
+footer a,
+footer h1, footer h2, footer h3, footer h4, footer h5, footer h6,
+footer li,
+footer div {
+  color: var(--footer-text) !important;
+}
+footer a:hover {
+  color: var(--ar-primary-hover) !important;
+}
+
+/* Trust banner: force white text and DynaPuff font */
+.trust-banner,
+.trust-banner p,
+.trust-banner span {
+  color: #ffffff !important;
+  font-family: var(--font-dynapuff), "DynaPuff", cursive !important;
+}
+
+/* Logo: use accent color */
+.site-logo,
+.site-logo span {
+  color: var(--color-accent) !important;
+}
+.site-logo svg {
+  color: var(--color-accent) !important;
+  fill: var(--color-accent) !important;
+}
+
+/* Print styles - hide nav, show only recipe content */
+@media print {
+  header,
+  footer,
+  nav,
+  .no-print,
+  [data-print-hide],
+  button[onclick*="print"] {
+    display: none !important;
+  }
+  main {
+    padding: 0;
+  }
+  a[href]::after {
+    content: none;
+  }
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
+}
+
+/* Allrecipes-style flip cards */
+.perspective-1000 {
+  perspective: 1000px;
+}
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+.backface-hidden {
+  backface-visibility: hidden;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Hide scrollbar utility */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* DynaPuff font for headings and titles - medium weight */
+.font-dynapuff {
+  font-family: var(--font-dynapuff), "DynaPuff", cursive;
+  font-weight: 500;
+}
+
+/* Playpen Sans font for body text */
+.font-playpen-sans {
+  font-family: var(--font-playpen-sans), "Playpen Sans", system-ui, sans-serif;
+}
+
+/* Apply DynaPuff to all headings by default - medium weight */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-dynapuff), "DynaPuff", cursive;
+  font-weight: 500;
+}
+
+/* Apply Playpen Sans to all body text elements */
+p, span, a, li, td, th, label, input, textarea, select, button {
+  font-family: var(--font-playpen-sans), "Playpen Sans", system-ui, sans-serif;
+}
+
+/* Auth forms (login / registration) */
+.auth-form-card {
+  background: var(--card);
+  border-radius: 0;
+  box-shadow: var(--ar-card-shadow);
+  padding: 2rem 1.75rem;
+  border: 1px solid var(--ar-gray-200);
+}
+
+.auth-form-title {
+  font-family: var(--font-dynapuff), "DynaPuff", cursive;
+  font-weight: 500;
+  font-size: 1.75rem;
+  color: var(--ar-gray-700);
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.auth-form-error {
+  background: oklch(0.97 0.02 25 / 0.9);
+  color: oklch(0.45 0.2 25);
+  padding: 0.75rem 1rem;
+  border-radius: 0;
+  font-size: 0.875rem;
+  border: 1px solid oklch(0.85 0.08 25);
+}
+
+.auth-form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.auth-form-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--ar-gray-700);
+}
+
+.auth-form-input {
+  height: 2.75rem;
+  border-radius: 0;
+  border: 1px solid var(--ar-gray-200);
+  background: var(--background);
+  padding: 0 1rem;
+  font-size: 1rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.auth-form-input::placeholder {
+  color: var(--ar-gray-500);
+}
+
+.auth-form-input:focus {
+  outline: none;
+  border-color: var(--ar-primary);
+  box-shadow: 0 0 0 3px rgba(70, 222, 182, 0.25);
+}
+
+.auth-form-submit {
+  height: 2.75rem;
+  width: 100%;
+  border-radius: 0;
+  background: var(--ar-primary) !important;
+  color: #fff !important;
+  font-weight: 600;
+  margin-top: 0.25rem;
+  transition: background 0.2s;
+}
+
+.auth-form-submit:hover:not(:disabled) {
+  background: var(--ar-primary-hover) !important;
+}
+
+.auth-form-submit:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.auth-form-footer {
+  margin-top: 1.25rem;
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--ar-gray-500);
+}
+
+.auth-form-link {
+  font-weight: 500;
+  color: var(--ar-primary);
+  text-underline-offset: 2px;
+}
+
+.auth-form-link:hover {
+  text-decoration: underline;
+  color: var(--ar-primary-hover);
+}
+
+.auth-form-back {
+  display: block;
+  margin-top: 1rem;
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--ar-gray-500);
+}
+
+.auth-form-back:hover {
+  color: var(--ar-primary);
+}
