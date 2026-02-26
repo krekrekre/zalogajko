@@ -156,6 +156,9 @@ export function HeroSection({
           {/* Left: Featured Article */}
           <div className="flex-1 lg:w-[65%]">
             <Link href={`/recepti/${featured.slug}`} className="group block">
+              <div className="mb-3 text-center text-6xl font-extrabold uppercase tracking-widest text-[var(--color-primary)] sm:text-7xl lg:text-8xl">
+                TEST
+              </div>
               {/* Featured Image */}
               <div className="relative aspect-[16/10] w-full overflow-hidden">
                 <Image
