@@ -1,8 +1,16 @@
 import Link from "next/link";
 import { Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { createClient } from "@/lib/supabase/server";
 
-export function SaveRecipesBanner() {
+export async function SaveRecipesBanner() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const isLoggedIn = !!user;
+
   return (
     <section className="bg-white pt-[7vh] pb-[7vh]">
       <div className="mx-auto max-w-[1220px] border border-[var(--ar-primary)] rounded-none">
@@ -10,15 +18,20 @@ export function SaveRecipesBanner() {
           <div>
             <h3 className="flex items-center gap-2 text-xl font-bold text-[var(--ar-gray-700)]">
               <Heart className="h-6 w-6 shrink-0 fill-[var(--ar-primary)] text-[var(--ar-primary)]" aria-hidden />
-              Počnite da čuvate recepte
+              {isLoggedIn ? "Pregledajte recepte" : "Počnite da čuvate recepte"}
             </h3>
             <p className="mt-1 text-[var(--ar-gray-500)]">
-              Kreirajte nalog besplatno i sačuvajte omiljene recepte na jednom mestu.
+              {isLoggedIn
+                ? "Pronađite recepte po kategoriji, sastojcima ili kuhinji i sačuvajte omiljene."
+                : "Kreirajte nalog besplatno i sačuvajte omiljene recepte na jednom mestu."}
             </p>
           </div>
           <Button asChild size="lg" className="shrink-0 rounded-none">
-            <Link href="/signup" style={{ color: "#f1f1e6" }}>
-              Registruj se
+            <Link
+              href={isLoggedIn ? "/recepti" : "/signup"}
+              style={{ color: "#f1f1e6" }}
+            >
+              {isLoggedIn ? "Pregledaj recepte" : "Registruj se"}
             </Link>
           </Button>
         </div>

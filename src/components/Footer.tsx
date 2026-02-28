@@ -22,7 +22,7 @@ export function Footer() {
             </p>
           </div>
 
-          <div>
+          <div className="hidden">
             <h4 className="text-sm font-semibold uppercase tracking-wider">
               Naš tim
             </h4>
@@ -85,7 +85,7 @@ export function Footer() {
             <ul className="mt-4 space-y-2">
               <li>
                 <Link
-                  href="/kategorija/srpska"
+                  href="/recepti/srpska"
                   className="text-sm hover:text-[var(--ar-primary)]"
                 >
                   Srpska kuhinja
@@ -93,7 +93,7 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="/kategorija/glavna-jela"
+                  href="/recepti/glavna-jela"
                   className="text-sm hover:text-[var(--ar-primary)]"
                 >
                   Glavna jela
@@ -101,7 +101,7 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="/kategorija/deserti"
+                  href="/recepti/deserti"
                   className="text-sm hover:text-[var(--ar-primary)]"
                 >
                   Deserti

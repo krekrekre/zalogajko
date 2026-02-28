@@ -1,127 +1,130 @@
 import Link from "next/link";
-import { Suspense } from "react";
-import { getPublishedRecipes, getFilterCategories } from "@/lib/queries/recipes";
-import { RecipeCard } from "@/components/RecipeCard";
-import { FilterSidebar } from "@/components/recipes/FilterSidebar";
+import { getFilterCategories, getPublishedRecipes } from "@/lib/queries/recipes";
 import { getListingMetadata } from "@/lib/seo";
+import { CategoryRecipeSection } from "@/components/recipes/CategoryRecipeSection";
+import { RecipeCard } from "@/components/RecipeCard";
 
-export const metadata = getListingMetadata(
-  "Recepti",
-  "Pregledajte sve recepte. Filtrirajte po kategoriji, težini, vremenu, sastojcima i kuhinji."
-);
-
-function parseTimeParam(
-  vreme: string | undefined
-): { maxTimeMinutes?: number; minTimeMinutes?: number } {
-  if (!vreme) return {};
-  switch (vreme) {
-    case "do-30":
-      return { maxTimeMinutes: 30 };
-    case "do-60":
-      return { maxTimeMinutes: 60 };
-    case "do-120":
-      return { maxTimeMinutes: 120 };
-    case "120-plus":
-      return { minTimeMinutes: 121 };
-    default:
-      return {};
-  }
-}
+export const metadata = getListingMetadata({
+  title: "Recepti",
+  description: "Pregledajte sve recepte. Filtrirajte po kategoriji, težini, vremenu, sastojcima i kuhinji.",
+  path: "/recepti",
+});
 
 export default async function RecipesPage({
   searchParams,
 }: {
-  searchParams: Promise<{
-    kategorija?: string;
-    tezina?: string;
-    vreme?: string;
-    sastojak?: string;
-    kuhinja?: string;
-    sort?: string;
-  }>;
+  searchParams: Promise<{ sastojak?: string }>;
 }) {
-  const params = await searchParams;
-  const categorySlug = params.kategorija;
-  const skillLevel = params.tezina as "lako" | "srednje" | "tesko" | undefined;
-  const timeParam = params.vreme;
-  const ingredientQuery = params.sastojak?.trim() || undefined;
-  const cuisineSlug = params.kuhinja;
+  const raw = await searchParams;
+  const sastojak = typeof raw?.sastojak === "string" ? raw.sastojak.trim() : "";
+  const isSearch = sastojak.length > 0;
 
-  const timeFilter = parseTimeParam(timeParam);
-  const validSkill =
-    skillLevel && ["lako", "srednje", "tesko"].includes(skillLevel)
-      ? skillLevel
-      : undefined;
-
-  let recipes: Awaited<ReturnType<typeof getPublishedRecipes>> = [];
   let categories: Awaited<ReturnType<typeof getFilterCategories>> = [];
 
   try {
-    [recipes, categories] = await Promise.all([
-      getPublishedRecipes(24, 0, {
-        categorySlug,
-        skillLevel: validSkill,
-        maxTimeMinutes: timeFilter.maxTimeMinutes,
-        minTimeMinutes: timeFilter.minTimeMinutes,
-        ingredientQuery,
-        cuisineSlug,
-      }),
-      getFilterCategories(),
-    ]);
+    const all = await getFilterCategories();
+    categories = all.filter((c) => c.type === "meal_type");
   } catch {
-    recipes = [];
     categories = [];
   }
 
+  const categoryRecipes = await Promise.all(
+    categories.map(async (c) => {
+      const recipes = await getPublishedRecipes(100, 0, { categorySlug: c.slug });
+      return { category: c, recipes };
+    })
+  );
+
+  let searchRecipes: Awaited<ReturnType<typeof getPublishedRecipes>> = [];
+  if (isSearch) {
+    searchRecipes = await getPublishedRecipes(100, 0, {
+      ingredientQuery: sastojak,
+    });
+  }
+
   return (
-    <div className="mx-auto max-w-[1284px] px-8 py-10">
-      <div className="flex flex-col gap-10 lg:flex-row">
-        <Suspense fallback={<div className="w-72 shrink-0" />}>
-          <FilterSidebar
-            categories={categories}
-            activeCategory={categorySlug}
-            activeSkill={validSkill}
-            activeTime={timeParam}
-            activeIngredient={ingredientQuery}
-            activeCuisine={cuisineSlug}
-          />
-        </Suspense>
-        <div className="flex-1">
-          <h1 className="font-dynapuff text-2xl font-semibold text-[var(--color-primary)] sm:text-3xl">
-            Recepti
+    <div>
+      <div className="mx-auto max-w-[1220px] px-8 py-10">
+        <header className="text-center">
+          <h1 className="font-dynapuff text-3xl font-bold text-[var(--color-primary)] sm:text-4xl">
+            {isSearch ? `Recepti sa: ${sastojak}` : "Recepti"}
           </h1>
-          <p className="mt-2 text-[var(--ar-gray-500)]">
-            {categorySlug || validSkill || timeParam || ingredientQuery || cuisineSlug
-              ? "Recepti prema izabranim filterima."
-              : "Pregledajte sve naše recepte. Filtrirajte po kategoriji, težini, vremenu, sastojcima i kuhinji."}
+          <p className="mx-auto mt-2 max-w-2xl text-base text-[var(--ar-gray-700)]">
+            {isSearch
+              ? `${searchRecipes.length} ${searchRecipes.length === 1 ? "recept" : "recepta"} sa ovim sastojkom.`
+              : "Šta za večeru? Nađite odgovor među našim popularnim receptima — filtrirajte po kategoriji, težini, vremenu i sastojcima."}
           </p>
-          <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {recipes.map((recipe) => (
-              <RecipeCard
-                key={recipe.id}
-                slug={recipe.slug}
-                title={recipe.title_sr}
-                imageUrl={recipe.image_url}
-                prepTime={recipe.prep_time_minutes}
-                cookTime={recipe.cook_time_minutes}
-              />
-            ))}
-          </div>
-          {recipes.length === 0 && (
-            <div className="border border-[var(--ar-gray-200)] bg-white py-16 text-center">
-              <p className="text-[var(--ar-gray-500)]">
-                Nema recepta za izabrane filtere.
+          {isSearch && (
+            <Link
+              href="/recepti"
+              className="mt-4 inline-block text-sm font-semibold text-[var(--color-accent)] hover:text-[var(--ar-primary-hover)] hover:underline"
+            >
+              ← Pregledaj sve recepte
+            </Link>
+          )}
+        </header>
+      </div>
+
+      {isSearch ? (
+        <div className="border-t border-[var(--ar-gray-200)] bg-white py-8">
+          <div className="mx-auto max-w-[1220px] px-4 sm:px-6 lg:px-8">
+            {searchRecipes.length > 0 ? (
+              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                {searchRecipes.map((r) => (
+                  <RecipeCard
+                    key={r.id}
+                    slug={r.slug}
+                    title={r.title_sr}
+                    imageUrl={r.image_url}
+                    prepTime={r.prep_time_minutes}
+                    cookTime={r.cook_time_minutes}
+                    ratingCount={(r as { rating_count?: number }).rating_count ?? 0}
+                    ratingAvg={(r as { rating_avg?: number | null }).rating_avg}
+                  />
+                ))}
+              </div>
+            ) : (
+              <p className="py-12 text-center text-[var(--ar-gray-500)]">
+                Nema recepta sa sastojkom &quot;{sastojak}&quot;. Pokušajte drugi sastojak ili{" "}
+                <Link href="/recepti" className="font-semibold text-[var(--color-accent)] hover:underline">
+                  pregledajte sve recepte
+                </Link>
+                .
               </p>
-              <Link
-                href="/recepti"
-                className="mt-4 inline-block font-semibold text-[var(--color-accent)] hover:underline"
-              >
-                Poništi filtere →
-              </Link>
+            )}
+          </div>
+        </div>
+      ) : (
+        <>
+          {categories.length > 0 && (
+            <div className="sticky top-0 z-10 border-b border-[var(--ar-gray-200)] bg-white py-4">
+              <div className="mx-auto max-w-[1220px] px-8">
+                <div className="flex flex-wrap justify-center gap-3 sm:gap-4">
+                  {categories.map((c) => (
+                    <Link
+                      key={c.id}
+                      href={`#${c.slug}`}
+                      className="rounded-full px-4 py-2 text-sm font-medium uppercase tracking-wide transition-colors bg-[var(--ar-gray-200)] text-[var(--ar-gray-700)] hover:bg-[var(--color-accent)]/20 hover:text-[var(--color-accent)]"
+                    >
+                      {c.name_sr}
+                    </Link>
+                  ))}
+                </div>
+              </div>
             </div>
           )}
-        </div>
-      </div>
+
+          {categoryRecipes.map(({ category, recipes }, index) => (
+            <CategoryRecipeSection
+              key={category.id}
+              title={category.name_sr}
+              slug={category.slug}
+              recipes={recipes}
+              variant={index % 2 === 0 ? "white" : "cream"}
+            />
+          ))}
+        </>
+      )}
     </div>
   );
 }

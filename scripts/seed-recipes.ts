@@ -1,5 +1,5 @@
 /**
- * Seed script: deletes all recipes and inserts 30 mock recipes with real Serbian titles
+ * Seed script: deletes all recipes and inserts 10 mock recipes per meal_type category
  * and lorem ipsum for descriptions/instructions. Run from project root:
  *
  *   npm run seed
@@ -64,7 +64,7 @@ const LOREM =
 const LOREM_STEP =
   "Ut aliquet tristique nisl. Pellentesque habitant morbi tristique senectus. Donec vitae sapien ut libero venenatis faucibus.";
 
-const REAL_TITLES = [
+const REAL_TITLES_BASE = [
   "Sarma",
   "Punjene paprike",
   "Karadjordjeva šnicla",
@@ -95,6 +95,80 @@ const REAL_TITLES = [
   "Štrudla sa višnjama",
   "Riblja čorba",
   "Teleća čorba",
+  "Paprikaš",
+  "Čorba od leće",
+  "Musaka",
+  "Satarash sa piletinom",
+  "Pileća prsutina",
+  "Šnicle od purećeg mesa",
+  "Kuvana svinjetina sa kupusom",
+  "Čorba od graška",
+  "Pita sa višnjama",
+  "Palenta sa sirom",
+  "Pasulj na tavici",
+  "Šargarepa salata",
+  "Pileći file u pavlaci",
+  "Tortilja sa povrćem",
+  "Pileća čorba sa rezancima",
+  "Šopska salata",
+  "Kuvano meso sa krompirom",
+  "Svinjski kare",
+  "Teleći gulaš",
+  "Pileći rizoto",
+  "Šnicle od svinjetine",
+  "Čorba od krompira",
+  "Pita sa špinatom",
+  "Tuna salata",
+  "Čevapi u lepinji",
+  "Pečena piletina sa začinima",
+  "Kuvani pasulj",
+  "Šnicle od ribe",
+  "Čorba od povrća",
+  "Pita sa mesom",
+  "Posna sarma",
+  "Svinjski ražnjići",
+  "Teleća čorba sa rezancima",
+  "Palenta sa jogurtom",
+  "Kuvani grašak",
+  "Pileći file sa gljivama",
+  "Pita sa tikvicama",
+  "Šopska salata sa sirom",
+  "Pečena svinjetina",
+  "Čorba od pilećih krilaca",
+  "Šnicle od teletine",
+  "Kuvana piletina sa pirinčom",
+  "Pita sa jabukama i cimetom",
+  "Paprikaš sa kobasicom",
+  "Čorba od karfiola",
+  "Musaka od krompira",
+  "Pileći paprikaš",
+  "Kuvani kupus sa mesom",
+  "Pita sa balkava kremom",
+  "Teleći paprikaš",
+  "Čorba od spanča",
+  "Šnicle od piletine",
+  "Pasulj prebranac sa suhim mesom",
+  "Pečena riba",
+  "Pita sa krompirom",
+  "Satarash sa jajima",
+  "Čorba od paradajza",
+  "Kuvana teletina",
+  "Pita sa orasima",
+  "Šnicle od kokošije prsuti",
+  "Gulaš sa krompirom",
+  "Čorba od boranije",
+  "Palenta sa mesom",
+  "Kuvani grašak sa slaninom",
+  "Pita sa višnjama i orašastim",
+  "Pileći file sa sirom",
+  "Čorba od kelja",
+  "Pečena piletina sa limunom",
+];
+// 200 recipes spread across categories
+const REAL_TITLES = [
+  ...REAL_TITLES_BASE,
+  ...REAL_TITLES_BASE,
+  ...REAL_TITLES_BASE.slice(0, 20),
 ];
 
 const SAMPLE_INGREDIENTS = [
@@ -117,7 +191,7 @@ const SAMPLE_INGREDIENTS = [
 
 const SKILL_LEVELS = ["lako", "srednje", "tesko"] as const;
 
-// 10 recipe images (Unsplash, free to use) – reused across recipes
+// 15 recipe images (Unsplash, free to use) – all recipes have images
 const RECIPE_IMAGES = [
   "https://images.unsplash.com/photo-1547592166-23ac45744acd?w=800&q=80",
   "https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=800&q=80",
@@ -129,6 +203,11 @@ const RECIPE_IMAGES = [
   "https://images.unsplash.com/photo-1476224203421-9ac39bcb3327?w=800&q=80",
   "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800&q=80",
   "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800&q=80",
+  "https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=800&q=80",
+  "https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=800&q=80",
+  "https://images.unsplash.com/photo-1563379926898-05f4575a45d8?w=800&q=80",
+  "https://images.unsplash.com/photo-1574894709920-11b28e7367e3?w=800&q=80",
+  "https://images.unsplash.com/photo-1559847844-5315695dadae?w=800&q=80",
 ];
 
 async function main() {
@@ -167,62 +246,66 @@ async function main() {
     console.log("No existing recipes to delete.");
   }
 
-  for (let i = 0; i < REAL_TITLES.length; i++) {
-    const title = REAL_TITLES[i];
-    const slug = slugify(title) + "-" + (i + 1);
-    const prep = 15 + (i % 5) * 5;
-    const cook = 30 + (i % 6) * 10;
-    const servings = 4 + (i % 4);
-    const skillIndex = i % 3;
-    const skill = SKILL_LEVELS[skillIndex];
+  const RECIPES_PER_CATEGORY = 10;
+  const totalToCreate = mealCategories.length * RECIPES_PER_CATEGORY;
+  let recipeIndex = 0;
 
-    const { data: recipe, error: recipeErr } = await supabase
-      .from("recipes")
-      .insert({
-        slug,
-        title_sr: title,
-        description_sr: LOREM,
-        why_youll_love: [LOREM.slice(0, 40) + ".", LOREM.slice(40, 85) + "."],
-        prep_time_minutes: prep,
-        cook_time_minutes: cook,
-        servings,
-        author_name: "Domaći kuvar",
-        image_url: RECIPE_IMAGES[i % RECIPE_IMAGES.length],
-        status: "published",
-        skill_level: skill,
-      })
-      .select("id")
-      .single();
+  for (const mealCat of mealCategories) {
+    for (let j = 0; j < RECIPES_PER_CATEGORY; j++) {
+      const i = recipeIndex++;
+      const title = REAL_TITLES[i % REAL_TITLES.length];
+      const slug = slugify(title) + "-" + (i + 1);
+      const prep = 15 + (i % 5) * 5;
+      const cook = 30 + (i % 6) * 10;
+      const servings = 4 + (i % 4);
+      const skillIndex = i % 3;
+      const skill = SKILL_LEVELS[skillIndex];
 
-    if (recipeErr || !recipe) {
-      console.error("Insert recipe failed:", title, recipeErr?.message);
-      continue;
-    }
+      const { data: recipe, error: recipeErr } = await supabase
+        .from("recipes")
+        .insert({
+          slug,
+          title_sr: title,
+          description_sr: LOREM,
+          why_youll_love: [LOREM.slice(0, 40) + ".", LOREM.slice(40, 85) + "."],
+          prep_time_minutes: prep,
+          cook_time_minutes: cook,
+          servings,
+          author_name: "Domaći kuvar",
+          image_url: RECIPE_IMAGES[i % RECIPE_IMAGES.length],
+          status: "published",
+          skill_level: skill,
+        })
+        .select("id")
+        .single();
 
-    const recipeId = recipe.id;
+      if (recipeErr || !recipe) {
+        console.error("Insert recipe failed:", title, recipeErr?.message);
+        continue;
+      }
 
-    const numIngredients = 5 + (i % (SAMPLE_INGREDIENTS.length - 4));
-    const ings = SAMPLE_INGREDIENTS.slice(0, numIngredients).map((ing, sort_order) => ({
-      recipe_id: recipeId,
-      amount: ing.amount,
-      unit_sr: ing.unit_sr,
-      name_sr: ing.name_sr,
-      sort_order,
-    }));
-    await supabase.from("ingredients").insert(ings);
+      const recipeId = recipe.id;
 
-    const numSteps = 3 + (i % 4);
-    const steps = Array.from({ length: numSteps }, (_, k) => ({
-      recipe_id: recipeId,
-      step_number: k + 1,
-      instruction_sr: LOREM_STEP,
-      sort_order: k,
-      image_url: null,
-    }));
-    await supabase.from("directions").insert(steps);
+      const numIngredients = 5 + (i % (SAMPLE_INGREDIENTS.length - 4));
+      const ings = SAMPLE_INGREDIENTS.slice(0, numIngredients).map((ing, sort_order) => ({
+        recipe_id: recipeId,
+        amount: ing.amount,
+        unit_sr: ing.unit_sr,
+        name_sr: ing.name_sr,
+        sort_order,
+      }));
+      await supabase.from("ingredients").insert(ings);
 
-    if (mealCategories.length > 0) {
-      const mealCat = mealCategories[i % mealCategories.length];
+      const numSteps = 3 + (i % 4);
+      const steps = Array.from({ length: numSteps }, (_, k) => ({
+        recipe_id: recipeId,
+        step_number: k + 1,
+        instruction_sr: LOREM_STEP,
+        sort_order: k,
+        image_url: null,
+      }));
+      await supabase.from("directions").insert(steps);
+
       const links: { recipe_id: string; category_id: string }[] = [
         { recipe_id: recipeId, category_id: mealCat.id },
       ];
@@ -231,22 +314,22 @@ async function main() {
         links.push({ recipe_id: recipeId, category_id: cuisineCat.id });
       }
       await supabase.from("recipe_categories").insert(links);
-    }
 
-    if (i % 3 === 0) {
-      await supabase.from("recipe_nutrition").insert({
-        recipe_id: recipeId,
-        calories: 250 + (i % 20) * 25,
-        fat_g: 10 + (i % 8),
-        carbs_g: 25 + (i % 15),
-        protein_g: 15 + (i % 12),
-      });
-    }
+      if (i % 3 === 0) {
+        await supabase.from("recipe_nutrition").insert({
+          recipe_id: recipeId,
+          calories: 250 + (i % 20) * 25,
+          fat_g: 10 + (i % 8),
+          carbs_g: 25 + (i % 15),
+          protein_g: 15 + (i % 12),
+        });
+      }
 
-    console.log(`Inserted: ${title} (${slug})`);
+      console.log(`Inserted: ${title} (${slug}) → ${mealCat.slug}`);
+    }
   }
 
-  console.log("Done. 30 mock recipes created.");
+  console.log(`Done. ${totalToCreate} mock recipes created (10 per meal_type category).`);
 }
 
 main().catch((err) => {

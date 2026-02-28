@@ -6,6 +6,9 @@ interface RecipeSchemaProps {
     prep_time_minutes: number;
     cook_time_minutes: number;
     servings: number;
+    author_name?: string | null;
+    created_at?: string | null;
+    updated_at?: string | null;
     rating_avg?: number | null;
     rating_count?: number;
     ingredients?: Array<{ amount: string | null; unit_sr: string | null; name_sr: string }>;
@@ -18,6 +21,8 @@ interface RecipeSchemaProps {
     } | null;
   };
   baseUrl?: string;
+  /** Canonical path e.g. /recepti/hladna-predjela/podvarak-10 for schema url */
+  canonicalPath?: string;
 }
 
 function formatDuration(minutes: number) {
@@ -29,8 +34,9 @@ function formatDuration(minutes: number) {
   return `PT${minutes}M`;
 }
 
-export function RecipeSchema({ recipe, baseUrl = "https://recepti.rs" }: RecipeSchemaProps) {
+export function RecipeSchema({ recipe, baseUrl = "https://recepti.rs", canonicalPath }: RecipeSchemaProps) {
   const totalTime = recipe.prep_time_minutes + recipe.cook_time_minutes;
+  const schemaUrl = canonicalPath ? `${baseUrl}${canonicalPath}` : undefined;
   const ingredients = (recipe.ingredients || [])
     .sort((a, b) => ((a as { sort_order?: number }).sort_order ?? 0) - ((b as { sort_order?: number }).sort_order ?? 0))
     .map((i) => {
@@ -46,6 +52,7 @@ export function RecipeSchema({ recipe, baseUrl = "https://recepti.rs" }: RecipeS
     "@type": "Recipe",
     name: recipe.title_sr,
     description: recipe.description_sr || undefined,
+    ...(schemaUrl && { url: schemaUrl }),
     image: recipe.image_url ? (recipe.image_url.startsWith("http") ? recipe.image_url : `${baseUrl}${recipe.image_url}`) : undefined,
     prepTime: formatDuration(recipe.prep_time_minutes),
     cookTime: formatDuration(recipe.cook_time_minutes),
@@ -54,6 +61,16 @@ export function RecipeSchema({ recipe, baseUrl = "https://recepti.rs" }: RecipeS
     recipeIngredient: ingredients,
     recipeInstructions: instructions,
   };
+
+  if (recipe.author_name) {
+    schema.author = { "@type": "Person", name: recipe.author_name };
+  }
+  if (recipe.created_at) {
+    schema.datePublished = recipe.created_at;
+  }
+  if (recipe.updated_at) {
+    schema.dateModified = recipe.updated_at;
+  }
 
   if (recipe.recipe_nutrition?.calories != null) {
     schema.nutrition = {

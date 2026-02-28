@@ -142,12 +142,18 @@ export async function getPublishedRecipes(
   let recipes = data || [];
 
   // Ingredient search – recipes that contain an ingredient matching the query
+  // s and š are treated as equivalent (e.g. "sargarepa" matches "šargarepa")
   if (filters?.ingredientQuery?.trim()) {
     const term = filters.ingredientQuery.trim();
+    const variant = term.replace(/[sš]/g, (c) => (c === "s" ? "š" : "s"));
+    const patterns = [...new Set([term, variant])];
+    const orConditions = patterns
+      .map((p) => `name_sr.ilike.%${p}%`)
+      .join(",");
     const { data: ingRows } = await supabase
       .from("ingredients")
       .select("recipe_id")
-      .ilike("name_sr", `%${term}%`);
+      .or(orConditions);
     const recipeIdsFromIng = [...new Set((ingRows || []).map((r) => r.recipe_id))];
     if (recipeIdsFromIng.length > 0) {
       recipes = recipes.filter((r) => recipeIdsFromIng.includes(r.id));
@@ -196,6 +202,17 @@ export async function getPublishedRecipes(
     ...r,
     categories: categoriesByRecipe[r.id] || [],
   }));
+}
+
+/** Canonical path for a recipe: /recepti/{categorySlug}/{recipeSlug}. Uses first category or "ostalo". */
+export function getRecipeCanonicalPath(recipe: {
+  slug: string;
+  recipe_categories?: Array<{ category?: { slug: string } }>;
+}): string {
+  const raw = recipe.recipe_categories || [];
+  const first = raw.map((rc) => rc.category?.slug).find(Boolean);
+  const categorySlug = first || "ostalo";
+  return `/recepti/${categorySlug}/${recipe.slug}`;
 }
 
 export async function getRecipeBySlug(slug: string) {
@@ -377,7 +394,7 @@ export async function getRelatedRecipes(
         prep_time_minutes,
         cook_time_minutes
       ),
-      category:categories(name_sr)
+      category:categories(name_sr, slug)
     `
     )
     .in("category_id", categoryIds)
@@ -397,27 +414,29 @@ export async function getRelatedRecipes(
   const seen = new Set<string>();
   const recipeMap = new Map<
     string,
-    RecipeRow & { categoryName?: string; rating_avg?: number | null; rating_count?: number }
+    RecipeRow & { categoryName?: string; primaryCategorySlug?: string; rating_avg?: number | null; rating_count?: number }
   >();
 
   for (const row of data || []) {
     const raw = row as unknown as {
       recipe_id: string;
       recipe?: RecipeRow | RecipeRow[];
-      category?: { name_sr: string } | { name_sr: string }[];
+      category?: { name_sr: string; slug: string } | { name_sr: string; slug: string }[];
     };
     const r = Array.isArray(raw.recipe) ? raw.recipe[0] : raw.recipe;
     if (!r) continue;
 
     const cat = Array.isArray(raw.category) ? raw.category[0] : raw.category;
     const categoryName = cat?.name_sr ?? undefined;
+    const categorySlug = cat?.slug ?? undefined;
 
     if (!recipeMap.has(r.id)) {
       seen.add(r.id);
-      recipeMap.set(r.id, { ...r, categoryName });
+      recipeMap.set(r.id, { ...r, categoryName, primaryCategorySlug: categorySlug });
     } else {
       const existing = recipeMap.get(r.id)!;
       if (!existing.categoryName && categoryName) existing.categoryName = categoryName;
+      if (!existing.primaryCategorySlug && categorySlug) existing.primaryCategorySlug = categorySlug;
     }
     if (recipeMap.size >= limit) break;
   }

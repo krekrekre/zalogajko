@@ -1,8 +1,6 @@
-import { redirect, permanentRedirect } from "next/navigation";
+import { redirect } from "next/navigation";
 import Link from "next/link";
 import {
-  getRecipeBySlug,
-  getRecipeCanonicalPath,
   getFilterCategories,
   getPublishedRecipes,
 } from "@/lib/queries/recipes";
@@ -18,20 +16,16 @@ export async function generateMetadata({
 }) {
   const { slug } = await params;
   const categories = await getFilterCategories();
-  const mealCategory = categories.find((c) => c.slug === slug && c.type === "meal_type");
-  const cuisineCategory = categories.find((c) => c.slug === slug && c.type === "cuisine");
-  const category = mealCategory ?? cuisineCategory;
+  const category = categories.find((c) => c.slug === slug && c.type === "cuisine");
   if (!category) return {};
-  // Cuisine pages are canonical at /kuhinja/[slug]
-  const path = cuisineCategory ? `/kuhinja/${slug}` : `/recepti/${slug}`;
   return getListingMetadata({
     title: category.name_sr,
-    description: `Pregledajte recepte u kategoriji ${category.name_sr}.`,
-    path,
+    description: `Pregledajte recepte u kuhinji: ${category.name_sr}.`,
+    path: `/kuhinja/${slug}`,
   });
 }
 
-export default async function ReceptiSlugPage({
+export default async function KuhinjaSlugPage({
   params,
   searchParams,
 }: {
@@ -43,29 +37,12 @@ export default async function ReceptiSlugPage({
   const tezina = typeof raw?.tezina === "string" ? raw.tezina : undefined;
   const vreme = typeof raw?.vreme === "string" ? raw.vreme : undefined;
 
-  const recipe = await getRecipeBySlug(slug);
-  if (recipe) {
-    permanentRedirect(getRecipeCanonicalPath(recipe));
-  }
-
   const categories = await getFilterCategories();
-  const category =
-    categories.find((c) => c.slug === slug && c.type === "meal_type") ??
-    categories.find((c) => c.slug === slug && c.type === "cuisine");
+  const category = categories.find((c) => c.slug === slug && c.type === "cuisine");
   if (!category) {
-    redirect("/recepti");
+    redirect("/kuhinja");
   }
 
-  // Cuisine categories live under /kuhinja; redirect so one canonical URL per cuisine
-  if (category.type === "cuisine") {
-    const params = new URLSearchParams();
-    if (tezina) params.set("tezina", tezina);
-    if (vreme) params.set("vreme", vreme);
-    const q = params.toString();
-    permanentRedirect(q ? `/kuhinja/${slug}?${q}` : `/kuhinja/${slug}`);
-  }
-
-  const isMealType = category.type === "meal_type";
   const skillLevel =
     tezina === "lako" || tezina === "srednje" || tezina === "tesko"
       ? (tezina as "lako" | "srednje" | "tesko")
@@ -78,15 +55,15 @@ export default async function ReceptiSlugPage({
   else if (vreme === "120-plus") minTimeMinutes = 121;
 
   const recipes = await getPublishedRecipes(100, 0, {
-    ...(isMealType ? { categorySlug: slug } : { cuisineSlug: slug }),
+    cuisineSlug: slug,
     skillLevel,
     maxTimeMinutes,
     minTimeMinutes,
   });
 
   const breadcrumbItems = [
-    { name: "Recepti", path: "/recepti" },
-    { name: category.name_sr, path: `/recepti/${slug}` },
+    { name: "Kuhinja", path: "/kuhinja" },
+    { name: category.name_sr, path: `/kuhinja/${slug}` },
   ];
 
   return (
@@ -94,8 +71,8 @@ export default async function ReceptiSlugPage({
       <BreadcrumbSchema items={breadcrumbItems} />
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <nav className="mb-6 text-sm text-[var(--ar-gray-600)]" aria-label="Breadcrumb">
-          <Link href="/recepti" className="hover:text-[var(--color-primary)]">
-            Recepti
+          <Link href="/kuhinja" className="hover:text-[var(--color-primary)]">
+            Kuhinja
           </Link>
           <span className="mx-2">/</span>
           <span className="text-[var(--ar-gray-900)]" aria-current="page">
@@ -107,6 +84,7 @@ export default async function ReceptiSlugPage({
         </h1>
         <CategoryPageFilters
           categorySlug={slug}
+          basePath="/kuhinja"
           activeTezina={tezina}
           activeVreme={vreme}
         />
@@ -121,13 +99,13 @@ export default async function ReceptiSlugPage({
               cookTime={r.cook_time_minutes}
               ratingCount={r.rating_count ?? 0}
               ratingAvg={r.rating_avg}
-              categorySlug={isMealType ? slug : undefined}
+              categorySlug={slug}
             />
           ))}
         </div>
         {recipes.length === 0 && (
           <p className="py-12 text-center text-[var(--ar-gray-500)]">
-            Nema recepta u ovoj kategoriji još uvek.
+            Nema recepta u ovoj kuhinji još uvek.
           </p>
         )}
       </div>

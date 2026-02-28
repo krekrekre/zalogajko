@@ -2,10 +2,11 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { getListingMetadata } from "@/lib/seo";
 
-export const metadata = getListingMetadata(
-  "Kategorije recepta",
-  "Pregledajte sve kategorije recepta - od glavnih jela do deserta."
-);
+export const metadata = getListingMetadata({
+  title: "Kategorije recepta",
+  description: "Pregledajte sve kategorije recepta - od glavnih jela do deserta.",
+  path: "/kategorije",
+});
 
 export default async function CategoriesPage() {
   let categories: Array<{ slug: string; name_sr: string; type: string }> = [];
@@ -54,7 +55,7 @@ export default async function CategoriesPage() {
               {cats.map((c) => (
                 <Link
                   key={c.slug}
-                  href={`/kategorija/${c.slug}`}
+                  href={`/recepti/${c.slug}`}
                   className="rounded-lg border border-[var(--ar-gray-200)] bg-white px-4 py-2.5 text-sm font-medium text-[var(--ar-gray-700)] shadow-sm hover:border-[var(--ar-primary)] hover:bg-[var(--ar-primary-light)] hover:text-[var(--ar-primary)]"
                 >
                   {c.name_sr}

@@ -376,3 +376,37 @@ p, span, a, li, td, th, label, input, textarea, select, button {
 .auth-form-back:hover {
   color: var(--ar-primary);
 }
+
+/* Recipe slider: smoother transitions and 4th card scale effect */
+.recipe-slider .swiper-wrapper {
+  transition-timing-function: cubic-bezier(0.33, 1, 0.68, 1);
+  will-change: transform;
+}
+
+.recipe-slider .swiper-slide {
+  transition: transform 0.45s cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+.recipe-slider .swiper-slide-visible:not(.swiper-slide-fully-visible) {
+  transform: scale(0.9);
+  transform-origin: left center;
+}
+
+/* Article / blog body content */
+.article-body p {
+  margin-bottom: 1rem;
+  line-height: 1.65;
+  color: var(--ar-gray-700);
+}
+
+.article-body h2 {
+  margin-top: 1.75rem;
+  margin-bottom: 0.75rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--ar-gray-900);
+}
+
+.article-body h2:first-child {
+  margin-top: 0;
+}

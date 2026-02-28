@@ -1,0 +1,31 @@
+import { getListingMetadata } from "@/lib/seo";
+import { SAVETI_ARTICLES } from "@/lib/articles";
+import { ArticleCard } from "@/components/articles/ArticleCard";
+
+export const metadata = getListingMetadata({
+  title: "Saveti",
+  description:
+    "Korisni saveti za kuvanje, čuvanje namirnica, zamenjivanje sastojaka i organizaciju kuhinje.",
+  path: "/saveti",
+});
+
+export default function SavetiPage() {
+  return (
+    <div className="min-h-screen bg-white">
+      <div className="mx-auto max-w-[1220px] px-4 py-8 sm:px-6 lg:px-8">
+        <h1 className="font-dynapuff text-3xl font-bold text-[var(--ar-gray-900)] sm:text-4xl">
+          Saveti
+        </h1>
+        <p className="mt-2 text-[var(--ar-gray-500)]">
+          Korisni saveti za kuvanje, čuvanje namirnica i organizaciju kuhinje.
+        </p>
+
+        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {SAVETI_ARTICLES.map((article) => (
+            <ArticleCard key={article.slug} article={article} basePath="/saveti" />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}

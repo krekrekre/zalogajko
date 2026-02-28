@@ -446,7 +446,7 @@ export function Header({ categories, ingredients }: HeaderProps) {
                     {mealCategories.slice(0, 12).map((c) => (
                       <li key={c.id}>
                         <Link
-                          href={`/recepti?kategorija=${c.slug}`}
+                          href={`/recepti/${c.slug}`}
                           onClick={closeMobileMenu}
                           className="block py-2 text-base text-[var(--ar-gray-700)]"
                         >
@@ -493,7 +493,7 @@ export function Header({ categories, ingredients }: HeaderProps) {
                       ingredients.slice(0, 12).map((name) => (
                         <li key={name}>
                           <Link
-                            href={`/recepti?sastojak=${encodeURIComponent(name)}`}
+                            href={`/sastojci/${encodeURIComponent(name.toLowerCase())}`}
                             onClick={closeMobileMenu}
                             className="block py-2 text-base text-[var(--ar-gray-700)]"
                           >
@@ -504,7 +504,7 @@ export function Header({ categories, ingredients }: HeaderProps) {
                     )}
                     <li>
                       <Link
-                        href="/recepti"
+                        href="/sastojci"
                         onClick={closeMobileMenu}
                         className="block py-2 text-base font-semibold text-[var(--color-primary)]"
                       >
@@ -534,17 +534,17 @@ export function Header({ categories, ingredients }: HeaderProps) {
                     {cuisineCategories.slice(0, 12).map((c) => (
                       <li key={c.id}>
                         <Link
-                          href={`/recepti?kuhinja=${c.slug}`}
+                          href={`/kuhinja/${c.slug}`}
                           onClick={closeMobileMenu}
                           className="block py-2 text-base text-[var(--ar-gray-700)]"
                         >
-                          {c.name_sr}
+                          {c.slug.charAt(0).toUpperCase() + c.slug.slice(1)}
                         </Link>
                       </li>
                     ))}
                     <li>
                       <Link
-                        href="/recepti"
+                        href="/kuhinja"
                         onClick={closeMobileMenu}
                         className="block py-2 text-base font-semibold text-[var(--color-primary)]"
                       >
@@ -574,7 +574,7 @@ export function Header({ categories, ingredients }: HeaderProps) {
                   <ChevronRight className="h-5 w-5 text-[var(--ar-gray-700)]" />
                 </Link>
               </li>
-              <li className="border-b border-[var(--ar-gray-300)]">
+              <li className="hidden border-b border-[var(--ar-gray-300)]">
                 <Link
                   href="/o-nama"
                   onClick={closeMobileMenu}
@@ -624,7 +624,7 @@ export function Header({ categories, ingredients }: HeaderProps) {
               {mealCategories.map((c) => (
                 <li key={c.id}>
                   <Link
-                    href={`/recepti?kategorija=${c.slug}`}
+                    href={`/recepti/${c.slug}`}
                     className="block px-4 py-2.5 text-sm font-normal text-[var(--color-primary)] hover:bg-[var(--ar-gray-200)] hover:text-[var(--color-primary)] cursor-pointer"
                   >
                     {c.name_sr}
@@ -643,7 +643,7 @@ export function Header({ categories, ingredients }: HeaderProps) {
 
             <NavDropdown
               id="sastojci"
-              href="/recepti"
+              href="/sastojci"
               label="Sastojci"
               open={openDropdown === "sastojci"}
               onOpen={() => setOpenDropdown("sastojci")}
@@ -660,7 +660,7 @@ export function Header({ categories, ingredients }: HeaderProps) {
                   {ingredients.slice(0, 7).map((name) => (
                     <li key={name}>
                       <Link
-                        href={`/recepti?sastojak=${encodeURIComponent(name)}`}
+                        href={`/sastojci/${encodeURIComponent(name.toLowerCase())}`}
                         className="block px-4 py-2.5 text-sm font-normal text-[var(--color-primary)] hover:bg-[var(--ar-gray-200)] hover:text-[var(--color-primary)] cursor-pointer"
                       >
                         {name}
@@ -669,7 +669,7 @@ export function Header({ categories, ingredients }: HeaderProps) {
                   ))}
                   <li className="border-t border-[var(--ar-gray-200)] mt-1 pt-1">
                     <Link
-                      href="/recepti"
+                      href="/sastojci"
                       className="block px-4 py-2.5 text-sm font-bold uppercase tracking-wide text-[var(--color-primary)] hover:bg-[var(--ar-gray-200)] cursor-pointer"
                     >
                       Pregledaj sve
@@ -681,7 +681,7 @@ export function Header({ categories, ingredients }: HeaderProps) {
 
             <NavDropdown
               id="kuhinja"
-              href="/recepti"
+              href="/kuhinja"
               label="Kuhinja"
               open={openDropdown === "kuhinja"}
               onOpen={() => setOpenDropdown("kuhinja")}
@@ -690,16 +690,16 @@ export function Header({ categories, ingredients }: HeaderProps) {
               {cuisineCategories.slice(0, 7).map((c) => (
                 <li key={c.id}>
                   <Link
-                    href={`/recepti?kuhinja=${c.slug}`}
+                    href={`/kuhinja/${c.slug}`}
                     className="block px-4 py-2.5 text-sm font-normal text-[var(--color-primary)] hover:bg-[var(--ar-gray-200)] hover:text-[var(--color-primary)] cursor-pointer"
                   >
-                    {c.name_sr}
+                    {c.slug.charAt(0).toUpperCase() + c.slug.slice(1)}
                   </Link>
                 </li>
               ))}
               <li className="border-t border-[var(--ar-gray-200)] mt-1 pt-1">
                 <Link
-                  href="/recepti"
+                  href="/kuhinja"
                   className="block px-4 py-2.5 text-sm font-bold uppercase tracking-wide text-[var(--color-primary)] hover:bg-[var(--ar-gray-200)] cursor-pointer"
                 >
                   Pregledaj sve
@@ -723,7 +723,7 @@ export function Header({ categories, ingredients }: HeaderProps) {
                 <span className={navLinkUnderline}>Blog</span>
               </Link>
             </li>
-            <li>
+            <li className="hidden">
               <Link
                 href="/o-nama"
                 className={`${navLinkBase} text-[var(--color-primary)] hover:text-[var(--color-orange)]`}

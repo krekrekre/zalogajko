@@ -8,12 +8,15 @@ interface RecipeActionsProps {
   recipeId: string;
   slug: string;
   title: string;
+  /** Canonical path for login redirect (e.g. /recepti/hladna-predjela/podvarak-10) */
+  canonicalPath?: string;
 }
 
 export function RecipeActions({
   recipeId,
   slug,
   title,
+  canonicalPath,
 }: RecipeActionsProps) {
   const [user, setUser] = useState<{ id: string } | null>(null);
   const [isSaved, setIsSaved] = useState(false);
@@ -37,7 +40,8 @@ export function RecipeActions({
 
   async function toggleSave() {
     if (!user) {
-      window.location.href = "/login?next=/recepti/" + slug;
+      const path = canonicalPath ?? `/recepti/${slug}`;
+      window.location.href = "/login?next=" + path;
       return;
     }
     setSaving(true);

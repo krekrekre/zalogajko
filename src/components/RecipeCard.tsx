@@ -11,6 +11,8 @@ interface RecipeCardProps {
   ratingCount?: number;
   ratingAvg?: number | null;
   tag?: string;
+  /** When set, link uses canonical path /recepti/{categorySlug}/{slug} */
+  categorySlug?: string;
 }
 
 function formatTime(minutes: number) {
@@ -25,7 +27,10 @@ function formatTime(minutes: number) {
 function StarRating({ avg }: { avg: number }) {
   const full = Math.min(5, Math.floor(avg));
   return (
-    <span className="inline-flex items-center gap-0.5 text-[var(--ar-primary)]" aria-label={`${avg.toFixed(1)} od 5 zvezdica`}>
+    <span
+      className="inline-flex items-center gap-0.5 text-[var(--ar-primary)]"
+      aria-label={`${avg.toFixed(1)} od 5 zvezdica`}
+    >
       {[...Array(5)].map((_, i) => (
         <svg
           key={i}
@@ -48,15 +53,17 @@ export function RecipeCard({
   ratingCount = 0,
   ratingAvg,
   tag,
+  categorySlug,
 }: RecipeCardProps) {
   const totalTime = prepTime + cookTime;
+  const href = categorySlug ? `/recepti/${categorySlug}/${slug}` : `/recepti/${slug}`;
 
   return (
     <Link
-      href={`/recepti/${slug}`}
-      className="group block overflow-hidden rounded-none border border-[var(--color-primary)] bg-[#f1f1e6] transition-all duration-200"
+      href={href}
+      className="group flex h-[340px] flex-col overflow-hidden rounded-none border border-[var(--color-primary)] bg-transparent transition-all duration-200"
     >
-      <div className="relative aspect-[4/3] overflow-hidden bg-[var(--ar-gray-100)]">
+      <div className="relative min-h-0 flex-1 overflow-hidden bg-[var(--ar-gray-100)]">
         <Image
           src={imageUrl || PLACEHOLDER_IMAGES.default}
           alt={title}
@@ -70,8 +77,8 @@ export function RecipeCard({
           </span>
         )}
       </div>
-      <div className="bg-[#f1f1e6] p-3 sm:p-4">
-        <h3 className="line-clamp-2 text-xl font-semibold leading-tight text-[var(--ar-gray-700)] transition-colors group-hover:text-[var(--ar-primary)] sm:text-[23px]">
+      <div className="shrink-0 bg-transparent p-3 sm:p-4">
+        <h3 className="font-playpen-sans line-clamp-2 text-xl font-semibold leading-tight text-[var(--ar-gray-700)] transition-colors group-hover:text-[var(--ar-primary)] group-hover:underline group-hover:decoration-[var(--color-accent)] sm:text-[23px]">
           {title}
         </h3>
         {ratingCount > 0 && (
@@ -85,9 +92,6 @@ export function RecipeCard({
         <p className="mt-1 text-sm text-[var(--ar-gray-500)]">
           {formatTime(totalTime)}
         </p>
-        <span className="mt-3 inline-block text-sm font-medium text-[var(--ar-primary)] group-hover:underline">
-          Vidi recept →
-        </span>
       </div>
     </Link>
   );

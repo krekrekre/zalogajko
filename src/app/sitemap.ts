@@ -18,20 +18,37 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const supabase = await createClient();
     const { data: recipes } = await supabase
       .from("recipes")
-      .select("slug, updated_at")
+      .select("id, slug, updated_at")
       .eq("status", "published");
-    recipePages = (recipes || []).map((r) => ({
-      url: `${baseUrl}/recepti/${r.slug}`,
-      lastModified: r.updated_at ? new Date(r.updated_at) : new Date(),
-      changeFrequency: "weekly" as const,
-      priority: 0.8,
-    }));
+    if (recipes?.length) {
+      const recipeIds = recipes.map((r) => r.id);
+      const { data: rcData } = await supabase
+        .from("recipe_categories")
+        .select("recipe_id, category:categories(slug)")
+        .in("recipe_id", recipeIds);
+      const idToFirstCategory: Record<string, string> = {};
+      for (const rc of rcData || []) {
+        const raw = rc as unknown as { recipe_id: string; category?: { slug: string } | { slug: string }[] };
+        const cat = Array.isArray(raw.category) ? raw.category[0] : raw.category;
+        const slug = cat?.slug;
+        if (slug && !idToFirstCategory[raw.recipe_id]) idToFirstCategory[raw.recipe_id] = slug;
+      }
+      recipePages = recipes.map((r) => {
+        const categorySlug = idToFirstCategory[r.id] ?? "ostalo";
+        return {
+          url: `${baseUrl}/recepti/${categorySlug}/${r.slug}`,
+          lastModified: r.updated_at ? new Date(r.updated_at) : new Date(),
+          changeFrequency: "weekly" as const,
+          priority: 0.8,
+        };
+      });
+    }
 
     const { data: categories } = await supabase
       .from("categories")
       .select("slug");
     categoryPages = (categories || []).map((c) => ({
-      url: `${baseUrl}/kategorija/${c.slug}`,
+      url: `${baseUrl}/recepti/${c.slug}`,
       lastModified: new Date(),
       changeFrequency: "weekly" as const,
       priority: 0.7,

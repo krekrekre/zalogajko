@@ -34,7 +34,7 @@ export function TopicHubs() {
               {MEAL_TYPE_LINKS.map((c) => (
                 <li key={c.slug}>
                   <Link
-                    href={`/kategorija/${c.slug}`}
+                    href={`/recepti/${c.slug}`}
                     className="rounded-lg px-4 py-2.5 text-sm font-medium text-[var(--ar-gray-700)] transition-colors hover:bg-[var(--ar-primary-light)] hover:text-[var(--ar-primary)]"
                   >
                     {c.name_sr}
@@ -51,7 +51,7 @@ export function TopicHubs() {
               {CUISINE_LINKS.map((c) => (
                 <li key={c.slug}>
                   <Link
-                    href={`/kategorija/${c.slug}`}
+                    href={`/recepti/${c.slug}`}
                     className="rounded-lg px-4 py-2.5 text-sm font-medium text-[var(--ar-gray-700)] transition-colors hover:bg-[var(--ar-primary-light)] hover:text-[var(--ar-primary)]"
                   >
                     {c.name_sr}

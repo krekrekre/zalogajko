@@ -4,9 +4,21 @@ import { SaveRecipesBanner } from "@/components/home/SaveRecipesBanner";
 import { FeaturedRecipeCards } from "@/components/home/FeaturedRecipeCards";
 import { SearchSection } from "@/components/home/SearchSection";
 import { MeatlessMealIdeas } from "@/components/home/MeatlessMealIdeas";
-import { CommunitySection } from "@/components/home/CommunitySection";
-import { TopicHubs } from "@/components/home/TopicHubs";
+import { BlogSection } from "@/components/home/BlogSection";
 import { getPublishedRecipes, getFeaturedRecipesWithReviews, getSectionRecipes } from "@/lib/queries/recipes";
+import { DEFAULT_META, SITE_NAME } from "@/lib/constants";
+
+export const metadata = {
+  title: `${SITE_NAME} | Recepti, saveti i više`,
+  description: DEFAULT_META.description,
+  openGraph: {
+    title: `${SITE_NAME} | Recepti, saveti i više`,
+    description: DEFAULT_META.description,
+    url: DEFAULT_META.url,
+    locale: DEFAULT_META.locale,
+  },
+  alternates: { canonical: DEFAULT_META.url },
+};
 
 export default async function HomePage() {
   let recipes: Awaited<ReturnType<typeof getPublishedRecipes>> = [];
@@ -35,8 +47,7 @@ export default async function HomePage() {
       <MeatlessMealIdeas recipes={sectionRecipes} />
       <SaveRecipesBanner />
       <LatestRecipes recipes={recipes} />
-      <CommunitySection />
-      <TopicHubs />
+      <BlogSection />
     </>
   );
 }

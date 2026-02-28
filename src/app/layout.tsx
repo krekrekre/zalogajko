@@ -3,8 +3,9 @@ import { DynaPuff, Playpen_Sans } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { SiteSchema } from "@/components/SiteSchema";
 import { DEFAULT_META } from "@/lib/constants";
-import { getFilterCategories, getDistinctIngredients } from "@/lib/queries/recipes";
+import { getFilterCategories } from "@/lib/queries/recipes";
 
 const dynaPuff = DynaPuff({
   variable: "--font-dynapuff",
@@ -32,16 +33,23 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [categories, ingredients] = await Promise.all([
-    getFilterCategories(),
-    getDistinctIngredients(),
-  ]);
+  const categories = await getFilterCategories();
+
+  const sastojciDropdownItems = [
+    "Piletina",
+    "Govedina",
+    "Svinjetina",
+    "Pasta",
+    "Voće",
+    "Povrće",
+  ];
 
   return (
     <html lang="sr">
       <body className={`${dynaPuff.variable} ${playpenSans.variable} ${playpenSans.className} font-sans antialiased bg-white`}>
+        <SiteSchema />
         <div className="flex min-h-screen flex-col bg-white">
-          <Header categories={categories} ingredients={ingredients} />
+          <Header categories={categories} ingredients={sastojciDropdownItems} />
           <main className="flex-1 bg-white">{children}</main>
           <Footer />
         </div>
