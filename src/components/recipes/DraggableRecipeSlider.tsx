@@ -54,8 +54,9 @@ export function DraggableRecipeSlider({ recipes, categorySlug }: DraggableRecipe
           setTimeout(() => {
             try {
               if (prevRef.current && nextRef.current && swiper?.navigation) {
+                const nav = swiper.params?.navigation;
                 swiper.params.navigation = {
-                  ...(swiper.params?.navigation ?? {}),
+                  ...(nav && typeof nav === "object" ? nav : {}),
                   prevEl: prevRef.current,
                   nextEl: nextRef.current,
                 };

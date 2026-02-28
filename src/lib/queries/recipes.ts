@@ -182,6 +182,24 @@ export async function getPublishedRecipes(
   const recipeIds = recipes.map((r) => r.id);
   if (recipeIds.length === 0) return [];
 
+  // Fetch ratings for display
+  const { data: ratings } = await supabase
+    .from("ratings")
+    .select("recipe_id, stars")
+    .in("recipe_id", recipeIds);
+  const ratingByRecipe: Record<string, { count: number; avg: number }> = {};
+  for (const id of recipeIds) ratingByRecipe[id] = { count: 0, avg: 0 };
+  for (const row of ratings || []) {
+    const curr = ratingByRecipe[row.recipe_id];
+    if (!curr) continue;
+    curr.count += 1;
+    curr.avg += row.stars;
+  }
+  for (const id of recipeIds) {
+    const curr = ratingByRecipe[id];
+    if (curr.count > 0) curr.avg /= curr.count;
+  }
+
   const { data: rcData } = await supabase
     .from("recipe_categories")
     .select("recipe_id, category:categories(id, slug, name_sr)")
@@ -198,10 +216,15 @@ export async function getPublishedRecipes(
     }
   }
 
-  return recipes.map((r) => ({
-    ...r,
-    categories: categoriesByRecipe[r.id] || [],
-  }));
+  return recipes.map((r) => {
+    const stats = ratingByRecipe[r.id] || { count: 0, avg: 0 };
+    return {
+      ...r,
+      categories: categoriesByRecipe[r.id] || [],
+      rating_count: stats.count,
+      rating_avg: stats.count > 0 ? stats.avg : null,
+    };
+  });
 }
 
 /** Canonical path for a recipe: /recepti/{categorySlug}/{recipeSlug}. Uses first category or "ostalo". */
