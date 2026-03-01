@@ -9,6 +9,10 @@ import {
 } from "@/lib/articles";
 import { getListingMetadata } from "@/lib/seo";
 import { ArticleCard } from "@/components/articles/ArticleCard";
+import {
+  getPublishedBlogArticleBySlug,
+  getRelatedBlogArticles,
+} from "@/lib/queries/articles";
 
 const PLACEHOLDER_ARTICLE =
   "https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=800&q=80";
@@ -19,7 +23,8 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const article = getArticleBySlug(slug, "blog");
+  const fromDb = await getPublishedBlogArticleBySlug(slug);
+  const article = fromDb ?? getArticleBySlug(slug, "blog");
   if (!article) return {};
   return getListingMetadata({
     title: article.title,
@@ -30,10 +35,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function BlogArticlePage({ params }: Props) {
   const { slug } = await params;
-  const article = getArticleBySlug(slug, "blog");
+  const fromDb = await getPublishedBlogArticleBySlug(slug);
+  const article = fromDb ?? getArticleBySlug(slug, "blog");
   if (!article) notFound();
 
-  const related = getRelatedArticles(slug, "blog", 4);
+  const relatedFromDb = await getRelatedBlogArticles(slug, 4);
+  const related =
+    relatedFromDb.length > 0
+      ? relatedFromDb
+      : getRelatedArticles(slug, "blog", 4);
   const imageUrl = article.imageUrl || PLACEHOLDER_ARTICLE;
 
   const breadcrumbItems = [

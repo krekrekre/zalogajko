@@ -3,7 +3,9 @@
 import { useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
+import { AuthLayout } from "@/components/auth/AuthLayout";
 import { Button } from "@/components/ui/button";
+import { GoogleIcon } from "@/components/icons/GoogleIcon";
 import { Input } from "@/components/ui/input";
 
 export default function SignupPage() {
@@ -11,6 +13,7 @@ export default function SignupPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [oauthLoading, setOauthLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
@@ -39,10 +42,27 @@ export default function SignupPage() {
     }
   }
 
+  async function handleGoogleSignUp() {
+    setOauthLoading(true);
+    setError(null);
+    try {
+      const supabase = createClient();
+      const redirectTo = `${window.location.origin}/auth/callback`;
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: { redirectTo },
+      });
+      if (error) throw error;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Greška pri registraciji putem Google-a.");
+      setOauthLoading(false);
+    }
+  }
+
   if (success) {
     return (
-      <div className="flex min-h-[60vh] items-center justify-center px-4 py-16">
-        <div className="auth-form-card w-full max-w-[400px] text-center">
+      <AuthLayout>
+        <div className="text-center">
           <h1 className="auth-form-title">Proverite email</h1>
           <p className="mt-3 text-[var(--ar-gray-500)]">
             Poslali smo vam link za potvrdu. Kliknite na link u email-u da
@@ -52,14 +72,13 @@ export default function SignupPage() {
             Idi na prijavu →
           </Link>
         </div>
-      </div>
+      </AuthLayout>
     );
   }
 
   return (
-    <div className="flex min-h-[60vh] items-center justify-center px-4 py-16">
-      <div className="auth-form-card w-full max-w-[400px]">
-        <h1 className="auth-form-title">Registracija</h1>
+    <AuthLayout>
+      <h1 className="auth-form-title">Registracija</h1>
         <form onSubmit={handleSubmit} className="auth-form">
           {error && (
             <div className="auth-form-error" role="alert">
@@ -109,10 +128,29 @@ export default function SignupPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="auth-form-input"
+              placeholder="****"
             />
           </div>
           <Button type="submit" disabled={loading} className="auth-form-submit">
             {loading ? "Registracija..." : "Registruj se"}
+          </Button>
+          <div className="relative my-4">
+            <span className="absolute inset-0 flex items-center" aria-hidden>
+              <span className="w-full border-t border-[var(--ar-gray-200)]" />
+            </span>
+            <span className="relative flex justify-center text-xs uppercase tracking-wide text-[var(--ar-gray-500)]">
+              ili
+            </span>
+          </div>
+          <Button
+            type="button"
+            variant="outline"
+            disabled={loading || oauthLoading}
+            onClick={handleGoogleSignUp}
+            className="auth-form-submit w-full gap-2 border-[var(--ar-gray-300)] bg-white hover:bg-[var(--ar-gray-50)]"
+          >
+            <GoogleIcon className="h-4 w-4" />
+            {oauthLoading ? "Preusmjeravanje..." : "Registruj se putem Google-a"}
           </Button>
         </form>
         <p className="auth-form-footer">
@@ -121,10 +159,6 @@ export default function SignupPage() {
             Prijavi se
           </Link>
         </p>
-        <Link href="/" className="auth-form-back">
-          ← Nazad na početnu
-        </Link>
-      </div>
-    </div>
+    </AuthLayout>
   );
 }

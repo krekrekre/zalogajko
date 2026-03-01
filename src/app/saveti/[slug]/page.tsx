@@ -9,6 +9,10 @@ import {
 } from "@/lib/articles";
 import { getListingMetadata } from "@/lib/seo";
 import { ArticleCard } from "@/components/articles/ArticleCard";
+import {
+  getPublishedArticleBySlug,
+  getRelatedArticles as getRelatedFromDb,
+} from "@/lib/queries/articles";
 
 const PLACEHOLDER_ARTICLE =
   "https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=800&q=80";
@@ -19,7 +23,8 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const article = getArticleBySlug(slug, "saveti");
+  const fromDb = await getPublishedArticleBySlug("saveti", slug);
+  const article = fromDb ?? getArticleBySlug(slug, "saveti");
   if (!article) return {};
   return getListingMetadata({
     title: article.title,
@@ -30,10 +35,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function SavetiArticlePage({ params }: Props) {
   const { slug } = await params;
-  const article = getArticleBySlug(slug, "saveti");
+  const fromDb = await getPublishedArticleBySlug("saveti", slug);
+  const article = fromDb ?? getArticleBySlug(slug, "saveti");
   if (!article) notFound();
 
-  const related = getRelatedArticles(slug, "saveti", 4);
+  const relatedFromDb = await getRelatedFromDb("saveti", slug, 4);
+  const related =
+    relatedFromDb.length > 0
+      ? relatedFromDb
+      : getRelatedArticles(slug, "saveti", 4);
   const imageUrl = article.imageUrl || PLACEHOLDER_ARTICLE;
 
   const breadcrumbItems = [

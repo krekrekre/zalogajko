@@ -18,6 +18,16 @@ export default async function AdminDashboardPage() {
     supabase.from("recipes").select("*", { count: "exact", head: true }),
   ]);
 
+  let articlesCount: number | null = null;
+  try {
+    const { count } = await supabase
+      .from("articles")
+      .select("*", { count: "exact", head: true });
+    articlesCount = count;
+  } catch {
+    // articles table may not exist yet
+  }
+
   return (
     <div>
       <h1 className="text-2xl font-bold text-[var(--ar-gray-900)]">
@@ -80,6 +90,17 @@ export default async function AdminDashboardPage() {
           </p>
           <p className="mt-1 text-2xl font-bold text-[var(--ar-gray-900)]">
             {recipesCount ?? 0}
+          </p>
+        </Link>
+        <Link
+          href="/admin/blog"
+          className="rounded-none border border-[var(--ar-gray-200)] bg-white p-4 transition-shadow hover:shadow-md"
+        >
+          <p className="text-sm font-medium text-[var(--ar-gray-600)]">
+            Blog članci
+          </p>
+          <p className="mt-1 text-2xl font-bold text-[var(--ar-gray-900)]">
+            {articlesCount ?? 0}
           </p>
         </Link>
       </div>

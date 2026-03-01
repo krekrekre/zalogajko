@@ -1,6 +1,7 @@
 import { getListingMetadata } from "@/lib/seo";
-import { SAVETI_ARTICLES } from "@/lib/articles";
 import { ArticleCard } from "@/components/articles/ArticleCard";
+import { getPublishedArticles } from "@/lib/queries/articles";
+import { SAVETI_ARTICLES } from "@/lib/articles";
 
 export const metadata = getListingMetadata({
   title: "Saveti",
@@ -9,7 +10,10 @@ export const metadata = getListingMetadata({
   path: "/saveti",
 });
 
-export default function SavetiPage() {
+export default async function SavetiPage() {
+  const fromDb = await getPublishedArticles("saveti");
+  const articles = fromDb.length > 0 ? fromDb : SAVETI_ARTICLES;
+
   return (
     <div className="min-h-screen bg-white">
       <div className="mx-auto max-w-[1220px] px-4 py-8 sm:px-6 lg:px-8">
@@ -21,7 +25,7 @@ export default function SavetiPage() {
         </p>
 
         <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {SAVETI_ARTICLES.map((article) => (
+          {articles.map((article) => (
             <ArticleCard key={article.slug} article={article} basePath="/saveti" />
           ))}
         </div>

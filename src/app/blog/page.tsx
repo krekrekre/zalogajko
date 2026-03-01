@@ -1,6 +1,7 @@
 import { getListingMetadata } from "@/lib/seo";
-import { BLOG_ARTICLES } from "@/lib/articles";
 import { ArticleCard } from "@/components/articles/ArticleCard";
+import { getPublishedBlogArticles } from "@/lib/queries/articles";
+import { BLOG_ARTICLES } from "@/lib/articles";
 
 export const metadata = getListingMetadata({
   title: "Blog",
@@ -9,7 +10,10 @@ export const metadata = getListingMetadata({
   path: "/blog",
 });
 
-export default function BlogPage() {
+export default async function BlogPage() {
+  const fromDb = await getPublishedBlogArticles();
+  const articles = fromDb.length > 0 ? fromDb : BLOG_ARTICLES;
+
   return (
     <div className="min-h-screen bg-white">
       <div className="mx-auto max-w-[1220px] px-4 py-8 sm:px-6 lg:px-8">
@@ -21,7 +25,7 @@ export default function BlogPage() {
         </p>
 
         <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {BLOG_ARTICLES.map((article) => (
+          {articles.map((article) => (
             <ArticleCard key={article.slug} article={article} basePath="/blog" />
           ))}
         </div>

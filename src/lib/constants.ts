@@ -31,17 +31,16 @@ export const STATS = {
 };
 
 // Popular searches for homepage (Serbian cuisine)
+// category: true = link to /recepti/{slug}, else link to /sastojci/{slug}
 export const POPULAR_SEARCHES = [
-  { label: "Čorba", slug: "corba" },
   { label: "Piletina", slug: "piletina" },
-  { label: "Gibanica", slug: "gibanica" },
-  { label: "Karadjordjeva", slug: "karadjordjeva" },
-  { label: "Sarma", slug: "sarma" },
-  { label: "Punjene paprike", slug: "punjene-paprike" },
-  { label: "Palačinke", slug: "palacinke" },
-  { label: "Kolači", slug: "kolaci" },
-  { label: "Salate", slug: "salate" },
-  { label: "Kuvana jela", slug: "kuvana-jela" },
+  { label: "Govedina", slug: "govedina" },
+  { label: "Svinjetina", slug: "svinjetina" },
+  { label: "Pasta", slug: "pasta" },
+  { label: "Voće", slug: "voce" },
+  { label: "Povrće", slug: "povrce" },
+  { label: "Glavna jela", slug: "glavna-jela", category: true },
+  { label: "Kolači", slug: "kolaci", category: true },
 ] as const;
 
 export const DEFAULT_META = {

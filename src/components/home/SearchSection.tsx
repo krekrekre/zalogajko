@@ -49,7 +49,7 @@ export function SearchSection() {
               {POPULAR_SEARCHES.slice(0, 8).map((s) => (
                 <Link
                   key={s.slug}
-                  href={`/recepti?sastojak=${encodeURIComponent(s.label)}`}
+                  href={"category" in s && s.category ? `/recepti/${s.slug}` : `/sastojci/${encodeURIComponent(s.slug)}`}
                   className="rounded-none bg-[var(--ar-primary)] px-3 py-2 text-center text-xs font-medium text-[var(--color-primary)] transition-colors hover:opacity-90 sm:text-sm"
                 >
                   {s.label}

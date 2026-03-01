@@ -42,6 +42,12 @@ export default function AdminLayout({
               Recepti
             </Link>
             <Link
+              href="/admin/blog"
+              className="text-[var(--ar-gray-700)] hover:text-[var(--ar-primary)] hover:underline"
+            >
+              Blog
+            </Link>
+            <Link
               href="/"
               className="text-[var(--ar-gray-500)] hover:underline"
             >

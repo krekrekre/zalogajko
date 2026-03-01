@@ -4,7 +4,9 @@ import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
+import { AuthLayout } from "@/components/auth/AuthLayout";
 import { Button } from "@/components/ui/button";
+import { GoogleIcon } from "@/components/icons/GoogleIcon";
 import { Input } from "@/components/ui/input";
 
 export default function LoginPage() {
@@ -13,6 +15,7 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [oauthLoading, setOauthLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [checkingAuth, setCheckingAuth] = useState(true);
 
@@ -46,12 +49,30 @@ export default function LoginPage() {
     }
   }
 
+  async function handleGoogleSignIn() {
+    setOauthLoading(true);
+    setError(null);
+    try {
+      const supabase = createClient();
+      const next = searchParams.get("next") ?? "/";
+      const redirectTo = `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`;
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: { redirectTo },
+      });
+      if (error) throw error;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Greška pri prijavi putem Google-a.");
+      setOauthLoading(false);
+    }
+  }
+
   return (
-    <div className="flex min-h-[60vh] items-center justify-center px-4 py-16">
+    <AuthLayout>
       {checkingAuth ? (
         <p className="text-[var(--ar-gray-500)]">Učitavanje...</p>
       ) : (
-        <div className="auth-form-card w-full max-w-[400px]">
+        <>
           <h1 className="auth-form-title">Prijava</h1>
           <form onSubmit={handleSubmit} className="auth-form">
             {error && (
@@ -84,10 +105,29 @@ export default function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="auth-form-input"
+                placeholder="****"
               />
             </div>
             <Button type="submit" disabled={loading} className="auth-form-submit">
               {loading ? "Prijava..." : "Prijavi se"}
+            </Button>
+            <div className="relative my-4">
+              <span className="absolute inset-0 flex items-center" aria-hidden>
+                <span className="w-full border-t border-[var(--ar-gray-200)]" />
+              </span>
+              <span className="relative flex justify-center text-xs uppercase tracking-wide text-[var(--ar-gray-500)]">
+                ili
+              </span>
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              disabled={loading || oauthLoading}
+              onClick={handleGoogleSignIn}
+              className="auth-form-submit w-full gap-2 border-[var(--ar-gray-300)] bg-white hover:bg-[var(--ar-gray-50)]"
+            >
+              <GoogleIcon className="h-4 w-4" />
+              {oauthLoading ? "Preusmjeravanje..." : "Prijavi se putem Google-a"}
             </Button>
           </form>
           <p className="auth-form-footer">
@@ -96,11 +136,8 @@ export default function LoginPage() {
               Registruj se
             </Link>
           </p>
-          <Link href="/" className="auth-form-back">
-            ← Nazad na početnu
-          </Link>
-        </div>
+        </>
       )}
-    </div>
+    </AuthLayout>
   );
 }

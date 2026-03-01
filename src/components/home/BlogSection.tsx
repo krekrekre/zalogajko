@@ -1,11 +1,14 @@
 import Link from "next/link";
-import { BLOG_ARTICLES } from "@/lib/articles";
 import { ArticleCard } from "@/components/articles/ArticleCard";
+import { getPublishedBlogArticles } from "@/lib/queries/articles";
+import { BLOG_ARTICLES } from "@/lib/articles";
 
 const FEATURED_COUNT = 3;
 
-export function BlogSection() {
-  const articles = BLOG_ARTICLES.slice(0, FEATURED_COUNT);
+export async function BlogSection() {
+  const fromDb = await getPublishedBlogArticles();
+  const all = fromDb.length > 0 ? fromDb : BLOG_ARTICLES;
+  const articles = all.slice(0, FEATURED_COUNT);
 
   return (
     <section className="border-b border-[var(--ar-gray-200)] bg-white py-12">

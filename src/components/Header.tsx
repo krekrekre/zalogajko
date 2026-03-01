@@ -138,7 +138,7 @@ function HeaderUserBlock() {
           </Button>
           {accountOpen && (
             <div
-              className="absolute right-0 top-full pt-2 z-[100] min-w-[220px] border border-[var(--ar-gray-200)] bg-white py-2 shadow-xl rounded-md"
+              className="absolute right-0 top-full pt-2 z-[100] min-w-[220px] border border-[var(--ar-gray-200)] bg-white py-2 shadow-xl rounded-none"
               role="menu"
             >
               <div className="px-1 py-2">

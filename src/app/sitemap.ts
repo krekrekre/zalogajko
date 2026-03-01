@@ -8,11 +8,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticPages: MetadataRoute.Sitemap = [
     { url: baseUrl, lastModified: new Date(), changeFrequency: "daily", priority: 1 },
     { url: `${baseUrl}/recepti`, lastModified: new Date(), changeFrequency: "daily", priority: 0.9 },
+    { url: `${baseUrl}/blog`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.8 },
+    { url: `${baseUrl}/saveti`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.8 },
     { url: `${baseUrl}/kategorije`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.8 },
   ];
 
   let recipePages: MetadataRoute.Sitemap = [];
   let categoryPages: MetadataRoute.Sitemap = [];
+  let articlePages: MetadataRoute.Sitemap = [];
 
   try {
     const supabase = await createClient();
@@ -53,9 +56,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "weekly" as const,
       priority: 0.7,
     }));
+
+    const { data: articles } = await supabase
+      .from("articles")
+      .select("slug, section, updated_at")
+      .eq("status", "published");
+    articlePages = (articles || []).map((a) => ({
+      url: `${baseUrl}/${a.section ?? "blog"}/${a.slug}`,
+      lastModified: a.updated_at ? new Date(a.updated_at) : new Date(),
+      changeFrequency: "weekly" as const,
+      priority: 0.7,
+    }));
   } catch {
     // Supabase not configured
   }
 
-  return [...staticPages, ...recipePages, ...categoryPages];
+  return [...staticPages, ...recipePages, ...categoryPages, ...articlePages];
 }

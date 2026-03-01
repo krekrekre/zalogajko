@@ -48,6 +48,30 @@ CREATE INDEX idx_recipes_created ON recipes(created_at DESC);
 CREATE INDEX idx_recipes_skill_level ON recipes(skill_level);
 
 -- ============================================
+-- Blog articles (admin-managed)
+-- ============================================
+CREATE TABLE articles (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  slug TEXT NOT NULL,
+  title TEXT NOT NULL,
+  excerpt TEXT NOT NULL,
+  content TEXT NOT NULL,
+  published_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  image_url TEXT,
+  category TEXT,
+  section TEXT NOT NULL DEFAULT 'blog' CHECK (section IN ('blog', 'saveti')),
+  status TEXT NOT NULL DEFAULT 'draft' CHECK (status IN ('draft', 'published')),
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(section, slug)
+);
+
+CREATE INDEX idx_articles_slug ON articles(slug);
+CREATE INDEX idx_articles_section ON articles(section);
+CREATE INDEX idx_articles_status ON articles(status);
+CREATE INDEX idx_articles_published_at ON articles(published_at DESC);
+
+-- ============================================
 -- Recipe-Category (many-to-many)
 -- ============================================
 CREATE TABLE recipe_categories (
@@ -141,6 +165,14 @@ ALTER TABLE recipes ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Recipes are viewable by everyone" ON recipes FOR SELECT USING (status = 'published');
 CREATE POLICY "Authenticated users can insert recipes" ON recipes FOR INSERT WITH CHECK (auth.role() = 'authenticated');
 CREATE POLICY "Users can update own recipes" ON recipes FOR UPDATE USING (auth.uid() = author_id);
+
+-- Articles: public read published only; authenticated read all + write (admin enforced in app)
+ALTER TABLE articles ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Published articles are viewable by everyone" ON articles FOR SELECT USING (status = 'published');
+CREATE POLICY "Authenticated can read all articles" ON articles FOR SELECT USING (auth.role() = 'authenticated');
+CREATE POLICY "Authenticated can insert articles" ON articles FOR INSERT WITH CHECK (auth.role() = 'authenticated');
+CREATE POLICY "Authenticated can update articles" ON articles FOR UPDATE USING (auth.role() = 'authenticated');
+CREATE POLICY "Authenticated can delete articles" ON articles FOR DELETE USING (auth.role() = 'authenticated');
 
 -- Categories: public read
 ALTER TABLE categories ENABLE ROW LEVEL SECURITY;

@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { Capriola, DynaPuff, Playpen_Sans } from "next/font/google";
 import "./globals.css";
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
+import { AppShell } from "@/components/AppShell";
 import { SiteSchema } from "@/components/SiteSchema";
 import { DEFAULT_META } from "@/lib/constants";
 import { getFilterCategories } from "@/lib/queries/recipes";
@@ -54,11 +53,9 @@ export default async function RootLayout({
     <html lang="sr">
       <body className={`${capriola.variable} ${dynaPuff.variable} ${playpenSans.variable} ${playpenSans.className} font-sans antialiased bg-white`}>
         <SiteSchema />
-        <div className="flex min-h-screen flex-col bg-white">
-          <Header categories={categories} ingredients={sastojciDropdownItems} />
-          <main className="flex-1 bg-white">{children}</main>
-          <Footer />
-        </div>
+        <AppShell categories={categories} ingredients={sastojciDropdownItems}>
+          {children}
+        </AppShell>
       </body>
     </html>
   );
