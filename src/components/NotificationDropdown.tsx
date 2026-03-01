@@ -139,7 +139,7 @@ export function NotificationDropdown() {
       .eq("status", "published")
       .order("created_at", { ascending: false })
       .limit(7);
-    setRecipes((recipeRows ?? []) as NotificationRecipe[]);
+    setRecipes((recipeRows ?? []) as unknown as NotificationRecipe[]);
     setLoading(false);
   }, [user]);
 
