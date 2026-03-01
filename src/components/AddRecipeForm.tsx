@@ -420,8 +420,15 @@ export function AddRecipeForm({ userId, categories }: AddRecipeFormProps) {
     try {
       const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
-      const authorName =
-        (user?.user_metadata?.display_name as string)?.trim() || null;
+      let authorName: string | null = null;
+      if (user?.id) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("author_name")
+          .eq("id", user.id)
+          .single();
+        authorName = (profile as { author_name?: string | null } | null)?.author_name?.trim() || null;
+      }
 
       let imageUrl: string | null = null;
       if (imageFile) {

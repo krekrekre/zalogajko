@@ -16,6 +16,7 @@ import {
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { NotificationDropdown } from "@/components/NotificationDropdown";
 
 export interface NavCategory {
   id: string;
@@ -116,7 +117,11 @@ function HeaderUserBlock() {
             Novi recept
           </Link>
         </Button>
-        <div className="relative">
+        <div
+          className="relative"
+          onMouseEnter={() => setAccountOpen(true)}
+          onMouseLeave={() => setAccountOpen(false)}
+        >
           <Button
             variant="ghost"
             size="sm"
@@ -136,15 +141,16 @@ function HeaderUserBlock() {
               className="absolute right-0 top-full pt-2 z-[100] min-w-[220px] border border-[var(--ar-gray-200)] bg-white py-2 shadow-xl rounded-md"
               role="menu"
             >
-              <div className="px-4 py-2 border-b border-[var(--ar-gray-200)]">
-                <span
-                  className="text-[13px] text-[var(--color-primary)] truncate block max-w-[200px]"
-                  title={user.email}
+              <div className="px-1 py-2">
+                <Link
+                  href="/profil"
+                  onClick={() => setAccountOpen(false)}
+                  className="flex w-full items-center gap-2 px-3 py-2.5 text-sm text-[var(--color-primary)] hover:bg-[var(--ar-gray-200)] cursor-pointer rounded"
+                  role="menuitem"
                 >
-                  {user.email ?? "Nalog"}
-                </span>
-              </div>
-              <div className="px-1 pt-1">
+                  <User className="w-4 h-4" />
+                  Moj profil
+                </Link>
                 <Link
                   href="/moji-recepti"
                   onClick={() => setAccountOpen(false)}
@@ -335,7 +341,7 @@ export function Header({ categories, ingredients }: HeaderProps) {
               </form>
             </div>
 
-            <div className="hidden items-center gap-4 text-[13px] md:flex">
+            <div className="hidden items-center gap-2 text-[13px] md:flex">
               <Link
                 href="/moji-recepti"
                 className="flex items-center gap-1 text-[var(--color-orange)] font-semibold hover:text-[var(--ar-primary-hover)] cursor-pointer"
@@ -343,6 +349,7 @@ export function Header({ categories, ingredients }: HeaderProps) {
                 <Heart className="w-4 h-4 fill-[var(--color-orange)]" />
                 <span className="text-[13px]">Sačuvani</span>
               </Link>
+              <NotificationDropdown />
               <HeaderUserBlock />
             </div>
 

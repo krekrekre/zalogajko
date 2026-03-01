@@ -102,7 +102,7 @@ export default async function ReceptiSlugPage({
             {category.name_sr}
           </span>
         </nav>
-        <h1 className="font-dynapuff text-3xl font-bold text-[var(--color-primary)] sm:text-4xl">
+        <h1 className="font-capriola text-3xl font-bold text-[var(--color-primary)] sm:text-4xl">
           {category.name_sr}
         </h1>
         <CategoryPageFilters

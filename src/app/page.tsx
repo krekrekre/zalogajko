@@ -34,13 +34,15 @@ export default async function HomePage() {
     // Supabase not configured or schema not applied — show empty state
   }
 
+  // getPublishedRecipes(12) returns newest-first; use [0] as featured, [1..6] for "Najnovije" sidebar
   const featuredRecipe = recipes[0] || null;
+  const latestForSidebar = recipes.slice(1, 7);
 
   return (
     <>
       <HeroSection
-        featuredRecipe={recipes[0] || null}
-        latestRecipes={recipes.slice(1, 7)}
+        featuredRecipe={featuredRecipe}
+        latestRecipes={latestForSidebar}
       />
       <FeaturedRecipeCards recipes={featuredRecipes} />
       <SearchSection />

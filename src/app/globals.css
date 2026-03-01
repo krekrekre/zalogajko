@@ -6,6 +6,8 @@
 /* Color palette & design tokens */
 :root {
   --color-primary: #202557;
+  --color-primary-65: rgba(32, 37, 87, 0.65);
+  --color-primary-50: rgba(32, 37, 87, 0.5);
   --color-accent: #46deb6;
   --color-orange: #46deb6;
   --color-white: #ffffff;
@@ -66,6 +68,7 @@
   --color-ar-accent-hover: var(--ar-accent-hover);
   --color-ar-primary-light: var(--ar-primary-light);
   --font-sans: var(--font-playpen-sans);
+  --font-capriola: var(--font-capriola);
   --font-dynapuff: var(--font-dynapuff);
   --font-mono: var(--font-geist-mono);
   --color-sidebar-ring: var(--sidebar-ring);
@@ -141,12 +144,12 @@ footer a:hover {
   color: var(--ar-primary-hover) !important;
 }
 
-/* Trust banner: force white text and DynaPuff font */
+/* Trust banner: force white text and Capriola font */
 .trust-banner,
 .trust-banner p,
 .trust-banner span {
   color: #ffffff !important;
-  font-family: var(--font-dynapuff), "DynaPuff", cursive !important;
+  font-family: var(--font-capriola), "Capriola", sans-serif !important;
 }
 
 /* Logo: use accent color */
@@ -240,7 +243,12 @@ footer a:hover {
   scrollbar-width: none;
 }
 
-/* DynaPuff font for headings and titles - medium weight */
+/* Capriola font for titles */
+.font-capriola {
+  font-family: var(--font-capriola), "Capriola", sans-serif;
+}
+
+/* DynaPuff font (legacy) */
 .font-dynapuff {
   font-family: var(--font-dynapuff), "DynaPuff", cursive;
   font-weight: 500;
@@ -251,10 +259,9 @@ footer a:hover {
   font-family: var(--font-playpen-sans), "Playpen Sans", system-ui, sans-serif;
 }
 
-/* Apply DynaPuff to all headings by default - medium weight */
+/* Apply Capriola to all headings (titles) by default */
 h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-dynapuff), "DynaPuff", cursive;
-  font-weight: 500;
+  font-family: var(--font-capriola), "Capriola", sans-serif;
 }
 
 /* Apply Playpen Sans to all body text elements */
@@ -272,8 +279,7 @@ p, span, a, li, td, th, label, input, textarea, select, button {
 }
 
 .auth-form-title {
-  font-family: var(--font-dynapuff), "DynaPuff", cursive;
-  font-weight: 500;
+  font-family: var(--font-capriola), "Capriola", sans-serif;
   font-size: 1.75rem;
   color: var(--ar-gray-700);
   margin-bottom: 1.5rem;

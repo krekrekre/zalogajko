@@ -1,11 +1,17 @@
 import type { Metadata } from "next";
-import { DynaPuff, Playpen_Sans } from "next/font/google";
+import { Capriola, DynaPuff, Playpen_Sans } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { SiteSchema } from "@/components/SiteSchema";
 import { DEFAULT_META } from "@/lib/constants";
 import { getFilterCategories } from "@/lib/queries/recipes";
+
+const capriola = Capriola({
+  variable: "--font-capriola",
+  subsets: ["latin"],
+  weight: ["400"],
+});
 
 const dynaPuff = DynaPuff({
   variable: "--font-dynapuff",
@@ -46,7 +52,7 @@ export default async function RootLayout({
 
   return (
     <html lang="sr">
-      <body className={`${dynaPuff.variable} ${playpenSans.variable} ${playpenSans.className} font-sans antialiased bg-white`}>
+      <body className={`${capriola.variable} ${dynaPuff.variable} ${playpenSans.variable} ${playpenSans.className} font-sans antialiased bg-white`}>
         <SiteSchema />
         <div className="flex min-h-screen flex-col bg-white">
           <Header categories={categories} ingredients={sastojciDropdownItems} />

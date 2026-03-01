@@ -83,7 +83,7 @@ export function FilterSidebar({
   return (
     <aside className="w-full shrink-0 lg:w-72">
       <div className="border border-[var(--ar-gray-200)] bg-white p-5">
-        <h3 className="font-dynapuff text-lg font-semibold text-[var(--color-primary)]">
+        <h3 className="font-capriola text-lg font-semibold text-[var(--color-primary)]">
           Filteri
         </h3>
 

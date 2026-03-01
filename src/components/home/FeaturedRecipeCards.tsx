@@ -3,9 +3,9 @@
 import { useRef, useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import { PLACEHOLDER_IMAGES } from "@/lib/constants";
-import { getSavedRecipeIds, toggleSavedRecipe } from "@/lib/saved-recipes";
+import { getSavedRecipeIds } from "@/lib/saved-recipes";
+import { SaveRecipeDropdown } from "@/components/SaveRecipeDropdown";
 import { RotateCcw, ChevronLeft, ChevronRight, Heart } from "lucide-react";
 
 // Category tags – yellow-orange banner style (top-left on image)
@@ -54,7 +54,9 @@ interface FeaturedRecipe {
   image_url: string | null;
   prep_time_minutes: number;
   cook_time_minutes: number;
+  author_id: string | null;
   author_name: string | null;
+  author_display_name?: string;
   rating_count: number;
   rating_avg: number | null;
   review_quote: string | null;
@@ -113,7 +115,7 @@ export function FeaturedRecipeCards({ recipes }: FeaturedRecipeCardsProps) {
         {/* Top row: heading (left), arrows (right) */}
         <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
           <div className="min-w-0">
-            <h2 className="font-dynapuff text-[30px] font-semibold text-[var(--color-primary)]">
+            <h2 className="font-capriola text-[30px] font-semibold text-[var(--color-primary)]">
               Počnite da čuvate ova jela
             </h2>
             <p className="mt-1 text-sm text-[var(--ar-gray-500)]">
@@ -189,32 +191,10 @@ function FeaturedFlipCard({
   savedIds: Set<string>;
   onToggleSave: (recipeId: string, saved: boolean) => void;
 }) {
-  const router = useRouter();
   const [flipped, setFlipped] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
-  const [saving, setSaving] = useState(false);
   const isSaved = savedIds.has(recipe.id);
   const totalTime = recipe.prep_time_minutes + recipe.cook_time_minutes;
   const cardWidth = 260;
-  const heartColor = isSaved
-    ? "var(--ar-primary)"
-    : isHovered
-      ? "var(--ar-primary)"
-      : "var(--color-primary)";
-
-  const handleSaveClick = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (saving) return;
-    setSaving(true);
-    const result = await toggleSavedRecipe(recipe.id);
-    setSaving(false);
-    if (result === null) {
-      router.push("/login?next=" + encodeURIComponent(window.location.pathname));
-      return;
-    }
-    onToggleSave(recipe.id, result);
-  };
 
   return (
     <div
@@ -268,22 +248,17 @@ function FeaturedFlipCard({
                 {formatTime(totalTime)}
               </span>
             </div>
-            <div className="mt-auto pt-2">
-              <Link
-                href="/moji-recepti"
-                className="inline-flex w-full items-center justify-center gap-2 rounded-none border border-[var(--color-primary)] bg-white py-2.5 text-[16px] font-bold text-[var(--color-primary)] transition-all duration-200 hover:scale-105 hover:bg-[var(--ar-gray-100)]"
-                onClick={handleSaveClick}
-                onMouseEnter={() => setIsHovered(true)}
-                onMouseLeave={() => setIsHovered(false)}
-              >
-                {saving ? "..." : "Sačuvaj recept"}
-                <Heart
-                  className="h-4 w-4 shrink-0 transition-colors"
-                  fill={isSaved ? heartColor : "none"}
-                  stroke={heartColor}
-                  strokeWidth={isSaved ? 0 : 2}
-                />
-              </Link>
+            <div className="mt-auto pt-2" onClick={(e) => e.stopPropagation()}>
+              <SaveRecipeDropdown
+                recipeId={recipe.id}
+                isSaved={isSaved}
+                onSaved={() => onToggleSave(recipe.id, true)}
+                onUnsaved={() => onToggleSave(recipe.id, false)}
+                variant="button"
+                fullWidth
+                saveLabel="Sačuvaj recept"
+                className="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-none border border-[var(--color-primary)] bg-white py-2.5 text-[16px] font-bold text-[var(--color-primary)] transition-all duration-200 hover:scale-105 hover:bg-[var(--ar-gray-100)]"
+              />
             </div>
           </div>
         </div>
@@ -296,7 +271,18 @@ function FeaturedFlipCard({
             &rdquo;
           </p>
           <cite className="block text-sm text-[var(--ar-gray-500)] not-italic">
-            — {recipe.author_name || "Domaći kuvar"}
+            —{" "}
+            {recipe.author_id ? (
+              <Link
+                href={`/profil/${recipe.author_id}`}
+                className="hover:text-[var(--color-orange)] hover:underline"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {recipe.author_display_name || recipe.author_name || "Domaći kuvar"}
+              </Link>
+            ) : (
+              recipe.author_display_name || recipe.author_name || "Domaći kuvar"
+            )}
           </cite>
           <Link
             href={`/recepti/${recipe.slug}`}

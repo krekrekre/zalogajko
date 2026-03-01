@@ -41,7 +41,7 @@ export function CategoryRecipeSection({
         <header className="mb-6 flex items-end justify-between gap-4 pr-2">
           <Link
             href={sectionHref}
-            className="border-b-2 border-[var(--color-accent)] pb-1 font-dynapuff text-xl font-bold text-[var(--color-primary)] transition-colors hover:text-[var(--color-accent)] sm:text-2xl"
+            className="border-b-2 border-[var(--color-accent)] pb-1 font-capriola text-xl font-bold text-[var(--color-primary)] transition-colors hover:text-[var(--color-accent)] sm:text-2xl"
           >
             <h2 className="inline">{title}</h2>
           </Link>

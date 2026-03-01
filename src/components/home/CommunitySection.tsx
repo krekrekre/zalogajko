@@ -33,7 +33,7 @@ export function CommunitySection() {
   return (
     <section className="bg-white pt-[7vh] pb-[7vh] border-b-0 shadow-none">
       <div className="mx-auto max-w-[1220px]">
-        <h2 className="font-dynapuff text-[30px] font-semibold text-[var(--color-primary)]">
+        <h2 className="font-capriola text-[30px] font-semibold text-[var(--color-primary)]">
           Dom domaćih kuvara
         </h2>
         <p className="mt-2 text-[var(--ar-gray-500)]">

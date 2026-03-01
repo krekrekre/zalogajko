@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { getAuthorDisplayName, getAuthorDisplayNames } from "@/lib/profile";
 
 export async function getFilterCategories(): Promise<
   { id: string; slug: string; name_sr: string; type: string }[]
@@ -60,6 +61,7 @@ export async function getPublishedRecipes(
       prep_time_minutes,
       cook_time_minutes,
       servings,
+      author_id,
       author_name,
       image_url,
       skill_level,
@@ -216,13 +218,19 @@ export async function getPublishedRecipes(
     }
   }
 
+  const authorIds = recipes.map((r) => (r as { author_id?: string | null }).author_id).filter(Boolean) as string[];
+  const authorNames = authorIds.length > 0 ? await getAuthorDisplayNames(authorIds) : {};
+
   return recipes.map((r) => {
     const stats = ratingByRecipe[r.id] || { count: 0, avg: 0 };
+    const aid = (r as { author_id?: string | null }).author_id;
+    const author_display_name = aid ? (authorNames[aid] ?? (r as { author_name?: string | null }).author_name ?? "Domaći kuvar") : ((r as { author_name?: string | null }).author_name ?? "Domaći kuvar");
     return {
       ...r,
       categories: categoriesByRecipe[r.id] || [],
       rating_count: stats.count,
       rating_avg: stats.count > 0 ? stats.avg : null,
+      author_display_name,
     };
   });
 }
@@ -286,6 +294,10 @@ export async function getRecipeBySlug(slug: string) {
     .eq("recipe_id", recipeId)
     .eq("status", "approved");
 
+  const author_display_name = recipe.author_id
+    ? await getAuthorDisplayName(recipe.author_id)
+    : (recipe.author_name as string | null) || "Domaći kuvar";
+
   return {
     ...recipe,
     ingredients,
@@ -293,6 +305,7 @@ export async function getRecipeBySlug(slug: string) {
     rating_avg: ratingAvg,
     rating_count: ratingCount,
     review_count: reviewCount ?? 0,
+    author_display_name,
   };
 }
 
@@ -309,6 +322,7 @@ export async function getFeaturedRecipesWithReviews(limit = 6) {
       image_url,
       prep_time_minutes,
       cook_time_minutes,
+      author_id,
       author_name
     `
     )
@@ -319,6 +333,8 @@ export async function getFeaturedRecipesWithReviews(limit = 6) {
   if (error || !recipes?.length) return [];
 
   const recipeIds = recipes.map((r) => r.id);
+  const authorIds = recipes.map((r) => r.author_id).filter(Boolean) as string[];
+  const authorNames = authorIds.length > 0 ? await getAuthorDisplayNames(authorIds) : {};
 
   // Fetch one review per recipe (first by created_at), approved only
   const { data: reviews } = await supabase
@@ -359,11 +375,13 @@ export async function getFeaturedRecipesWithReviews(limit = 6) {
   return recipeIds.map((id) => {
     const r = recipes.find((x) => x.id === id)!;
     const rStats = ratingByRecipe[id] || { count: 0, avg: 0 };
+    const author_display_name = r.author_id ? (authorNames[r.author_id] ?? r.author_name ?? "Domaći kuvar") : (r.author_name ?? "Domaći kuvar");
     return {
       ...r,
       rating_count: rStats.count,
       rating_avg: rStats.count > 0 ? rStats.avg : null,
       review_quote: reviewByRecipe[id] || null,
+      author_display_name,
     };
   });
 }

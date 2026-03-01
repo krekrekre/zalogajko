@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { Star } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
-import { ANIMAL_AVATAR_URLS } from "@/lib/avatars";
+import { getAnimalAvatarForUser } from "@/lib/avatars";
 
 const STAR_LABELS: Record<number, string> = {
   1: "Loše",
@@ -71,6 +71,7 @@ export function RecipeReviewSection({
   const [submitting, setSubmitting] = useState(false);
   const [submitMessage, setSubmitMessage] = useState<string | null>(null);
   const [reviews, setReviews] = useState<ReviewRow[]>([]);
+  const [authorNamesByUserId, setAuthorNamesByUserId] = useState<Record<string, string>>({});
   const [loadingReviews, setLoadingReviews] = useState(true);
   const [reviewsError, setReviewsError] = useState<string | null>(null);
   const [visibleReviewsCount, setVisibleReviewsCount] = useState(REVIEWS_PAGE_SIZE);
@@ -94,9 +95,26 @@ export function RecipeReviewSection({
 
     if (error) {
       setReviews([]);
+      setAuthorNamesByUserId({});
       setReviewsError("Recenzije trenutno nisu dostupne.");
     } else {
-      setReviews((data as ReviewRow[] | null) ?? []);
+      const list = (data as ReviewRow[] | null) ?? [];
+      setReviews(list);
+      const userIds = [...new Set(list.map((r) => r.user_id).filter(Boolean))];
+      if (userIds.length > 0) {
+        const { data: profiles } = await supabase
+          .from("profiles")
+          .select("id, author_name")
+          .in("id", userIds);
+        const map: Record<string, string> = {};
+        for (const p of profiles ?? []) {
+          const row = p as { id: string; author_name: string | null };
+          map[row.id] = row.author_name?.trim() || "Korisnik";
+        }
+        setAuthorNamesByUserId(map);
+      } else {
+        setAuthorNamesByUserId({});
+      }
     }
     setLoadingReviews(false);
   }, [recipeId]);
@@ -116,21 +134,10 @@ export function RecipeReviewSection({
 
   const tagsForRating = rating > 0 ? (REVIEW_TAGS_BY_STAR[rating] ?? []) : [];
 
-  function resolveUserName() {
-    const displayName = user?.user_metadata?.display_name?.trim();
-    if (displayName) return displayName;
-    const fullName = user?.user_metadata?.full_name?.trim();
-    if (fullName) return fullName;
-    const name = user?.user_metadata?.name?.trim();
-    if (name) return name;
-    const emailPrefix = user?.email?.split("@")[0]?.trim();
-    if (emailPrefix) return emailPrefix;
-    return "Korisnik";
-  }
-
   function resolveReviewerName(review: ReviewRow) {
+    const fromProfile = authorNamesByUserId[review.user_id];
+    if (fromProfile) return fromProfile;
     if (review.author_name?.trim()) return review.author_name;
-    if (user && review.user_id === user.id) return resolveUserName();
     return "Korisnik";
   }
 
@@ -141,16 +148,6 @@ export function RecipeReviewSection({
     if (picture) return picture;
     if (!user?.id) return null;
     return getAnimalAvatarForUser(user.id);
-  }
-
-  function getAnimalAvatarForUser(userId: string) {
-    let hash = 0;
-    for (let i = 0; i < userId.length; i += 1) {
-      hash = (hash << 5) - hash + userId.charCodeAt(i);
-      hash |= 0;
-    }
-    const index = Math.abs(hash) % ANIMAL_AVATAR_URLS.length;
-    return ANIMAL_AVATAR_URLS[index];
   }
 
   function toggleTag(tag: string) {
@@ -172,10 +169,19 @@ export function RecipeReviewSection({
     setSubmitMessage(null);
     const supabase = createClient();
     try {
+      let authorName = authorNamesByUserId[user.id];
+      if (!authorName) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("author_name")
+          .eq("id", user.id)
+          .single();
+        authorName = (profile as { author_name?: string | null } | null)?.author_name?.trim() || "Korisnik";
+      }
       const { error: reviewError } = await supabase.from("reviews").insert({
         recipe_id: recipeId,
         user_id: user.id,
-        author_name: resolveUserName(),
+        author_name: authorName,
         author_avatar_url: resolveUserAvatar(),
         stars: rating || 0,
         content: reviewText.trim() || "",
@@ -372,7 +378,12 @@ export function RecipeReviewSection({
                   />
                   <div>
                     <p className="text-base font-semibold text-[var(--ar-gray-900)]">
-                      {resolveReviewerName(review)}
+                      <Link
+                        href={`/profil/${review.user_id}`}
+                        className="hover:text-[var(--color-orange)] hover:underline"
+                      >
+                        {resolveReviewerName(review)}
+                      </Link>
                     </p>
                     <div className="mt-1 flex items-center justify-start gap-2 text-left">
                       {review.stars > 0 && (

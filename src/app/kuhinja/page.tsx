@@ -31,7 +31,7 @@ export default async function KuhinjaPage() {
     <div>
       <div className="mx-auto max-w-[1220px] px-8 py-10">
         <header className="text-center">
-          <h1 className="font-dynapuff text-3xl font-bold text-[var(--color-primary)] sm:text-4xl">
+          <h1 className="font-capriola text-3xl font-bold text-[var(--color-primary)] sm:text-4xl">
             Kuhinja
           </h1>
           <p className="mx-auto mt-2 max-w-2xl text-base text-[var(--ar-gray-700)]">

@@ -20,7 +20,7 @@ export function LatestRecipes({ recipes }: LatestRecipesProps) {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div className="mb-4 border-b-4 border-[var(--ar-primary)]">
-            <h2 className="font-dynapuff text-2xl font-medium leading-tight tracking-tight text-[var(--color-primary)] sm:text-[36px] mb-0">
+            <h2 className="font-capriola text-2xl font-bold leading-tight tracking-tight text-[var(--color-primary)] sm:text-[36px] mb-0">
               Najnovije
             </h2>
           </div>

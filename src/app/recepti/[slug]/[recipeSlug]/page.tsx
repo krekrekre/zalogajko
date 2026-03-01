@@ -148,9 +148,18 @@ export default async function RecipePage({
 
               <div className="mt-2 pt-1 text-sm text-[var(--ar-gray-600)]">
                 Autor:{" "}
-                <span className="font-medium text-[var(--ar-gray-700)]">
-                  {recipe.author_name || "Domaći kuvar"}
-                </span>
+                {recipe.author_id ? (
+                  <Link
+                    href={`/profil/${recipe.author_id}`}
+                    className="font-medium text-[var(--ar-gray-700)] hover:text-[var(--color-orange)] hover:underline"
+                  >
+                    {(recipe as { author_display_name?: string }).author_display_name || "Domaći kuvar"}
+                  </Link>
+                ) : (
+                  <span className="font-medium text-[var(--ar-gray-700)]">
+                    {(recipe as { author_display_name?: string }).author_display_name || "Domaći kuvar"}
+                  </span>
+                )}
                 <span className="mx-3 inline-block">•</span>
                 Ažurirano:{" "}
                 <span className="font-medium text-[var(--ar-gray-700)]">

@@ -7,6 +7,7 @@ interface RecipeSchemaProps {
     cook_time_minutes: number;
     servings: number;
     author_name?: string | null;
+    author_display_name?: string | null;
     created_at?: string | null;
     updated_at?: string | null;
     rating_avg?: number | null;
@@ -62,8 +63,9 @@ export function RecipeSchema({ recipe, baseUrl = "https://recepti.rs", canonical
     recipeInstructions: instructions,
   };
 
-  if (recipe.author_name) {
-    schema.author = { "@type": "Person", name: recipe.author_name };
+  const authorName = recipe.author_display_name ?? recipe.author_name;
+  if (authorName) {
+    schema.author = { "@type": "Person", name: authorName };
   }
   if (recipe.created_at) {
     schema.datePublished = recipe.created_at;

@@ -14,6 +14,10 @@ export const PLACEHOLDER_IMAGES = {
   default:
     "https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=800&q=80",
 } as const;
+
+// Default user avatar when no custom image (animal placeholder)
+export const DEFAULT_AVATAR =
+  "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=400&h=400&fit=crop&q=80";
 export const SITE_DESCRIPTION =
   "Vodič kroz recepte za domaće kuvare. Pronađite proverene recepte, sačuvajte omiljene i delite sa zajednicom.";
 

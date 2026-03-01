@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { createClient } from "@/lib/supabase/client";
-import { Heart, Star, Share2 } from "lucide-react";
+import { Star, Share2 } from "lucide-react";
+import { isRecipeSaved } from "@/lib/saved-recipes";
+import { SaveRecipeDropdown } from "@/components/SaveRecipeDropdown";
 
 interface RecipeActionsProps {
   recipeId: string;
@@ -18,49 +19,11 @@ export function RecipeActions({
   title,
   canonicalPath,
 }: RecipeActionsProps) {
-  const [user, setUser] = useState<{ id: string } | null>(null);
   const [isSaved, setIsSaved] = useState(false);
-  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    const supabase = createClient();
-    supabase.auth.getUser().then(({ data }) => {
-      setUser(data.user);
-      if (data.user) {
-        supabase
-          .from("saved_recipes")
-          .select("recipe_id")
-          .eq("user_id", data.user.id)
-          .eq("recipe_id", recipeId)
-          .maybeSingle()
-          .then(({ data: saved }) => setIsSaved(!!saved));
-      }
-    });
+    isRecipeSaved(recipeId).then(setIsSaved);
   }, [recipeId]);
-
-  async function toggleSave() {
-    if (!user) {
-      const path = canonicalPath ?? `/recepti/${slug}`;
-      window.location.href = "/login?next=" + path;
-      return;
-    }
-    setSaving(true);
-    const supabase = createClient();
-    if (isSaved) {
-      await supabase
-        .from("saved_recipes")
-        .delete()
-        .eq("user_id", user.id)
-        .eq("recipe_id", recipeId);
-      setIsSaved(false);
-    } else {
-      await supabase
-        .from("saved_recipes")
-        .insert({ user_id: user.id, recipe_id: recipeId });
-      setIsSaved(true);
-    }
-    setSaving(false);
-  }
 
   async function handleShare() {
     const url = window.location.href;
@@ -86,22 +49,14 @@ export function RecipeActions({
   return (
     <div className="no-print mt-4">
       <div className="inline-flex flex-wrap border border-[var(--ar-gray-250)]">
-        <button
-          type="button"
-          onClick={toggleSave}
-          disabled={saving}
-          className={`inline-flex w-1/2 cursor-pointer items-center justify-center gap-2 border-b border-r border-[var(--ar-gray-250)] px-4 py-3 text-sm font-semibold uppercase tracking-wide transition-colors disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto sm:border-b-0 sm:border-r sm:px-5 sm:py-2.5 ${
-            isSaved
-              ? "bg-[var(--ar-primary)] text-white hover:bg-[var(--ar-primary-hover)]"
-              : "bg-[var(--ar-primary)] text-white hover:bg-[var(--ar-primary-hover)]"
-          }`}
-        >
-          {isSaved ? "Sačuvano" : "Sačuvaj"}
-          <Heart
-            className={`size-4 ${isSaved ? "fill-current" : ""}`}
-            strokeWidth={2}
-          />
-        </button>
+        <SaveRecipeDropdown
+          recipeId={recipeId}
+          isSaved={isSaved}
+          onSaved={() => setIsSaved(true)}
+          onUnsaved={() => setIsSaved(false)}
+          loginNextPath={canonicalPath ?? `/recepti/${slug}`}
+          variant="button"
+        />
         <button
           type="button"
           onClick={scrollToReviews}

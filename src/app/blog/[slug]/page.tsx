@@ -76,7 +76,7 @@ export default async function BlogArticlePage({ params }: Props) {
                 {article.category}
               </span>
             )}
-            <h1 className="mt-3 font-dynapuff text-3xl font-bold leading-tight text-[var(--ar-gray-900)] sm:text-4xl lg:text-[46px]">
+            <h1 className="mt-3 font-capriola text-3xl font-bold leading-tight text-[var(--ar-gray-900)] sm:text-4xl lg:text-[46px]">
               {article.title}
             </h1>
             <time

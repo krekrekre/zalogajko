@@ -41,7 +41,7 @@ export function ArticleCard({ article, basePath }: ArticleCardProps) {
         >
           {formatArticleDate(article.publishedAt)}
         </time>
-        <h2 className="mt-2 font-dynapuff text-lg font-semibold leading-tight text-[var(--ar-gray-700)] transition-colors group-hover:text-[var(--color-primary)] group-hover:underline sm:text-xl">
+        <h2 className="mt-2 font-capriola text-lg font-semibold leading-tight text-[var(--ar-gray-700)] transition-colors group-hover:text-[var(--color-primary)] group-hover:underline sm:text-xl">
           {article.title}
         </h2>
         <p className="mt-2 line-clamp-3 flex-1 text-sm text-[var(--ar-gray-500)]">

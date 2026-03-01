@@ -48,7 +48,7 @@ export default async function SastojciIngredientPage({
             {ingredientName}
           </span>
         </nav>
-        <h1 className="font-dynapuff text-3xl font-bold text-[var(--color-primary)] sm:text-4xl">
+        <h1 className="font-capriola text-3xl font-bold text-[var(--color-primary)] sm:text-4xl">
           Recepti sa: {ingredientName}
         </h1>
         <p className="mt-2 text-[var(--ar-gray-700)]">

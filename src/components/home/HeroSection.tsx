@@ -126,12 +126,15 @@ function LatestCard({
 
       {/* Content */}
       <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 text-[11px] font-bold tracking-wider text-[var(--ar-gray-700)] uppercase mb-1">
-          <span className="text-[var(--ar-primary)]">{categoryName}</span>
-          <span className="text-gray-400">|</span>
+        <div
+          className="flex items-center gap-2 text-[11px] font-bold tracking-wider uppercase mb-1"
+          style={{ color: "var(--color-primary-65)" }}
+        >
+          <span>{categoryName}</span>
+          <span>|</span>
           <span>{timeAgo}</span>
         </div>
-        <h4 className="text-[15px] font-medium text-[var(--color-primary)] leading-snug line-clamp-2 group-hover:text-[var(--ar-primary)] transition-colors">
+        <h4 className="text-[16px] font-medium text-[var(--color-primary)] leading-snug line-clamp-2 group-hover:text-[var(--ar-primary)] transition-colors">
           {recipe.title_sr}
         </h4>
       </div>
@@ -170,10 +173,13 @@ export function HeroSection({
 
               {/* Featured Content */}
               <div className="mt-4">
-                <span className="text-[11px] font-bold tracking-widest text-[var(--color-primary)] uppercase">
+                <span
+                  className="text-[11px] font-bold tracking-widest uppercase"
+                  style={{ color: "var(--color-primary-50)" }}
+                >
                   {featuredCategory}
                 </span>
-                <span className="mt-2 block text-[30px] font-medium text-[var(--color-primary)] leading-tight tracking-tight group-hover:text-[var(--ar-primary)] transition-colors font-dynapuff">
+                <span className="mt-2 block text-[30px] font-bold text-[var(--color-primary)] leading-tight tracking-tight group-hover:text-[var(--ar-primary)] transition-colors font-capriola">
                   {featured.title_sr}
                 </span>
                 {featured.description_sr && (
@@ -185,33 +191,31 @@ export function HeroSection({
             </Link>
           </div>
 
-          {/* Right: The Latest */}
+          {/* Right: Latest recipes (newest first; excludes featured) */}
           <div className="lg:w-[35%] lg:max-w-[380px]">
             <div className="mb-4 border-b-4 border-[var(--ar-primary)]">
-              <h2 className="font-dynapuff text-[36px] font-medium leading-tight tracking-tight text-[var(--color-primary)]">
+              <h2 className="font-capriola text-[36px] font-bold leading-tight tracking-tight text-[var(--color-primary)]">
                 Najnovije
               </h2>
             </div>
 
             <div className="flex flex-col">
-              {latestRecipes.length > 0 ? (
-                latestRecipes.slice(0, 6).map((recipe, index) => (
-                  <LatestCard
-                    key={recipe.slug}
-                    recipe={recipe}
-                    showHeart={index === 4} // Show heart on 5th item
-                  />
-                ))
-              ) : (
-                // Placeholder cards when no data
-                PLACEHOLDER_LATEST.map((recipe, index) => (
-                  <LatestCard
-                    key={recipe.slug}
-                    recipe={recipe}
-                    showHeart={index === 4}
-                  />
-                ))
-              )}
+              {latestRecipes.length > 0
+                ? latestRecipes.slice(0, 6).map((recipe, index) => (
+                    <LatestCard
+                      key={recipe.slug}
+                      recipe={recipe}
+                      showHeart={index === 4} // Show heart on 5th item
+                    />
+                  ))
+                : // Placeholder cards when no data
+                  PLACEHOLDER_LATEST.map((recipe, index) => (
+                    <LatestCard
+                      key={recipe.slug}
+                      recipe={recipe}
+                      showHeart={index === 4}
+                    />
+                  ))}
             </div>
 
             {/* See More button */}

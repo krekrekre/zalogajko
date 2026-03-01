@@ -1,17 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 export default function SignupPage() {
-  const router = useRouter();
-  const [fullName, setFullName] = useState("");
-  const [useFullNameAsAuthor, setUseFullNameAsAuthor] = useState(true);
-  const [displayName, setDisplayName] = useState("");
+  const [authorName, setAuthorName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -30,10 +26,7 @@ export default function SignupPage() {
         options: {
           emailRedirectTo: `${window.location.origin}/auth/callback`,
           data: {
-            full_name: fullName.trim() || null,
-            display_name: useFullNameAsAuthor
-              ? (fullName.trim() || null)
-              : (displayName.trim() || null),
+            author_name: authorName.trim() || null,
           },
         },
       });
@@ -74,42 +67,22 @@ export default function SignupPage() {
             </div>
           )}
           <div className="auth-form-field">
-            <label htmlFor="fullName" className="auth-form-label">
-              Puno ime
+            <label htmlFor="authorName" className="auth-form-label">
+              Autorsko ime
             </label>
             <Input
-              id="fullName"
+              id="authorName"
               type="text"
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
+              required
+              value={authorName}
+              onChange={(e) => setAuthorName(e.target.value)}
               className="auth-form-input"
               placeholder="npr. Ana Jovanović"
             />
-            <label className="mt-2 flex cursor-pointer items-center gap-2 text-sm text-[var(--ar-gray-500)]">
-              <input
-                type="checkbox"
-                checked={useFullNameAsAuthor}
-                onChange={(e) => setUseFullNameAsAuthor(e.target.checked)}
-                className="h-4 w-4 rounded border-2 border-gray-300 text-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-orange)]/25"
-              />
-              Koristi kao ime autora
-            </label>
+            <p className="mt-1 text-xs text-[var(--ar-gray-500)]">
+              Prikazuje se uz recepte i komentare.
+            </p>
           </div>
-          {!useFullNameAsAuthor && (
-            <div className="auth-form-field">
-              <label htmlFor="displayName" className="auth-form-label">
-                Ime autora recepta (prikazuje se uz recepte)
-              </label>
-              <Input
-                id="displayName"
-                type="text"
-                value={displayName}
-                onChange={(e) => setDisplayName(e.target.value)}
-                className="auth-form-input"
-                placeholder="npr. Ana, Beograd"
-              />
-            </div>
-          )}
           <div className="auth-form-field">
             <label htmlFor="email" className="auth-form-label">
               Email
