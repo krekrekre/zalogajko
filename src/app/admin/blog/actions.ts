@@ -48,7 +48,7 @@ export async function createArticle(
 export async function updateArticle(
   id: string,
   data: ArticleFormData
-): Promise<{ ok: boolean; error?: string }> {
+): Promise<{ ok: boolean; error?: string; id?: string }> {
   const admin = await isAdmin();
   if (!admin) return { ok: false, error: "Nemate pravo da menjate članke." };
 
