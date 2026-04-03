@@ -257,6 +257,8 @@ function FeaturedFlipCard({
                 variant="button"
                 fullWidth
                 saveLabel="Sačuvaj recept"
+                recipeTitle={recipe.title_sr}
+                recipeImageUrl={recipe.image_url}
                 className="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-none border border-[var(--color-primary)] bg-white py-2.5 text-[16px] font-bold text-[var(--color-primary)] transition-all duration-200 hover:scale-105 hover:bg-[var(--ar-gray-100)]"
               />
             </div>

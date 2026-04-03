@@ -114,7 +114,7 @@ function LatestCard({
           src={imageUrl}
           alt={recipe.title_sr}
           fill
-          className="object-cover transition-transform duration-300 group-hover:scale-105"
+          className="object-cover"
           sizes="112px"
         />
         {showHeart && (
@@ -134,7 +134,7 @@ function LatestCard({
           <span>|</span>
           <span>{timeAgo}</span>
         </div>
-        <h4 className="text-[16px] font-medium text-[var(--color-primary)] leading-snug line-clamp-2 group-hover:text-[var(--ar-primary)] transition-colors">
+        <h4 className="line-clamp-2 text-[16px] font-medium leading-snug text-[var(--color-primary)] transition-colors group-hover:text-[var(--ar-primary)] group-hover:underline group-hover:decoration-[var(--color-accent)]">
           {recipe.title_sr}
         </h4>
       </div>
@@ -165,7 +165,7 @@ export function HeroSection({
                   src={featuredImage}
                   alt={featured.title_sr}
                   fill
-                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  className="object-cover"
                   priority
                   sizes="(max-width: 1024px) 100vw, 65vw"
                 />
@@ -179,7 +179,7 @@ export function HeroSection({
                 >
                   {featuredCategory}
                 </span>
-                <span className="mt-2 block text-[30px] font-bold text-[var(--color-primary)] leading-tight tracking-tight group-hover:text-[var(--ar-primary)] transition-colors font-capriola">
+                <span className="mt-2 block text-[30px] font-bold text-[var(--color-primary)] leading-tight tracking-tight font-capriola transition-colors group-hover:text-[var(--ar-primary)] group-hover:underline group-hover:decoration-[var(--color-accent)]">
                   {featured.title_sr}
                 </span>
                 {featured.description_sr && (

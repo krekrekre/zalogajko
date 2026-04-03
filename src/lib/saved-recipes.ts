@@ -132,6 +132,41 @@ export async function toggleSavedRecipe(recipeId: string): Promise<boolean | nul
 }
 
 /**
+ * Get the list IDs a specific recipe is saved to for the current user.
+ */
+export async function getRecipeSavedListIds(recipeId: string): Promise<Set<string>> {
+  const supabase = createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return new Set();
+
+  const { data, error } = await supabase
+    .from(SAVED_RECIPES_TABLE)
+    .select("list_id")
+    .eq("user_id", user.id)
+    .eq("recipe_id", recipeId);
+
+  if (error) return new Set();
+  return new Set((data || []).map((r) => r.list_id));
+}
+
+/**
+ * Remove a recipe from a specific list.
+ */
+export async function unsaveRecipeFromList(recipeId: string, listId: string): Promise<boolean> {
+  const supabase = createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return false;
+
+  const { error } = await supabase
+    .from(SAVED_RECIPES_TABLE)
+    .delete()
+    .eq("user_id", user.id)
+    .eq("recipe_id", recipeId)
+    .eq("list_id", listId);
+  return !error;
+}
+
+/**
  * Get all recipe IDs the current user has saved (in any list).
  */
 export async function getSavedRecipeIds(): Promise<Set<string>> {

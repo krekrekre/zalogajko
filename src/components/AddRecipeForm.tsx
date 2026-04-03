@@ -419,7 +419,9 @@ export function AddRecipeForm({ userId, categories }: AddRecipeFormProps) {
 
     try {
       const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       let authorName: string | null = null;
       if (user?.id) {
         const { data: profile } = await supabase
@@ -427,7 +429,10 @@ export function AddRecipeForm({ userId, categories }: AddRecipeFormProps) {
           .select("author_name")
           .eq("id", user.id)
           .single();
-        authorName = (profile as { author_name?: string | null } | null)?.author_name?.trim() || null;
+        authorName =
+          (
+            profile as { author_name?: string | null } | null
+          )?.author_name?.trim() || null;
       }
 
       let imageUrl: string | null = null;
@@ -953,16 +958,18 @@ export function AddRecipeForm({ userId, categories }: AddRecipeFormProps) {
                     onKeyDown={(e) => handleIngredientKeyDown(i, 2, e)}
                     className={`${inputClassSmall} flex-1 min-w-[120px]`}
                   />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => removeIngredient(i)}
-                    className="shrink-0 cursor-pointer rounded-none text-red-600 hover:bg-red-50 hover:text-red-700"
-                    aria-label="Ukloni sastojak"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
+                  {ingredients.length > 1 && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => removeIngredient(i)}
+                      className="shrink-0 cursor-pointer rounded-none text-red-600 hover:bg-red-50 hover:text-red-700"
+                      aria-label="Ukloni sastojak"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  )}
                   {i === ingredients.length - 1 && (
                     <Button
                       type="button"
@@ -998,35 +1005,37 @@ export function AddRecipeForm({ userId, categories }: AddRecipeFormProps) {
                         ref={(el) => {
                           directionRefs.current[i] = el;
                         }}
-                        rows={2}
+                        rows={1}
                         placeholder="Opis koraka"
                         value={dir.text}
                         onChange={(e) => updateDirection(i, e.target.value)}
                         onInput={(e) => {
                           const ta = e.target as HTMLTextAreaElement;
                           ta.style.height = "auto";
-                          ta.style.height = `${Math.max(56, ta.scrollHeight)}px`;
+                          ta.style.height = `${Math.max(36, ta.scrollHeight)}px`;
                         }}
                         onKeyDown={(e) => handleDirectionKeyDown(i, e)}
-                        className={`${inputClassSmall} flex-1 min-w-[200px] resize-none overflow-y-auto min-h-[56px]`}
+                        className={`${inputClassSmall} flex-1 min-w-[200px] resize-none overflow-hidden h-9 leading-5 py-1.5`}
                       />
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => removeDirection(i)}
-                        className="shrink-0 cursor-pointer rounded-none mt-1 text-red-600 hover:bg-red-50 hover:text-red-700"
-                        aria-label="Ukloni korak"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                      {directions.length > 1 && (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => removeDirection(i)}
+                          className="shrink-0 cursor-pointer rounded-none h-9 w-9 text-red-600 hover:bg-red-50 hover:text-red-700"
+                          aria-label="Ukloni korak"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      )}
                       {i === directions.length - 1 && (
                         <Button
                           type="button"
                           variant="outline"
                           size="icon"
                           onClick={addDirection}
-                          className="shrink-0 cursor-pointer rounded-none mt-1 border-[var(--color-orange)] text-[var(--color-orange)] hover:bg-[var(--color-orange)]/10"
+                          className="shrink-0 cursor-pointer rounded-none h-9 w-9 border-[var(--color-orange)] text-[var(--color-orange)] hover:bg-[var(--color-orange)]/10"
                           aria-label="Dodaj korak"
                         >
                           <Plus className="h-4 w-4" />

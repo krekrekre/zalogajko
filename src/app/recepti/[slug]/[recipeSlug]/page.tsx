@@ -175,6 +175,7 @@ export default async function RecipePage({
                 recipeId={recipe.id}
                 slug={recipeSlug}
                 title={recipe.title_sr}
+                imageUrl={recipe.image_url}
                 canonicalPath={canonicalPath}
               />
               <div className="relative mt-6 aspect-[4/3] overflow-hidden shadow-[var(--ar-card-shadow)]">

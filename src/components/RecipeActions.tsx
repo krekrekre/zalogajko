@@ -9,6 +9,7 @@ interface RecipeActionsProps {
   recipeId: string;
   slug: string;
   title: string;
+  imageUrl?: string | null;
   /** Canonical path for login redirect (e.g. /recepti/hladna-predjela/podvarak-10) */
   canonicalPath?: string;
 }
@@ -17,6 +18,7 @@ export function RecipeActions({
   recipeId,
   slug,
   title,
+  imageUrl,
   canonicalPath,
 }: RecipeActionsProps) {
   const [isSaved, setIsSaved] = useState(false);
@@ -56,6 +58,8 @@ export function RecipeActions({
           onUnsaved={() => setIsSaved(false)}
           loginNextPath={canonicalPath ?? `/recepti/${slug}`}
           variant="button"
+          recipeTitle={title}
+          recipeImageUrl={imageUrl}
         />
         <button
           type="button"

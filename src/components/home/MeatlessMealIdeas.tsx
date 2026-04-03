@@ -52,7 +52,7 @@ function SectionCard({ recipe }: { recipe: SectionRecipe }) {
           src={imageUrl}
           alt={recipe.title_sr}
           fill
-          className="object-cover transition-transform duration-300 group-hover:scale-105"
+          className="object-cover"
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         />
         <div className="absolute right-3 top-3">

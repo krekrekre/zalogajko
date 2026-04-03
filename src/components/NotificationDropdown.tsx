@@ -52,7 +52,8 @@ export function NotificationDropdown() {
     }
   }, [user]);
 
-  // Fetch notification count: only recipes created AFTER lastSeenAt (or last 7 days if never seen)
+  // Fetch notification count: recipes created AFTER lastSeenAt (or last 7 days if never seen)
+  // Notifications disappear 24 hours after being seen (one day window)
   useEffect(() => {
     if (!user) {
       setCount(0);
@@ -61,9 +62,14 @@ export function NotificationDropdown() {
     let cancelled = false;
     const supabase = createClient();
     (async () => {
+      const now = Date.now();
+      const oneDayAgo = now - 24 * 60 * 60 * 1000;
+
+      // Start from lastSeenAt, but cap at 24 hours ago (notifications expire after 1 day)
       const since = lastSeenAt
-        ? new Date(lastSeenAt).toISOString()
+        ? new Date(Math.max(lastSeenAt, oneDayAgo)).toISOString()
         : new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+
       const { data: follows } = await supabase
         .from("user_follows")
         .select("following_id")
@@ -123,6 +129,12 @@ export function NotificationDropdown() {
       setLoading(false);
       return;
     }
+
+    // Apply 24-hour window: notifications expire one day after being seen
+    const now = Date.now();
+    const oneDayAgo = now - 24 * 60 * 60 * 1000;
+    const since = new Date(Math.max(lastSeenAt ?? 0, oneDayAgo)).toISOString();
+
     const { data: recipeRows } = await supabase
       .from("recipes")
       .select(
@@ -137,11 +149,12 @@ export function NotificationDropdown() {
       )
       .in("author_id", followingIds)
       .eq("status", "published")
+      .gt("created_at", since)
       .order("created_at", { ascending: false })
       .limit(7);
     setRecipes((recipeRows ?? []) as unknown as NotificationRecipe[]);
     setLoading(false);
-  }, [user]);
+  }, [user, lastSeenAt]);
 
   useEffect(() => {
     return () => clearCloseTimer();

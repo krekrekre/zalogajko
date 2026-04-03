@@ -190,18 +190,20 @@ export function EditRecipeForm({
                 }
                 className="min-w-[200px] flex-1 rounded-lg border border-[var(--ar-gray-300)] px-3 py-2 text-sm"
               />
-              <button
-                type="button"
-                onClick={() =>
-                  setIngredients((prev) =>
-                    prev.length > 1 ? prev.filter((_, idx) => idx !== i) : prev,
-                  )
-                }
-                className="rounded p-2 text-red-600 hover:bg-red-50"
-                aria-label="Ukloni sastojak"
-              >
-                <Trash2 className="h-4 w-4" />
-              </button>
+              {ingredients.length > 1 && (
+                <button
+                  type="button"
+                  onClick={() =>
+                    setIngredients((prev) =>
+                      prev.filter((_, idx) => idx !== i),
+                    )
+                  }
+                  className="rounded p-2 text-red-600 hover:bg-red-50"
+                  aria-label="Ukloni sastojak"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              )}
             </div>
           ))}
           <Button
@@ -242,18 +244,20 @@ export function EditRecipeForm({
                 }
                 className="min-h-[72px] flex-1 rounded-lg border border-[var(--ar-gray-300)] px-3 py-2 text-sm"
               />
-              <button
-                type="button"
-                onClick={() =>
-                  setDirections((prev) =>
-                    prev.length > 1 ? prev.filter((_, idx) => idx !== i) : prev,
-                  )
-                }
-                className="mt-1 rounded p-2 text-red-600 hover:bg-red-50"
-                aria-label="Ukloni korak"
-              >
-                <Trash2 className="h-4 w-4" />
-              </button>
+              {directions.length > 1 && (
+                <button
+                  type="button"
+                  onClick={() =>
+                    setDirections((prev) =>
+                      prev.filter((_, idx) => idx !== i),
+                    )
+                  }
+                  className="mt-1 rounded p-2 text-red-600 hover:bg-red-50"
+                  aria-label="Ukloni korak"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              )}
             </div>
           ))}
           <Button
