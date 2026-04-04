@@ -416,3 +416,10 @@ p, span, a, li, td, th, label, input, textarea, select, button {
 .article-body h2:first-child {
   margin-top: 0;
 }
+
+/* In-page anchors (e.g. recepti / kuhinja category tags): smooth scroll when motion is OK */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}

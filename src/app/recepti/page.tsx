@@ -52,7 +52,7 @@ export default async function RecipesPage({
           <p className="mx-auto mt-2 max-w-2xl text-base text-[var(--ar-gray-700)]">
             {isSearch
               ? `${searchRecipes.length} ${searchRecipes.length === 1 ? "recept" : "recepta"} sa ovim sastojkom.`
-              : "Šta za večeru? Nađite odgovor među našim popularnim receptima — filtrirajte po kategoriji, težini, vremenu i sastojcima."}
+              : "Šta za večeru? Nađite odgovor među našim popularnim receptima, filtrirajte po kategoriji."}
           </p>
           {isSearch && (
             <Link
@@ -101,13 +101,13 @@ export default async function RecipesPage({
               <div className="mx-auto max-w-[1220px] px-8">
                 <div className="flex flex-wrap justify-center gap-3 sm:gap-4">
                   {categories.map((c) => (
-                    <Link
+                    <a
                       key={c.id}
                       href={`#${c.slug}`}
                       className="rounded-full px-4 py-2 text-sm font-medium uppercase tracking-wide transition-colors bg-[var(--ar-gray-200)] text-[var(--ar-gray-700)] hover:bg-[var(--color-accent)]/20 hover:text-[var(--color-accent)]"
                     >
                       {c.name_sr}
-                    </Link>
+                    </a>
                   ))}
                 </div>
               </div>
