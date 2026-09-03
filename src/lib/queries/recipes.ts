@@ -135,7 +135,7 @@ export async function getPublishedRecipes(
   const fetchSize = hasInMemoryFilters ? 500 : limit;
   const fetchOffset = hasInMemoryFilters ? 0 : offset;
 
-  let { data, error } = await query.range(fetchOffset, fetchOffset + fetchSize - 1);
+  const { data, error } = await query.range(fetchOffset, fetchOffset + fetchSize - 1);
   if (error) {
     console.error("getPublishedRecipes:", error);
     return [];

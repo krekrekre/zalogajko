@@ -6,7 +6,7 @@ import Image from "next/image";
 import { PLACEHOLDER_IMAGES } from "@/lib/constants";
 import { getSavedRecipeIds } from "@/lib/saved-recipes";
 import { SaveRecipeDropdown } from "@/components/SaveRecipeDropdown";
-import { RotateCcw, ChevronLeft, ChevronRight, Heart } from "lucide-react";
+import { RotateCcw, ChevronLeft, ChevronRight } from "lucide-react";
 
 // Category tags – yellow-orange banner style (top-left on image)
 const FEATURED_TAGS = [

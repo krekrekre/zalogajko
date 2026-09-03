@@ -275,10 +275,13 @@ export function ArticleForm({
           <div className="relative mt-2 inline-block">
             <div className="relative h-32 w-48 overflow-hidden rounded-none border border-[var(--ar-gray-200)] bg-[var(--ar-gray-100)]">
               {imagePreview ? (
-                <img
+                <Image
                   src={imagePreview}
                   alt="Pregled"
-                  className="h-full w-full object-cover"
+                  fill
+                  unoptimized
+                  className="object-cover"
+                  sizes="192px"
                 />
               ) : (
                 <Image

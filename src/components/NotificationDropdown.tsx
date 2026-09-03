@@ -9,6 +9,14 @@ import { PLACEHOLDER_IMAGES } from "@/lib/constants";
 
 const STORAGE_KEY = (uid: string) => `notification-last-seen-${uid}`;
 
+function readLastSeenAt(uid: string): number | null {
+  if (typeof window === "undefined") return null;
+  const raw = localStorage.getItem(STORAGE_KEY(uid));
+  if (!raw) return null;
+  const timestamp = parseInt(raw, 10);
+  return Number.isNaN(timestamp) ? null : timestamp;
+}
+
 type NotificationRecipe = {
   id: string;
   slug: string;
@@ -33,32 +41,23 @@ export function NotificationDropdown() {
     const supabase = createClient();
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
+      setLastSeenAt(session?.user ? readLastSeenAt(session.user.id) : null);
+      if (!session?.user) setCount(0);
     });
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
+      setLastSeenAt(session?.user ? readLastSeenAt(session.user.id) : null);
+      if (!session?.user) setCount(0);
     });
     return () => subscription.unsubscribe();
   }, []);
 
-  // Hydrate lastSeenAt from localStorage when user is set
-  useEffect(() => {
-    if (!user || typeof window === "undefined") return;
-    const raw = localStorage.getItem(STORAGE_KEY(user.id));
-    if (raw) {
-      const t = parseInt(raw, 10);
-      if (!Number.isNaN(t)) setLastSeenAt(t);
-    }
-  }, [user]);
-
   // Fetch notification count: recipes created AFTER lastSeenAt (or last 7 days if never seen)
   // Notifications disappear 24 hours after being seen (one day window)
   useEffect(() => {
-    if (!user) {
-      setCount(0);
-      return;
-    }
+    if (!user) return;
     let cancelled = false;
     const supabase = createClient();
     (async () => {
@@ -154,7 +153,7 @@ export function NotificationDropdown() {
       .limit(7);
     setRecipes((recipeRows ?? []) as unknown as NotificationRecipe[]);
     setLoading(false);
-  }, [user, lastSeenAt]);
+  }, [clearCloseTimer, user, lastSeenAt]);
 
   useEffect(() => {
     return () => clearCloseTimer();

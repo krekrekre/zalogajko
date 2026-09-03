@@ -44,7 +44,7 @@ export function RateRecipe({
 
   async function submitRating(stars: number) {
     if (!user) {
-      window.location.href = `/login?next=${encodeURIComponent(window.location.pathname)}#rate`;
+      router.push(`/login?next=${encodeURIComponent(window.location.pathname)}#rate`);
       return;
     }
     setSubmitting(true);

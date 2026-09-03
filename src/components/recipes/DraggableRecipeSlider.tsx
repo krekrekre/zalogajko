@@ -46,10 +46,7 @@ export function DraggableRecipeSlider({ recipes, categorySlug }: DraggableRecipe
         resistanceRatio={0.9}
         threshold={5}
         longSwipesRatio={0.3}
-        navigation={{
-          prevEl: prevRef.current,
-          nextEl: nextRef.current,
-        }}
+        navigation={false}
         onSwiper={(swiper: SwiperType) => {
           setTimeout(() => {
             try {
