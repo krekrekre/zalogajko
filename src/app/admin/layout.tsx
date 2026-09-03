@@ -1,11 +1,13 @@
 import Link from "next/link";
-import { AdminGuard } from "@/components/admin/AdminGuard";
+import { requireAdmin } from "@/lib/auth/server";
 
-export default function AdminLayout({
+export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  await requireAdmin("/admin");
+
   return (
     <div className="min-h-screen bg-[var(--ar-gray-100)]">
       <header className="border-b border-[var(--ar-gray-200)] bg-white">
@@ -57,7 +59,7 @@ export default function AdminLayout({
         </div>
       </header>
       <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
-        <AdminGuard>{children}</AdminGuard>
+        {children}
       </main>
     </div>
   );

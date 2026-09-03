@@ -1,7 +1,7 @@
-import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { getProfile, getProfileDisplayName, ensureAuthorNameFromAuth } from "@/lib/profile";
+import { requireUser } from "@/lib/auth/server";
+import { bootstrapProfileForUser, getProfileDisplayName } from "@/lib/profile";
 import { getProfileStats } from "@/lib/profile-stats";
 import { ProfileForm } from "@/components/profile/ProfileForm";
 import { ProfileDisplay } from "@/components/profile/ProfileDisplay";
@@ -14,15 +14,13 @@ export const metadata = {
 };
 
 export default async function ProfilPage() {
+  const user = await requireUser("/profil");
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect("/login?next=/profil");
 
-  let profile = await getProfile(user.id);
-  if (!profile) redirect("/login?next=/profil");
-  profile = await ensureAuthorNameFromAuth(user.id, profile, user.user_metadata ?? undefined);
+  const profile = await bootstrapProfileForUser(user);
+  if (!profile) {
+    throw new Error("Profil nije mogao biti učitan.");
+  }
 
   const stats = await getProfileStats(user.id);
 

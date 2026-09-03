@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Heart, Plus, Trash2, X, ArrowLeft } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { getSafeNextPath } from "@/lib/auth/redirects";
 import { PLACEHOLDER_IMAGES } from "@/lib/constants";
 import {
   getSavedRecipeLists,
@@ -75,6 +76,13 @@ export function SaveRecipeDropdown({
     if (view === "create") nameInputRef.current?.focus();
   }, [view]);
 
+  const closeModal = useCallback(() => {
+    setOpen(false);
+    setView("collections");
+    setNewListName("");
+    setNewListDesc("");
+  }, []);
+
   useEffect(() => {
     if (!open) return;
     function onKeyDown(e: KeyboardEvent) {
@@ -82,14 +90,7 @@ export function SaveRecipeDropdown({
     }
     document.addEventListener("keydown", onKeyDown);
     return () => document.removeEventListener("keydown", onKeyDown);
-  }, [open]);
-
-  const closeModal = useCallback(() => {
-    setOpen(false);
-    setView("collections");
-    setNewListName("");
-    setNewListDesc("");
-  }, []);
+  }, [closeModal, open]);
 
   function handleBackdropClick(e: React.MouseEvent) {
     if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
@@ -107,7 +108,7 @@ export function SaveRecipeDropdown({
     if (!user) {
       router.push(
         "/login?next=" +
-          encodeURIComponent(loginNextPath ?? window.location.pathname),
+          encodeURIComponent(getSafeNextPath(loginNextPath ?? window.location.pathname)),
       );
       return;
     }
@@ -194,8 +195,6 @@ export function SaveRecipeDropdown({
   const imgSrc = recipeImageUrl || PLACEHOLDER_IMAGES.default;
 
   const customLists = lists.filter((l) => !PRESET_NAMES.includes(l.name));
-  const suggestedPreset = PRESET_NAMES.find((n) => !isPresetChecked(n));
-
   const trigger =
     variant === "heart-only" ? (
       <button

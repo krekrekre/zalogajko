@@ -1,6 +1,6 @@
-import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { requireUser } from "@/lib/auth/server";
 
 export const metadata = {
   title: "Moji objavljeni recepti | Recepti",
@@ -16,18 +16,7 @@ type AuthoredRecipe = {
 };
 
 export default async function AuthoredRecipesPage() {
-  let user: { id: string } | null = null;
-  try {
-    const supabase = await createClient();
-    const { data } = await supabase.auth.getUser();
-    user = data.user;
-  } catch {
-    redirect("/login?next=/moji-recepti/autorski");
-  }
-  if (!user) {
-    redirect("/login?next=/moji-recepti/autorski");
-  }
-
+  const user = await requireUser("/moji-recepti/autorski");
   const supabase = await createClient();
   const { data } = await supabase
     .from("recipes")

@@ -16,7 +16,6 @@ interface Category {
 }
 
 interface AddRecipeFormProps {
-  userId: string;
   categories: Category[];
 }
 
@@ -199,7 +198,7 @@ function CustomSelect({
   );
 }
 
-export function AddRecipeForm({ userId, categories }: AddRecipeFormProps) {
+export function AddRecipeForm({ categories }: AddRecipeFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -422,18 +421,22 @@ export function AddRecipeForm({ userId, categories }: AddRecipeFormProps) {
       const {
         data: { user },
       } = await supabase.auth.getUser();
-      let authorName: string | null = null;
-      if (user?.id) {
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("author_name")
-          .eq("id", user.id)
-          .single();
-        authorName =
-          (
-            profile as { author_name?: string | null } | null
-          )?.author_name?.trim() || null;
+      if (!user) {
+        setError("Morate biti prijavljeni da biste dodali recept.");
+        setLoading(false);
+        return;
       }
+
+      let authorName: string | null = null;
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("author_name")
+        .eq("id", user.id)
+        .single();
+      authorName =
+        (
+          profile as { author_name?: string | null } | null
+        )?.author_name?.trim() || null;
 
       let imageUrl: string | null = null;
       if (imageFile) {
@@ -441,7 +444,7 @@ export function AddRecipeForm({ userId, categories }: AddRecipeFormProps) {
         const safeExt = ["jpg", "jpeg", "png", "webp", "gif"].includes(ext)
           ? ext
           : "jpg";
-        const path = `${userId}/${slug}-${Date.now()}.${safeExt}`;
+        const path = `${user.id}/${slug}-${Date.now()}.${safeExt}`;
         const { error: uploadError } = await supabase.storage
           .from("recipe-images")
           .upload(path, imageFile, {
@@ -469,7 +472,7 @@ export function AddRecipeForm({ userId, categories }: AddRecipeFormProps) {
           prep_time_minutes: prep,
           cook_time_minutes: cook,
           servings: serv,
-          author_id: userId,
+          author_id: user.id,
           author_name: authorName,
           image_url: imageUrl,
           status,
@@ -514,7 +517,7 @@ export function AddRecipeForm({ userId, categories }: AddRecipeFormProps) {
           const safeExt = ["jpg", "jpeg", "png", "webp", "gif"].includes(ext)
             ? ext
             : "jpg";
-          const path = `${userId}/${recipe.id}/step-${i}.${safeExt}`;
+          const path = `${user.id}/${recipe.id}/step-${i}.${safeExt}`;
           const { error: upErr } = await supabase.storage
             .from("recipe-images")
             .upload(path, stepData.imageFile, {

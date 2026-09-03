@@ -1,6 +1,6 @@
-import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { requireUser } from "@/lib/auth/server";
 import { RecipeCard } from "@/components/RecipeCard";
 
 export const metadata = {
@@ -22,18 +22,7 @@ export default async function MojiReceptiPage({
   searchParams: Promise<{ list?: string }>;
 }) {
   const { list: selectedListId } = await searchParams;
-  let user: { id: string } | null = null;
-  try {
-    const supabase = await createClient();
-    const { data } = await supabase.auth.getUser();
-    user = data.user;
-  } catch {
-    redirect("/login?next=/moji-recepti");
-  }
-  if (!user) {
-    redirect("/login?next=/moji-recepti");
-  }
-
+  const user = await requireUser("/moji-recepti");
   const supabase = await createClient();
 
   const [listsRes, savedRes] = await Promise.all([
@@ -59,7 +48,7 @@ export default async function MojiReceptiPage({
   }
 
   const allRecipeIds = [...new Set(saved.map((r) => r.recipe_id))];
-  let recipesMap = new Map<string, Recipe>();
+  const recipesMap = new Map<string, Recipe>();
   if (allRecipeIds.length > 0) {
     const { data: recipesData } = await supabase
       .from("recipes")

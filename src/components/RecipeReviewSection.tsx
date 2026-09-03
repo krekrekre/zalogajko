@@ -186,7 +186,7 @@ export function RecipeReviewSection({
         stars: rating || 0,
         content: reviewText.trim() || "",
         tags: selectedTags,
-        status: "approved", // Set to "pending" when you want admin moderation
+        status: "pending",
       });
       if (reviewError) throw reviewError;
       if (rating > 0) {
@@ -199,7 +199,7 @@ export function RecipeReviewSection({
         if (ratingError) throw ratingError;
       }
       handleCancel();
-      setSubmitMessage("Recenzija/komentar je uspešno postavljen/a.");
+      setSubmitMessage("Recenzija/komentar je poslat/a i čeka odobrenje.");
       void loadReviews();
     } catch (err) {
       const msg =

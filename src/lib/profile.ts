@@ -25,6 +25,68 @@ export function getAuthorNameFromMetadata(meta: Record<string, unknown> | null |
   return v("author_name") || v("full_name") || v("display_name") || v("name") || null;
 }
 
+function getAvatarUrlFromMetadata(meta: Record<string, unknown> | null | undefined): string | null {
+  if (!meta || typeof meta !== "object") return null;
+  const v = (key: string) => (typeof meta[key] === "string" && (meta[key] as string).trim()) || null;
+  return v("avatar_url") || v("picture") || null;
+}
+
+export type ProfileBootstrapUser = {
+  id: string;
+  email?: string | null;
+  user_metadata?: Record<string, unknown> | null;
+};
+
+export async function bootstrapProfileForUser(
+  user: ProfileBootstrapUser,
+): Promise<Profile | null> {
+  const supabase = await createClient();
+  const now = new Date().toISOString();
+  const authorName =
+    getAuthorNameFromMetadata(user.user_metadata) ||
+    user.email?.split("@")[0]?.trim() ||
+    null;
+  const avatarUrl = getAvatarUrlFromMetadata(user.user_metadata);
+
+  await supabase.from(TABLE).upsert(
+    {
+      id: user.id,
+      author_name: authorName,
+      avatar_url: avatarUrl,
+      updated_at: now,
+    },
+    { onConflict: "id", ignoreDuplicates: true },
+  );
+
+  const { data: profile } = await supabase
+    .from(TABLE)
+    .select("*")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  if (!profile) return null;
+
+  const updates: Partial<Profile> = {};
+  const typedProfile = profile as Profile;
+  if (authorName && !typedProfile.author_name?.trim()) {
+    updates.author_name = authorName;
+  }
+  if (avatarUrl && !typedProfile.avatar_url?.trim()) {
+    updates.avatar_url = avatarUrl;
+  }
+
+  if (Object.keys(updates).length === 0) return typedProfile;
+
+  const { data: updated } = await supabase
+    .from(TABLE)
+    .update({ ...updates, updated_at: now })
+    .eq("id", user.id)
+    .select()
+    .single();
+
+  return (updated as Profile | null) ?? { ...typedProfile, ...updates, updated_at: now };
+}
+
 /**
  * If profile has no author_name but auth metadata has one, update profile. Returns updated profile (merged).
  */

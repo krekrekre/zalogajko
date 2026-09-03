@@ -13,6 +13,7 @@ import {
   getPublishedBlogArticleBySlug,
   getRelatedBlogArticles,
 } from "@/lib/queries/articles";
+import { sanitizeArticleHtml } from "@/lib/sanitize-html";
 
 const PLACEHOLDER_ARTICLE =
   "https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=800&q=80";
@@ -38,6 +39,7 @@ export default async function BlogArticlePage({ params }: Props) {
   const fromDb = await getPublishedBlogArticleBySlug(slug);
   const article = fromDb ?? getArticleBySlug(slug, "blog");
   if (!article) notFound();
+  const articleHtml = sanitizeArticleHtml(article.content.trim());
 
   const relatedFromDb = await getRelatedBlogArticles(slug, 4);
   const related =
@@ -109,7 +111,7 @@ export default async function BlogArticlePage({ params }: Props) {
 
             <div
               className="article-body mt-8 border-t border-[var(--ar-gray-200)] pt-8"
-              dangerouslySetInnerHTML={{ __html: article.content.trim() }}
+              dangerouslySetInnerHTML={{ __html: articleHtml }}
             />
 
             <div className="mt-10 border-t border-[var(--ar-gray-200)] pt-6">

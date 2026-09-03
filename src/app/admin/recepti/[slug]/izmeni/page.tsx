@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { requireUser } from "@/lib/auth/server";
 import { EditRecipeForm } from "@/components/EditRecipeForm";
 
 export const metadata = {
@@ -13,14 +14,8 @@ export default async function EditRecipePage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
+  const user = await requireUser(`/admin/recepti/${slug}/izmeni`);
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    redirect(`/login?next=/admin/recepti/${slug}/izmeni`);
-  }
 
   const { data: recipe, error } = await supabase
     .from("recipes")

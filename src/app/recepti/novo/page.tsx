@@ -1,18 +1,9 @@
-import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { requireUser } from "@/lib/auth/server";
 import { getFilterCategories } from "@/lib/queries/recipes";
 import { AddRecipeForm } from "@/components/AddRecipeForm";
 
 export default async function NewRecipePage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    redirect("/login?next=/recepti/novo");
-  }
-
+  await requireUser("/recepti/novo");
   const categories = await getFilterCategories();
 
   return (
@@ -24,7 +15,7 @@ export default async function NewRecipePage() {
         Popunite podatke i objavite recept.
       </p>
       <div className="mt-8">
-        <AddRecipeForm userId={user.id} categories={categories} />
+        <AddRecipeForm categories={categories} />
       </div>
     </div>
   );

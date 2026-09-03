@@ -14,7 +14,7 @@ interface ReviewsSectionProps {
   recipeId: string;
 }
 
-function getReviewAuthor(userId: string) {
+function getReviewAuthor() {
   return "Korisnik";
 }
 
@@ -89,7 +89,7 @@ export function ReviewsSection({ recipeId }: ReviewsSectionProps) {
           <div key={r.id} className="rounded-xl border border-[var(--ar-gray-200)] bg-[var(--ar-gray-100)] p-4">
             <p className="text-[var(--ar-gray-700)]">{r.content}</p>
             <p className="mt-2 text-sm text-[var(--ar-gray-500)]">
-              {getReviewAuthor(r.user_id)} •{" "}
+              {getReviewAuthor()} •{" "}
               {new Date(r.created_at).toLocaleDateString("sr-RS")}
             </p>
           </div>

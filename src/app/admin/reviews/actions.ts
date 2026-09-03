@@ -1,21 +1,12 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { requireAdmin } from "@/lib/auth/server";
 import { revalidatePath } from "next/cache";
 
 export async function approveReview(reviewId: string): Promise<string | null> {
+  const user = await requireAdmin("/admin/reviews");
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return "Niste ulogovani.";
-
-  const { data: admin } = await supabase
-    .from("admin_users")
-    .select("user_id")
-    .eq("user_id", user.id)
-    .maybeSingle();
-  if (!admin) return "Nemate pravo da odobrite recenziju.";
 
   const { error } = await supabase
     .from("reviews")
@@ -33,18 +24,8 @@ export async function approveReview(reviewId: string): Promise<string | null> {
 }
 
 export async function denyReview(reviewId: string): Promise<string | null> {
+  const user = await requireAdmin("/admin/reviews");
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return "Niste ulogovani.";
-
-  const { data: admin } = await supabase
-    .from("admin_users")
-    .select("user_id")
-    .eq("user_id", user.id)
-    .maybeSingle();
-  if (!admin) return "Nemate pravo da odbijete recenziju.";
 
   const { error } = await supabase
     .from("reviews")

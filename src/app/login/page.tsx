@@ -8,6 +8,7 @@ import { AuthLayout } from "@/components/auth/AuthLayout";
 import { Button } from "@/components/ui/button";
 import { GoogleIcon } from "@/components/icons/GoogleIcon";
 import { Input } from "@/components/ui/input";
+import { getSafeNextPath } from "@/lib/auth/redirects";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -24,7 +25,7 @@ export default function LoginPage() {
       .auth.getSession()
       .then(({ data: { session } }) => {
         if (session?.user) {
-          const next = searchParams.get("next") ?? "/";
+          const next = getSafeNextPath(searchParams.get("next"));
           router.replace(next);
           return;
         }
@@ -40,7 +41,8 @@ export default function LoginPage() {
       const supabase = createClient();
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
-      router.push("/");
+      await fetch("/auth/bootstrap", { method: "POST" });
+      router.push(getSafeNextPath(searchParams.get("next")));
       router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Greška pri prijavi.");
@@ -54,7 +56,7 @@ export default function LoginPage() {
     setError(null);
     try {
       const supabase = createClient();
-      const next = searchParams.get("next") ?? "/";
+      const next = getSafeNextPath(searchParams.get("next"));
       const redirectTo = `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`;
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
@@ -108,7 +110,7 @@ export default function LoginPage() {
                 placeholder="****"
               />
             </div>
-            <Button type="submit" disabled={loading} className="auth-form-submit">
+            <Button type="submit" disabled={loading} className="auth-form-submit cursor-pointer">
               {loading ? "Prijava..." : "Prijavi se"}
             </Button>
             <div className="relative my-4">
@@ -124,7 +126,7 @@ export default function LoginPage() {
               variant="outline"
               disabled={loading || oauthLoading}
               onClick={handleGoogleSignIn}
-              className="auth-form-submit w-full gap-2 border-[var(--ar-gray-300)] bg-white hover:bg-[var(--ar-gray-50)]"
+              className="auth-form-submit w-full cursor-pointer gap-2 border-[var(--ar-gray-300)] bg-white hover:bg-[var(--ar-gray-50)]"
             >
               <GoogleIcon className="h-4 w-4" />
               {oauthLoading ? "Preusmjeravanje..." : "Prijavi se putem Google-a"}
@@ -132,7 +134,10 @@ export default function LoginPage() {
           </form>
           <p className="auth-form-footer">
             Nemate nalog?{" "}
-            <Link href="/signup" className="auth-form-link">
+            <Link
+              href={`/signup?next=${encodeURIComponent(getSafeNextPath(searchParams.get("next")))}`}
+              className="auth-form-link"
+            >
               Registruj se
             </Link>
           </p>

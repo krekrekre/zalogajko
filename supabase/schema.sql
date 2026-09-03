@@ -157,6 +157,13 @@ CREATE TABLE reviews (
 CREATE INDEX idx_reviews_recipe ON reviews(recipe_id);
 
 -- ============================================
+-- Admin users
+-- ============================================
+CREATE TABLE admin_users (
+  user_id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE
+);
+
+-- ============================================
 -- RLS Policies
 -- ============================================
 
@@ -166,13 +173,17 @@ CREATE POLICY "Recipes are viewable by everyone" ON recipes FOR SELECT USING (st
 CREATE POLICY "Authenticated users can insert recipes" ON recipes FOR INSERT WITH CHECK (auth.role() = 'authenticated');
 CREATE POLICY "Users can update own recipes" ON recipes FOR UPDATE USING (auth.uid() = author_id);
 
--- Articles: public read published only; authenticated read all + write (admin enforced in app)
+-- Admin users: users can only see their own admin marker
+ALTER TABLE admin_users ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Admins can read own admin row" ON admin_users FOR SELECT USING (auth.uid() = user_id);
+
+-- Articles: public read published only; admins manage drafts and writes
 ALTER TABLE articles ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Published articles are viewable by everyone" ON articles FOR SELECT USING (status = 'published');
-CREATE POLICY "Authenticated can read all articles" ON articles FOR SELECT USING (auth.role() = 'authenticated');
-CREATE POLICY "Authenticated can insert articles" ON articles FOR INSERT WITH CHECK (auth.role() = 'authenticated');
-CREATE POLICY "Authenticated can update articles" ON articles FOR UPDATE USING (auth.role() = 'authenticated');
-CREATE POLICY "Authenticated can delete articles" ON articles FOR DELETE USING (auth.role() = 'authenticated');
+CREATE POLICY "Admins can read all articles" ON articles FOR SELECT USING (EXISTS (SELECT 1 FROM admin_users WHERE user_id = auth.uid()));
+CREATE POLICY "Admins can insert articles" ON articles FOR INSERT WITH CHECK (EXISTS (SELECT 1 FROM admin_users WHERE user_id = auth.uid()));
+CREATE POLICY "Admins can update articles" ON articles FOR UPDATE USING (EXISTS (SELECT 1 FROM admin_users WHERE user_id = auth.uid())) WITH CHECK (EXISTS (SELECT 1 FROM admin_users WHERE user_id = auth.uid()));
+CREATE POLICY "Admins can delete articles" ON articles FOR DELETE USING (EXISTS (SELECT 1 FROM admin_users WHERE user_id = auth.uid()));
 
 -- Categories: public read
 ALTER TABLE categories ENABLE ROW LEVEL SECURITY;
@@ -181,7 +192,9 @@ CREATE POLICY "Categories are viewable by everyone" ON categories FOR SELECT USI
 -- Recipe-categories: public read, auth write
 ALTER TABLE recipe_categories ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Recipe categories readable" ON recipe_categories FOR SELECT USING (true);
-CREATE POLICY "Authenticated can manage recipe categories" ON recipe_categories FOR ALL USING (auth.role() = 'authenticated');
+CREATE POLICY "Recipe owners and admins can insert recipe categories" ON recipe_categories FOR INSERT WITH CHECK (EXISTS (SELECT 1 FROM recipes WHERE recipes.id = recipe_categories.recipe_id AND recipes.author_id = auth.uid()) OR EXISTS (SELECT 1 FROM admin_users WHERE user_id = auth.uid()));
+CREATE POLICY "Recipe owners and admins can update recipe categories" ON recipe_categories FOR UPDATE USING (EXISTS (SELECT 1 FROM recipes WHERE recipes.id = recipe_categories.recipe_id AND recipes.author_id = auth.uid()) OR EXISTS (SELECT 1 FROM admin_users WHERE user_id = auth.uid())) WITH CHECK (EXISTS (SELECT 1 FROM recipes WHERE recipes.id = recipe_categories.recipe_id AND recipes.author_id = auth.uid()) OR EXISTS (SELECT 1 FROM admin_users WHERE user_id = auth.uid()));
+CREATE POLICY "Recipe owners and admins can delete recipe categories" ON recipe_categories FOR DELETE USING (EXISTS (SELECT 1 FROM recipes WHERE recipes.id = recipe_categories.recipe_id AND recipes.author_id = auth.uid()) OR EXISTS (SELECT 1 FROM admin_users WHERE user_id = auth.uid()));
 
 -- Ingredients, directions: public read
 ALTER TABLE ingredients ENABLE ROW LEVEL SECURITY;

@@ -1,14 +1,17 @@
 "use client";
 
 import { useState } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { AuthLayout } from "@/components/auth/AuthLayout";
 import { Button } from "@/components/ui/button";
 import { GoogleIcon } from "@/components/icons/GoogleIcon";
 import { Input } from "@/components/ui/input";
+import { getSafeNextPath } from "@/lib/auth/redirects";
 
 export default function SignupPage() {
+  const searchParams = useSearchParams();
   const [authorName, setAuthorName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -23,17 +26,21 @@ export default function SignupPage() {
     setError(null);
     try {
       const supabase = createClient();
-      const { error } = await supabase.auth.signUp({
+      const next = getSafeNextPath(searchParams.get("next"));
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`,
           data: {
             author_name: authorName.trim() || null,
           },
         },
       });
       if (error) throw error;
+      if (data.session) {
+        await fetch("/auth/bootstrap", { method: "POST" });
+      }
       setSuccess(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Greška pri registraciji.");
@@ -47,7 +54,8 @@ export default function SignupPage() {
     setError(null);
     try {
       const supabase = createClient();
-      const redirectTo = `${window.location.origin}/auth/callback`;
+      const next = getSafeNextPath(searchParams.get("next"));
+      const redirectTo = `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`;
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: { redirectTo },
@@ -68,7 +76,10 @@ export default function SignupPage() {
             Poslali smo vam link za potvrdu. Kliknite na link u email-u da
             aktivirate nalog.
           </p>
-          <Link href="/login" className="auth-form-link mt-6 inline-block">
+          <Link
+            href={`/login?next=${encodeURIComponent(getSafeNextPath(searchParams.get("next")))}`}
+            className="auth-form-link mt-6 inline-block"
+          >
             Idi na prijavu →
           </Link>
         </div>
@@ -131,7 +142,7 @@ export default function SignupPage() {
               placeholder="****"
             />
           </div>
-          <Button type="submit" disabled={loading} className="auth-form-submit">
+          <Button type="submit" disabled={loading} className="auth-form-submit cursor-pointer">
             {loading ? "Registracija..." : "Registruj se"}
           </Button>
           <div className="relative my-4">
@@ -147,7 +158,7 @@ export default function SignupPage() {
             variant="outline"
             disabled={loading || oauthLoading}
             onClick={handleGoogleSignUp}
-            className="auth-form-submit w-full gap-2 border-[var(--ar-gray-300)] bg-white hover:bg-[var(--ar-gray-50)]"
+            className="auth-form-submit w-full cursor-pointer gap-2 border-[var(--ar-gray-300)] bg-white hover:bg-[var(--ar-gray-50)]"
           >
             <GoogleIcon className="h-4 w-4" />
             {oauthLoading ? "Preusmjeravanje..." : "Registruj se putem Google-a"}
@@ -155,7 +166,10 @@ export default function SignupPage() {
         </form>
         <p className="auth-form-footer">
           Već imate nalog?{" "}
-          <Link href="/login" className="auth-form-link">
+          <Link
+            href={`/login?next=${encodeURIComponent(getSafeNextPath(searchParams.get("next")))}`}
+            className="auth-form-link"
+          >
             Prijavi se
           </Link>
         </p>
