@@ -32,6 +32,8 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+# ...but the template carries no secrets and belongs in the repo
+!.env.local.example
 
 # vercel
 .vercel
@@ -42,3 +44,6 @@ next-env.d.ts
 
 # local nested copy kept for safety during flatten
 /recepti/
+
+# claude code machine-local settings
+.claude/settings.local.json
