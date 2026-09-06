@@ -61,9 +61,9 @@ export function RecipeCard({
   return (
     <Link
       href={href}
-      className="group flex h-[340px] flex-col overflow-hidden rounded-none border border-[var(--color-primary)] bg-transparent transition-all duration-200"
+      className="group flex h-full flex-col overflow-hidden rounded-none border border-[var(--color-primary)] bg-transparent transition-all duration-200"
     >
-      <div className="relative min-h-0 flex-1 overflow-hidden bg-[var(--ar-gray-100)]">
+      <div className="relative aspect-[5/4] shrink-0 overflow-hidden bg-[var(--ar-gray-100)]">
         <Image
           src={imageUrl || PLACEHOLDER_IMAGES.default}
           alt={title}
@@ -77,7 +77,7 @@ export function RecipeCard({
           </span>
         )}
       </div>
-      <div className="shrink-0 bg-transparent p-3 sm:p-4">
+      <div className="flex flex-1 flex-col bg-transparent p-3 sm:p-4">
         <h3 className="font-playpen-sans line-clamp-2 text-xl font-semibold leading-tight text-[var(--ar-gray-700)] transition-colors group-hover:text-[var(--ar-primary)] group-hover:underline group-hover:decoration-[var(--color-accent)] sm:text-[23px]">
           {title}
         </h3>

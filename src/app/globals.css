@@ -387,9 +387,20 @@ p, span, a, li, td, th, label, input, textarea, select, button {
 .recipe-slider .swiper-wrapper {
   transition-timing-function: cubic-bezier(0.33, 1, 0.68, 1);
   will-change: transform;
+  align-items: stretch;
 }
 
+/* Swiper clips at the wrapper's exact height. Card heights are content-derived
+   and land on fractional pixels, so without this slack the cards' bottom border
+   sits on the clip edge and disappears. */
+.swiper.recipe-slider {
+  padding-bottom: 2px;
+}
+
+/* height: auto lets slides stretch to the tallest card, so every card in the
+   rail shares one height and the images line up. */
 .recipe-slider .swiper-slide {
+  height: auto;
   transition: transform 0.45s cubic-bezier(0.33, 1, 0.68, 1);
 }
 
