@@ -43,6 +43,14 @@ export const POPULAR_SEARCHES = [
   { label: "Kolači", slug: "kolaci", category: true },
 ] as const;
 
+/**
+ * Search engines are let in unless NEXT_PUBLIC_ALLOW_INDEXING is exactly "false".
+ * Opt-out rather than opt-in on purpose: forgetting to set it leaves the site
+ * indexable (recoverable), whereas an opt-in default would silently keep a
+ * launched site out of Google until someone noticed.
+ */
+export const ALLOW_INDEXING = process.env.NEXT_PUBLIC_ALLOW_INDEXING !== "false";
+
 export const DEFAULT_META = {
   title: `${SITE_NAME} | Recepti, saveti i više`,
   description: SITE_DESCRIPTION,

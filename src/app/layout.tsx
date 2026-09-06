@@ -3,7 +3,7 @@ import { Capriola, DynaPuff, Playpen_Sans } from "next/font/google";
 import "./globals.css";
 import { AppShell } from "@/components/AppShell";
 import { SiteSchema } from "@/components/SiteSchema";
-import { DEFAULT_META } from "@/lib/constants";
+import { ALLOW_INDEXING, DEFAULT_META } from "@/lib/constants";
 import { getFilterCategories } from "@/lib/queries/recipes";
 
 const capriola = Capriola({
@@ -31,6 +31,7 @@ export const metadata: Metadata = {
   openGraph: {
     locale: DEFAULT_META.locale,
   },
+  ...(ALLOW_INDEXING ? {} : { robots: { index: false, follow: false } }),
 };
 
 export default async function RootLayout({
