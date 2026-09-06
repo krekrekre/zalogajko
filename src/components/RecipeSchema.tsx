@@ -1,3 +1,5 @@
+import { DEFAULT_META } from "@/lib/constants";
+
 interface RecipeSchemaProps {
   recipe: {
     title_sr: string;
@@ -35,7 +37,7 @@ function formatDuration(minutes: number) {
   return `PT${minutes}M`;
 }
 
-export function RecipeSchema({ recipe, baseUrl = "https://recepti.rs", canonicalPath }: RecipeSchemaProps) {
+export function RecipeSchema({ recipe, baseUrl = DEFAULT_META.url, canonicalPath }: RecipeSchemaProps) {
   const totalTime = recipe.prep_time_minutes + recipe.cook_time_minutes;
   const schemaUrl = canonicalPath ? `${baseUrl}${canonicalPath}` : undefined;
   const ingredients = (recipe.ingredients || [])
