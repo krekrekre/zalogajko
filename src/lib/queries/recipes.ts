@@ -3,7 +3,13 @@ import { getAuthorDisplayName, getAuthorDisplayNames } from "@/lib/profile";
 
 const FALLBACK_AUTHOR = "Domaći kuvar";
 
-export type RecipeCategory = { id: string; slug: string; name_sr: string };
+export type RecipeCategory = {
+  id: string;
+  slug: string;
+  name_sr: string;
+  type?: string | null;
+  sort_order?: number | null;
+};
 
 export type RecipeFilters = {
   categorySlug?: string;
@@ -201,16 +207,7 @@ export async function getRecipeRouteParams(): Promise<
   }));
 }
 
-/** Canonical path for a recipe: /recepti/{categorySlug}/{recipeSlug}. Uses first category or "ostalo". */
-export function getRecipeCanonicalPath(recipe: {
-  slug: string;
-  recipe_categories?: Array<{ category?: { slug: string } }>;
-}): string {
-  const raw = recipe.recipe_categories || [];
-  const first = raw.map((rc) => rc.category?.slug).find(Boolean);
-  const categorySlug = first || "ostalo";
-  return `/recepti/${categorySlug}/${recipe.slug}`;
-}
+export { getRecipeCanonicalPath } from "@/lib/recipe-path";
 
 export async function getRecipeBySlug(slug: string) {
   const supabase = createPublicClient();
@@ -221,7 +218,7 @@ export async function getRecipeBySlug(slug: string) {
       `
       *,
       recipe_nutrition(*),
-      recipe_categories(category:categories(id, slug, name_sr))
+      recipe_categories(category:categories(id, slug, name_sr, type, sort_order))
     `
     )
     .eq("slug", slug)
@@ -279,7 +276,8 @@ export async function getFeaturedRecipesWithReviews(limit = 6) {
       prep_time_minutes,
       cook_time_minutes,
       author_id,
-      author_name
+      author_name,
+      recipe_categories(category:categories(id, slug, name_sr, type, sort_order))
     `
     )
     .eq("status", "published")
@@ -311,8 +309,18 @@ export async function getFeaturedRecipesWithReviews(limit = 6) {
 
   return recipes.map((r) => {
     const stats = ratingSummaries[r.id];
+    const { recipe_categories, ...recipe } = r as unknown as Omit<typeof r, never> & {
+      recipe_categories?: Array<{
+        category?: RecipeCategory | RecipeCategory[] | null;
+      }> | null;
+    };
+    // PostgREST embeds come back as arrays when the relationship is ambiguous.
+    const categories = (recipe_categories ?? [])
+      .map((rc) => (Array.isArray(rc?.category) ? rc.category[0] : rc?.category))
+      .filter(Boolean) as unknown as RecipeCategory[];
     return {
-      ...r,
+      ...recipe,
+      categories,
       rating_count: stats.count,
       rating_avg: stats.avg,
       review_quote: reviewByRecipe[r.id] || null,

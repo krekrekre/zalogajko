@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getRecipeCanonicalPath } from "@/lib/recipe-path";
 import Image from "next/image";
 import { Heart } from "lucide-react";
 import { PLACEHOLDER_IMAGES } from "@/lib/constants";
@@ -9,7 +10,7 @@ interface Recipe {
   description_sr?: string | null;
   image_url?: string | null;
   created_at: string;
-  categories?: Array<{ slug: string; name_sr: string }>;
+  categories?: Array<{ slug: string; name_sr: string; type?: string | null; sort_order?: number | null }>;
 }
 
 interface HeroSectionProps {
@@ -105,7 +106,7 @@ function LatestCard({
 
   return (
     <Link
-      href={`/recepti/${recipe.slug}`}
+      href={getRecipeCanonicalPath(recipe)}
       className="group flex gap-3 py-3 border-b border-gray-200 last:border-b-0"
     >
       {/* Thumbnail */}
@@ -158,7 +159,7 @@ export function HeroSection({
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Left: Featured Article */}
           <div className="flex-1 lg:w-[65%]">
-            <Link href={`/recepti/${featured.slug}`} className="group block">
+            <Link href={getRecipeCanonicalPath(featured)} className="group block">
               {/* Featured Image */}
               <div className="relative aspect-[16/10] w-full overflow-hidden">
                 <Image

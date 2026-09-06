@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getRecipeCanonicalPath } from "@/lib/recipe-path";
 import Image from "next/image";
 import { ChevronRight, Heart } from "lucide-react";
 import { PLACEHOLDER_IMAGES } from "@/lib/constants";
@@ -10,7 +11,7 @@ export interface SectionRecipe {
   image_url: string | null;
   rating_count: number;
   rating_avg: number | null;
-  categories?: Array<{ slug: string; name_sr: string }>;
+  categories?: Array<{ slug: string; name_sr: string; type?: string | null; sort_order?: number | null }>;
 }
 
 interface MeatlessMealIdeasProps {
@@ -44,7 +45,7 @@ function SectionCard({ recipe }: { recipe: SectionRecipe }) {
 
   return (
     <Link
-      href={`/recepti/${recipe.slug}`}
+      href={getRecipeCanonicalPath(recipe)}
       className="group block overflow-hidden bg-white transition-all duration-200"
     >
       <div className="relative aspect-[4/3] overflow-hidden bg-[var(--ar-gray-100)]">

@@ -2,6 +2,7 @@
 
 import { useRef, useState, useEffect } from "react";
 import Link from "next/link";
+import { getRecipeCanonicalPath } from "@/lib/recipe-path";
 import Image from "next/image";
 import { PLACEHOLDER_IMAGES } from "@/lib/constants";
 import { getSavedRecipeIds } from "@/lib/saved-recipes";
@@ -60,6 +61,7 @@ interface FeaturedRecipe {
   rating_count: number;
   rating_avg: number | null;
   review_quote: string | null;
+  categories?: Array<{ slug: string; name_sr: string; type?: string | null; sort_order?: number | null }>;
 }
 
 interface FeaturedRecipeCardsProps {
@@ -287,7 +289,7 @@ function FeaturedFlipCard({
             )}
           </cite>
           <Link
-            href={`/recepti/${recipe.slug}`}
+            href={getRecipeCanonicalPath(recipe)}
             className="flex items-center justify-center gap-2 rounded-none bg-[var(--color-accent)] py-2.5 text-sm font-semibold text-white transition-colors hover:opacity-90"
             onClick={(e) => e.stopPropagation()}
           >

@@ -27,7 +27,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       const recipeIds = recipes.map((r) => r.id);
       const { data: rcData } = await supabase
         .from("recipe_categories")
-        .select("recipe_id, category:categories(slug)")
+        .select("recipe_id, category:categories(slug, type, sort_order)")
         .in("recipe_id", recipeIds);
       const idToFirstCategory: Record<string, string> = {};
       for (const rc of rcData || []) {
