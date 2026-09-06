@@ -31,6 +31,7 @@ export function ReviewsSection({ recipeId }: ReviewsSectionProps) {
       .from("reviews")
       .select("id, content, created_at, user_id")
       .eq("recipe_id", recipeId)
+      .eq("status", "approved")
       .order("created_at", { ascending: false })
       .then(({ data }) => setReviews((data as Review[]) || []));
   }, [recipeId]);
@@ -50,6 +51,7 @@ export function ReviewsSection({ recipeId }: ReviewsSectionProps) {
       .from("reviews")
       .select("id, content, created_at, user_id")
       .eq("recipe_id", recipeId)
+      .eq("status", "approved")
       .order("created_at", { ascending: false });
     setReviews((data as Review[]) || []);
     setSubmitting(false);
