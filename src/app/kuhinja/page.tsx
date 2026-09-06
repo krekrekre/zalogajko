@@ -2,6 +2,9 @@ import { getFilterCategories, getPublishedRecipes } from "@/lib/queries/recipes"
 import { getListingMetadata } from "@/lib/seo";
 import { CategoryRecipeSection } from "@/components/recipes/CategoryRecipeSection";
 
+// Public, read-only page: serve from cache and refresh in the background.
+export const revalidate = 900;
+
 export const metadata = getListingMetadata({
   title: "Kuhinja",
   description:

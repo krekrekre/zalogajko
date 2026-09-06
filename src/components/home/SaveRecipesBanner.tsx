@@ -1,15 +1,39 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@/lib/supabase/client";
 
-export async function SaveRecipesBanner() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+/**
+ * Resolves the session in the browser rather than on the server. Reading the
+ * session server-side here forced the whole homepage to render dynamically,
+ * which defeated caching for the sake of one line of copy. Header resolves
+ * auth the same way.
+ */
+export function SaveRecipesBanner() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  const isLoggedIn = !!user;
+  useEffect(() => {
+    const supabase = createClient();
+    let active = true;
+
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (active) setIsLoggedIn(!!session?.user);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (active) setIsLoggedIn(!!session?.user);
+    });
+
+    return () => {
+      active = false;
+      subscription.unsubscribe();
+    };
+  }, []);
 
   return (
     <section className="bg-white pt-[7vh] pb-[7vh]">

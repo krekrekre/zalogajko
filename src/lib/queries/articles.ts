@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/public";
 import type { Article } from "@/lib/articles";
 
 function rowToArticle(row: {
@@ -25,7 +26,7 @@ function rowToArticle(row: {
 export async function getPublishedArticles(
   section: "blog" | "saveti"
 ): Promise<Article[]> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data, error } = await supabase
     .from("articles")
     .select("slug, title, excerpt, content, published_at, image_url, category")
@@ -42,7 +43,7 @@ export async function getPublishedArticleBySlug(
   section: "blog" | "saveti",
   slug: string
 ): Promise<Article | null> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data, error } = await supabase
     .from("articles")
     .select("slug, title, excerpt, content, published_at, image_url, category")
@@ -61,7 +62,7 @@ export async function getRelatedArticles(
   currentSlug: string,
   limit: number
 ): Promise<Article[]> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data, error } = await supabase
     .from("articles")
     .select("slug, title, excerpt, content, published_at, image_url, category")

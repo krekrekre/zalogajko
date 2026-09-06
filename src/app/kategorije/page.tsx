@@ -1,6 +1,9 @@
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/public";
 import { getListingMetadata } from "@/lib/seo";
+
+// Public, read-only page: serve from cache and refresh in the background.
+export const revalidate = 900;
 
 export const metadata = getListingMetadata({
   title: "Kategorije recepta",
@@ -11,7 +14,7 @@ export const metadata = getListingMetadata({
 export default async function CategoriesPage() {
   let categories: Array<{ slug: string; name_sr: string; type: string }> = [];
   try {
-    const supabase = await createClient();
+    const supabase = createPublicClient();
     const { data } = await supabase
       .from("categories")
       .select("slug, name_sr, type")

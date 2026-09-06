@@ -1,10 +1,84 @@
-import { createClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/public";
 import { getAuthorDisplayName, getAuthorDisplayNames } from "@/lib/profile";
+
+const FALLBACK_AUTHOR = "Domaći kuvar";
+
+export type RecipeCategory = { id: string; slug: string; name_sr: string };
+
+export type RecipeFilters = {
+  categorySlug?: string;
+  skillLevel?: "lako" | "srednje" | "tesko";
+  maxTimeMinutes?: number;
+  minTimeMinutes?: number;
+  ingredientQuery?: string;
+  cuisineSlug?: string;
+};
+
+/** Row shape returned by the search_recipes() Postgres function. */
+type SearchRecipeRow = {
+  id: string;
+  slug: string;
+  title_sr: string;
+  description_sr: string | null;
+  prep_time_minutes: number;
+  cook_time_minutes: number;
+  total_time_minutes: number;
+  servings: number;
+  author_id: string | null;
+  author_name: string | null;
+  image_url: string | null;
+  skill_level: string | null;
+  created_at: string;
+  rating_count: number | string | null;
+  rating_avg: number | string | null;
+  categories: RecipeCategory[] | null;
+};
+
+/** Postgres numeric and bigint can arrive as strings once they leave PostgREST. */
+function toNumber(value: number | string | null | undefined): number {
+  if (value == null) return 0;
+  const n = typeof value === "number" ? value : Number(value);
+  return Number.isFinite(n) ? n : 0;
+}
+
+function toNullableNumber(value: number | string | null | undefined): number | null {
+  if (value == null) return null;
+  const n = typeof value === "number" ? value : Number(value);
+  return Number.isFinite(n) ? n : null;
+}
+
+/** Rating count and average per recipe, in one round trip. */
+async function fetchRatingSummaries(
+  recipeIds: string[],
+): Promise<Record<string, { count: number; avg: number | null }>> {
+  const summaries: Record<string, { count: number; avg: number | null }> = {};
+  for (const id of recipeIds) summaries[id] = { count: 0, avg: null };
+  if (recipeIds.length === 0) return summaries;
+
+  const supabase = createPublicClient();
+  const { data } = await supabase
+    .from("ratings")
+    .select("recipe_id, stars")
+    .in("recipe_id", recipeIds);
+
+  const totals: Record<string, number> = {};
+  for (const row of (data ?? []) as { recipe_id: string; stars: number }[]) {
+    const summary = summaries[row.recipe_id];
+    if (!summary) continue;
+    summary.count += 1;
+    totals[row.recipe_id] = (totals[row.recipe_id] ?? 0) + row.stars;
+  }
+  for (const id of recipeIds) {
+    const summary = summaries[id];
+    if (summary.count > 0) summary.avg = totals[id] / summary.count;
+  }
+  return summaries;
+}
 
 export async function getFilterCategories(): Promise<
   { id: string; slug: string; name_sr: string; type: string }[]
 > {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data, error } = await supabase
     .from("categories")
     .select("id, slug, name_sr, type")
@@ -16,7 +90,7 @@ export async function getFilterCategories(): Promise<
 }
 
 export async function getDistinctIngredients(limit = 80): Promise<string[]> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data, error } = await supabase
     .from("ingredients")
     .select("name_sr")
@@ -27,7 +101,7 @@ export async function getDistinctIngredients(limit = 80): Promise<string[]> {
 }
 
 export async function getRecipeCount(): Promise<number> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { count, error } = await supabase
     .from("recipes")
     .select("*", { count: "exact", head: true })
@@ -35,204 +109,96 @@ export async function getRecipeCount(): Promise<number> {
   return error ? 0 : count ?? 0;
 }
 
+/**
+ * Published recipes, filtered and paginated entirely in Postgres by
+ * search_recipes(). Every filter -- category, cuisine, skill, total time and
+ * ingredient -- is applied before LIMIT/OFFSET, so paging stays correct at any
+ * catalogue size.
+ */
 export async function getPublishedRecipes(
   limit = 12,
   offset = 0,
-  filters?: {
-    categorySlug?: string;
-    skillLevel?: "lako" | "srednje" | "tesko";
-    maxTimeMinutes?: number;
-    minTimeMinutes?: number;
-    ingredientQuery?: string;
-    cuisineSlug?: string;
-  }
+  filters?: RecipeFilters,
 ) {
-  const supabase = await createClient();
-  const categorySlug = filters?.categorySlug;
+  const supabase = createPublicClient();
 
-  let query = supabase
-    .from("recipes")
-    .select(
-      `
-      id,
-      slug,
-      title_sr,
-      description_sr,
-      prep_time_minutes,
-      cook_time_minutes,
-      servings,
-      author_id,
-      author_name,
-      image_url,
-      skill_level,
-      created_at
-    `
-    )
-    .eq("status", "published")
-    .order("created_at", { ascending: false });
+  const { data, error } = await supabase.rpc("search_recipes", {
+    p_limit: limit,
+    p_offset: offset,
+    p_category_slug: filters?.categorySlug ?? null,
+    p_cuisine_slug: filters?.cuisineSlug ?? null,
+    p_skill_level: filters?.skillLevel ?? null,
+    p_max_time:
+      filters?.maxTimeMinutes != null && filters.maxTimeMinutes > 0
+        ? filters.maxTimeMinutes
+        : null,
+    p_min_time:
+      filters?.minTimeMinutes != null && filters.minTimeMinutes > 0
+        ? filters.minTimeMinutes
+        : null,
+    p_ingredient: filters?.ingredientQuery?.trim() || null,
+  });
 
-  // Category filter (meal_type) – recipe must be in this category
-  if (categorySlug) {
-    const { data: cat } = await supabase
-      .from("categories")
-      .select("id")
-      .eq("slug", categorySlug)
-      .single();
-    if (cat) {
-      const { data: rcIds } = await supabase
-        .from("recipe_categories")
-        .select("recipe_id")
-        .eq("category_id", cat.id);
-      const ids = (rcIds || []).map((r) => r.recipe_id);
-      if (ids.length > 0) {
-        query = query.in("id", ids) as typeof query;
-      } else {
-        return [];
-      }
-    }
-  }
-
-  // Skill level
-  if (filters?.skillLevel) {
-    query = query.eq("skill_level", filters.skillLevel) as typeof query;
-  }
-
-  // Max total time (prep + cook)
-  if (filters?.maxTimeMinutes != null && filters.maxTimeMinutes > 0) {
-    // Supabase doesn't support (prep_time_minutes + cook_time_minutes) in one filter easily;
-    // we filter in memory after fetch, or use RPC. For simplicity we fetch and filter.
-    // Alternatively: raw filter with "prep_time_minutes + cook_time_minutes.lte" if supported.
-    // PostgREST: we need .or(`prep_time_minutes.lte.${filters.maxTimeMinutes}`) but that's only one column.
-    // So: fetch more and filter, or create a DB view. We'll filter after get for now.
-  }
-
-  // Cuisine – recipe must be in this cuisine category
-  if (filters?.cuisineSlug) {
-    const { data: cuisineCat } = await supabase
-      .from("categories")
-      .select("id")
-      .eq("slug", filters.cuisineSlug)
-      .eq("type", "cuisine")
-      .single();
-    if (cuisineCat) {
-      const { data: cuisineRcIds } = await supabase
-        .from("recipe_categories")
-        .select("recipe_id")
-        .eq("category_id", cuisineCat.id);
-      const cuisineIds = (cuisineRcIds || []).map((r) => r.recipe_id);
-      if (cuisineIds.length > 0) {
-        query = query.in("id", cuisineIds) as typeof query;
-      } else {
-        return [];
-      }
-    }
-  }
-
-  const hasInMemoryFilters =
-    (filters?.ingredientQuery?.trim()?.length ?? 0) > 0 ||
-    (filters?.maxTimeMinutes != null && filters.maxTimeMinutes > 0) ||
-    (filters?.minTimeMinutes != null && filters.minTimeMinutes > 0);
-  const fetchSize = hasInMemoryFilters ? 500 : limit;
-  const fetchOffset = hasInMemoryFilters ? 0 : offset;
-
-  const { data, error } = await query.range(fetchOffset, fetchOffset + fetchSize - 1);
   if (error) {
-    console.error("getPublishedRecipes:", error);
+    console.error("getPublishedRecipes:", error.message);
     return [];
   }
 
-  let recipes = data || [];
+  const rows = (data ?? []) as SearchRecipeRow[];
+  if (rows.length === 0) return [];
 
-  // Ingredient search – recipes that contain an ingredient matching the query
-  // s and š are treated as equivalent (e.g. "sargarepa" matches "šargarepa")
-  if (filters?.ingredientQuery?.trim()) {
-    const term = filters.ingredientQuery.trim();
-    const variant = term.replace(/[sš]/g, (c) => (c === "s" ? "š" : "s"));
-    const patterns = [...new Set([term, variant])];
-    const orConditions = patterns
-      .map((p) => `name_sr.ilike.%${p}%`)
-      .join(",");
-    const { data: ingRows } = await supabase
-      .from("ingredients")
-      .select("recipe_id")
-      .or(orConditions);
-    const recipeIdsFromIng = [...new Set((ingRows || []).map((r) => r.recipe_id))];
-    if (recipeIdsFromIng.length > 0) {
-      recipes = recipes.filter((r) => recipeIdsFromIng.includes(r.id));
-    } else {
-      recipes = [];
-    }
-  }
-
-  // Max time filter (prep + cook)
-  if (filters?.maxTimeMinutes != null && filters.maxTimeMinutes > 0) {
-    recipes = recipes.filter(
-      (r) => r.prep_time_minutes + r.cook_time_minutes <= filters!.maxTimeMinutes!
-    );
-  }
-
-  // Min time filter (e.g. "preko 2 h")
-  if (filters?.minTimeMinutes != null && filters.minTimeMinutes > 0) {
-    recipes = recipes.filter(
-      (r) => r.prep_time_minutes + r.cook_time_minutes >= filters!.minTimeMinutes!
-    );
-  }
-
-  // Apply offset and limit
-  recipes = recipes.slice(offset, offset + limit);
-
-  const recipeIds = recipes.map((r) => r.id);
-  if (recipeIds.length === 0) return [];
-
-  // Fetch ratings for display
-  const { data: ratings } = await supabase
-    .from("ratings")
-    .select("recipe_id, stars")
-    .in("recipe_id", recipeIds);
-  const ratingByRecipe: Record<string, { count: number; avg: number }> = {};
-  for (const id of recipeIds) ratingByRecipe[id] = { count: 0, avg: 0 };
-  for (const row of ratings || []) {
-    const curr = ratingByRecipe[row.recipe_id];
-    if (!curr) continue;
-    curr.count += 1;
-    curr.avg += row.stars;
-  }
-  for (const id of recipeIds) {
-    const curr = ratingByRecipe[id];
-    if (curr.count > 0) curr.avg /= curr.count;
-  }
-
-  const { data: rcData } = await supabase
-    .from("recipe_categories")
-    .select("recipe_id, category:categories(id, slug, name_sr)")
-    .in("recipe_id", recipeIds);
-
-  const categoriesByRecipe: Record<string, Array<{ id: string; slug: string; name_sr: string }>> = {};
-  for (const rc of rcData || []) {
-    const raw = rc as unknown as { recipe_id: string; category?: unknown };
-    const cat = Array.isArray(raw.category) ? raw.category[0] : raw.category;
-    if (cat && typeof cat === "object" && "id" in cat && "name_sr" in cat) {
-      const c = cat as { id: string; slug: string; name_sr: string };
-      if (!categoriesByRecipe[rc.recipe_id]) categoriesByRecipe[rc.recipe_id] = [];
-      categoriesByRecipe[rc.recipe_id].push(c);
-    }
-  }
-
-  const authorIds = recipes.map((r) => (r as { author_id?: string | null }).author_id).filter(Boolean) as string[];
+  const authorIds = rows.map((r) => r.author_id).filter(Boolean) as string[];
   const authorNames = authorIds.length > 0 ? await getAuthorDisplayNames(authorIds) : {};
 
-  return recipes.map((r) => {
-    const stats = ratingByRecipe[r.id] || { count: 0, avg: 0 };
-    const aid = (r as { author_id?: string | null }).author_id;
-    const author_display_name = aid ? (authorNames[aid] ?? (r as { author_name?: string | null }).author_name ?? "Domaći kuvar") : ((r as { author_name?: string | null }).author_name ?? "Domaći kuvar");
+  return rows.map((row) => {
+    const { rating_count, rating_avg, categories, ...recipe } = row;
+    const count = toNumber(rating_count);
     return {
-      ...r,
-      categories: categoriesByRecipe[r.id] || [],
-      rating_count: stats.count,
-      rating_avg: stats.count > 0 ? stats.avg : null,
-      author_display_name,
+      ...recipe,
+      categories: categories ?? [],
+      rating_count: count,
+      rating_avg: count > 0 ? toNullableNumber(rating_avg) : null,
+      author_display_name: row.author_id
+        ? authorNames[row.author_id] ?? row.author_name ?? FALLBACK_AUTHOR
+        : row.author_name ?? FALLBACK_AUTHOR,
     };
   });
+}
+
+/**
+ * Every published recipe as a {slug, recipeSlug} pair, matching the canonical
+ * /recepti/{category}/{recipe} shape. Used by generateStaticParams so recipe
+ * pages are prerendered rather than rendered per request.
+ */
+export async function getRecipeRouteParams(): Promise<
+  { slug: string; recipeSlug: string }[]
+> {
+  const supabase = createPublicClient();
+
+  const [recipesRes, linksRes] = await Promise.all([
+    supabase.from("recipes").select("id, slug").eq("status", "published"),
+    supabase.from("recipe_categories").select("recipe_id, category:categories(slug)"),
+  ]);
+
+  const recipes = (recipesRes.data ?? []) as { id: string; slug: string }[];
+  if (recipes.length === 0) return [];
+
+  const firstCategory: Record<string, string> = {};
+  for (const row of linksRes.data ?? []) {
+    const raw = row as unknown as {
+      recipe_id: string;
+      category?: { slug: string } | { slug: string }[];
+    };
+    const cat = Array.isArray(raw.category) ? raw.category[0] : raw.category;
+    if (cat?.slug && !firstCategory[raw.recipe_id]) {
+      firstCategory[raw.recipe_id] = cat.slug;
+    }
+  }
+
+  return recipes.map((r) => ({
+    slug: firstCategory[r.id] ?? "ostalo",
+    recipeSlug: r.slug,
+  }));
 }
 
 /** Canonical path for a recipe: /recepti/{categorySlug}/{recipeSlug}. Uses first category or "ostalo". */
@@ -247,15 +213,13 @@ export function getRecipeCanonicalPath(recipe: {
 }
 
 export async function getRecipeBySlug(slug: string) {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
 
   const { data: recipe, error } = await supabase
     .from("recipes")
     .select(
       `
       *,
-      ingredients(*),
-      directions(*),
       recipe_nutrition(*),
       recipe_categories(category:categories(id, slug, name_sr))
     `
@@ -268,49 +232,41 @@ export async function getRecipeBySlug(slug: string) {
 
   const recipeId = recipe.id;
 
-  // Fetch ingredients and directions explicitly (embedded select can be unreliable)
-  const [ingredientsRes, directionsRes] = await Promise.all([
+  // Ingredients and directions are fetched explicitly because the embedded
+  // select has proven unreliable for ordering.
+  const [ingredientsRes, directionsRes, ratingsRes, reviewCountRes] = await Promise.all([
     supabase.from("ingredients").select("*").eq("recipe_id", recipeId).order("sort_order"),
     supabase.from("directions").select("*").eq("recipe_id", recipeId).order("sort_order"),
+    supabase.from("ratings").select("stars").eq("recipe_id", recipeId),
+    supabase
+      .from("reviews")
+      .select("*", { count: "exact", head: true })
+      .eq("recipe_id", recipeId)
+      .eq("status", "approved"),
   ]);
 
-  const ingredients = ingredientsRes.data ?? [];
-  const directions = directionsRes.data ?? [];
-
-  // Get rating aggregate (Supabase doesn't have built-in avg, so we fetch)
-  const { data: ratings } = await supabase
-    .from("ratings")
-    .select("stars")
-    .eq("recipe_id", recipeId);
-  const ratingCount = ratings?.length ?? 0;
+  const ratings = (ratingsRes.data ?? []) as { stars: number }[];
+  const ratingCount = ratings.length;
   const ratingAvg =
-    ratingCount > 0
-      ? ratings!.reduce((s, r) => s + r.stars, 0) / ratingCount
-      : null;
-
-  const { count: reviewCount } = await supabase
-    .from("reviews")
-    .select("*", { count: "exact", head: true })
-    .eq("recipe_id", recipeId)
-    .eq("status", "approved");
+    ratingCount > 0 ? ratings.reduce((sum, r) => sum + r.stars, 0) / ratingCount : null;
 
   const author_display_name = recipe.author_id
     ? await getAuthorDisplayName(recipe.author_id)
-    : (recipe.author_name as string | null) || "Domaći kuvar";
+    : (recipe.author_name as string | null) || FALLBACK_AUTHOR;
 
   return {
     ...recipe,
-    ingredients,
-    directions,
+    ingredients: ingredientsRes.data ?? [],
+    directions: directionsRes.data ?? [],
     rating_avg: ratingAvg,
     rating_count: ratingCount,
-    review_count: reviewCount ?? 0,
+    review_count: reviewCountRes.count ?? 0,
     author_display_name,
   };
 }
 
 export async function getFeaturedRecipesWithReviews(limit = 6) {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
 
   const { data: recipes, error } = await supabase
     .from("recipes")
@@ -334,84 +290,45 @@ export async function getFeaturedRecipesWithReviews(limit = 6) {
 
   const recipeIds = recipes.map((r) => r.id);
   const authorIds = recipes.map((r) => r.author_id).filter(Boolean) as string[];
-  const authorNames = authorIds.length > 0 ? await getAuthorDisplayNames(authorIds) : {};
 
-  // Fetch one review per recipe (first by created_at), approved only
-  const { data: reviews } = await supabase
-    .from("reviews")
-    .select("recipe_id, content")
-    .in("recipe_id", recipeIds)
-    .eq("status", "approved")
-    .order("created_at", { ascending: false });
+  const [authorNames, ratingSummaries, reviewsRes] = await Promise.all([
+    authorIds.length > 0
+      ? getAuthorDisplayNames(authorIds)
+      : Promise.resolve({} as Record<string, string>),
+    fetchRatingSummaries(recipeIds),
+    supabase
+      .from("reviews")
+      .select("recipe_id, content")
+      .in("recipe_id", recipeIds)
+      .eq("status", "approved")
+      .order("created_at", { ascending: false }),
+  ]);
 
   const reviewByRecipe: Record<string, string> = {};
-  for (const r of reviews || []) {
-    if (!reviewByRecipe[r.recipe_id]) {
-      reviewByRecipe[r.recipe_id] = r.content;
-    }
+  for (const r of (reviewsRes.data ?? []) as { recipe_id: string; content: string }[]) {
+    if (!reviewByRecipe[r.recipe_id]) reviewByRecipe[r.recipe_id] = r.content;
   }
 
-  // Fetch ratings for aggregate
-  const { data: ratings } = await supabase
-    .from("ratings")
-    .select("recipe_id, stars")
-    .in("recipe_id", recipeIds);
-
-  const ratingByRecipe: Record<string, { count: number; avg: number }> = {};
-  for (const r of recipeIds) {
-    ratingByRecipe[r] = { count: 0, avg: 0 };
-  }
-  for (const row of ratings || []) {
-    const curr = ratingByRecipe[row.recipe_id];
-    if (!curr) continue;
-    curr.count += 1;
-    curr.avg += row.stars;
-  }
-  for (const r of recipeIds) {
-    const curr = ratingByRecipe[r];
-    if (curr.count > 0) curr.avg /= curr.count;
-  }
-
-  return recipeIds.map((id) => {
-    const r = recipes.find((x) => x.id === id)!;
-    const rStats = ratingByRecipe[id] || { count: 0, avg: 0 };
-    const author_display_name = r.author_id ? (authorNames[r.author_id] ?? r.author_name ?? "Domaći kuvar") : (r.author_name ?? "Domaći kuvar");
+  return recipes.map((r) => {
+    const stats = ratingSummaries[r.id];
     return {
       ...r,
-      rating_count: rStats.count,
-      rating_avg: rStats.count > 0 ? rStats.avg : null,
-      review_quote: reviewByRecipe[id] || null,
-      author_display_name,
+      rating_count: stats.count,
+      rating_avg: stats.avg,
+      review_quote: reviewByRecipe[r.id] || null,
+      author_display_name: r.author_id
+        ? authorNames[r.author_id] ?? r.author_name ?? FALLBACK_AUTHOR
+        : r.author_name ?? FALLBACK_AUTHOR,
     };
   });
 }
 
+/**
+ * search_recipes() already returns rating aggregates, so this is just a
+ * category-scoped call.
+ */
 export async function getSectionRecipes(categorySlug: string | null, limit = 6) {
-  const recipes = await getPublishedRecipes(limit, 0, categorySlug ? { categorySlug } : undefined);
-  if (recipes.length === 0) return [];
-  const supabase = await createClient();
-  const recipeIds = recipes.map((r) => r.id);
-  const { data: ratings } = await supabase
-    .from("ratings")
-    .select("recipe_id, stars")
-    .in("recipe_id", recipeIds);
-  const ratingByRecipe: Record<string, { count: number; avg: number }> = {};
-  for (const id of recipeIds) ratingByRecipe[id] = { count: 0, avg: 0 };
-  for (const row of ratings || []) {
-    const curr = ratingByRecipe[row.recipe_id];
-    if (!curr) continue;
-    curr.count += 1;
-    curr.avg += row.stars;
-  }
-  for (const id of recipeIds) {
-    const curr = ratingByRecipe[id];
-    if (curr.count > 0) curr.avg /= curr.count;
-  }
-  return recipes.map((r) => ({
-    ...r,
-    rating_count: ratingByRecipe[r.id].count,
-    rating_avg: ratingByRecipe[r.id].count > 0 ? ratingByRecipe[r.id].avg : null,
-  }));
+  return getPublishedRecipes(limit, 0, categorySlug ? { categorySlug } : undefined);
 }
 
 export async function getRelatedRecipes(
@@ -421,7 +338,7 @@ export async function getRelatedRecipes(
 ) {
   if (categoryIds.length === 0) return [];
 
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data, error } = await supabase
     .from("recipe_categories")
     .select(
@@ -452,10 +369,9 @@ export async function getRelatedRecipes(
     prep_time_minutes: number;
     cook_time_minutes: number;
   };
-  const seen = new Set<string>();
   const recipeMap = new Map<
     string,
-    RecipeRow & { categoryName?: string; primaryCategorySlug?: string; rating_avg?: number | null; rating_count?: number }
+    RecipeRow & { categoryName?: string; primaryCategorySlug?: string }
   >();
 
   for (const row of data || []) {
@@ -472,7 +388,6 @@ export async function getRelatedRecipes(
     const categorySlug = cat?.slug ?? undefined;
 
     if (!recipeMap.has(r.id)) {
-      seen.add(r.id);
       recipeMap.set(r.id, { ...r, categoryName, primaryCategorySlug: categorySlug });
     } else {
       const existing = recipeMap.get(r.id)!;
@@ -483,28 +398,13 @@ export async function getRelatedRecipes(
   }
 
   const recipeIds = [...recipeMap.keys()];
-  if (recipeIds.length === 0) return [...recipeMap.values()];
+  if (recipeIds.length === 0) return [];
 
-  const { data: ratings } = await supabase
-    .from("ratings")
-    .select("recipe_id, stars")
-    .in("recipe_id", recipeIds);
-
-  const ratingByRecipe: Record<string, { count: number; sum: number }> = {};
-  for (const id of recipeIds) ratingByRecipe[id] = { count: 0, sum: 0 };
-  for (const row of ratings || []) {
-    const curr = ratingByRecipe[row.recipe_id];
-    if (curr) {
-      curr.count += 1;
-      curr.sum += row.stars;
-    }
-  }
+  const ratingSummaries = await fetchRatingSummaries(recipeIds);
 
   return recipeIds.map((id) => {
     const recipe = recipeMap.get(id)!;
-    const r = ratingByRecipe[id];
-    const rating_count = r?.count ?? 0;
-    const rating_avg = rating_count > 0 ? r!.sum / rating_count : null;
-    return { ...recipe, rating_avg, rating_count };
+    const stats = ratingSummaries[id];
+    return { ...recipe, rating_avg: stats.avg, rating_count: stats.count };
   });
 }

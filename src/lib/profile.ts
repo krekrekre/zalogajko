@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/public";
 
 export type Profile = {
   id: string;
@@ -136,7 +137,7 @@ export async function getProfile(userId: string): Promise<Profile | null> {
  * Returns null if the user has no profile row (e.g. never visited /profil).
  */
 export async function getPublicProfile(userId: string): Promise<Profile | null> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data, error } = await supabase
     .from(TABLE)
     .select("*")
@@ -163,7 +164,7 @@ export async function getAuthorDisplayName(userId: string | null): Promise<strin
 export async function getAuthorDisplayNames(userIds: string[]): Promise<Record<string, string>> {
   const uniq = [...new Set(userIds)].filter(Boolean);
   if (uniq.length === 0) return {};
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data } = await supabase.from(TABLE).select("id, author_name").in("id", uniq);
   const map: Record<string, string> = {};
   for (const row of data ?? []) {

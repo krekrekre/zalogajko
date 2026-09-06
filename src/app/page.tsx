@@ -8,6 +8,9 @@ import { BlogSection } from "@/components/home/BlogSection";
 import { getPublishedRecipes, getFeaturedRecipesWithReviews, getSectionRecipes } from "@/lib/queries/recipes";
 import { DEFAULT_META, SITE_NAME } from "@/lib/constants";
 
+// Homepage surfaces new recipes, so keep the window short.
+export const revalidate = 300;
+
 export const metadata = {
   title: `${SITE_NAME} | Recepti, saveti i više`,
   description: DEFAULT_META.description,

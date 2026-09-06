@@ -6,6 +6,7 @@ import {
   getRecipeBySlug,
   getRelatedRecipes,
   getRecipeCanonicalPath,
+  getRecipeRouteParams,
 } from "@/lib/queries/recipes";
 import { RecipeActions } from "@/components/RecipeActions";
 import { ServingMultiplier } from "@/components/ServingMultiplier";
@@ -15,6 +16,13 @@ import { RecipeSchema } from "@/components/RecipeSchema";
 import { BreadcrumbSchema } from "@/components/BreadcrumbSchema";
 import { RecipeCard } from "@/components/RecipeCard";
 import { RecipeReviewSection } from "@/components/RecipeReviewSection";
+
+// Recipe content changes rarely; edits call revalidatePath.
+export const revalidate = 3600;
+
+export async function generateStaticParams() {
+  return getRecipeRouteParams();
+}
 
 const SKILL_LEVEL_LABELS: Record<string, string> = {
   lako: "Lako",

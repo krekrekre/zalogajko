@@ -3,6 +3,9 @@ import { ArticleCard } from "@/components/articles/ArticleCard";
 import { getPublishedBlogArticles } from "@/lib/queries/articles";
 import { BLOG_ARTICLES } from "@/lib/articles";
 
+// Public, read-only page: serve from cache and refresh in the background.
+export const revalidate = 900;
+
 export const metadata = getListingMetadata({
   title: "Blog",
   description:

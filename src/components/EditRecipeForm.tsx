@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { revalidateRecipeCaches } from "@/app/recepti/actions";
 import { Button } from "@/components/ui/button";
 import { Plus, Trash2 } from "lucide-react";
 
@@ -125,6 +126,7 @@ export function EditRecipeForm({
         .update({ updated_at: new Date().toISOString() })
         .eq("id", recipeId);
 
+      await revalidateRecipeCaches();
       router.push(`/recepti/${slug}`);
       router.refresh();
     } catch (err) {

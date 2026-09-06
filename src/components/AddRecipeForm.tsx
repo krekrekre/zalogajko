@@ -4,6 +4,7 @@ import { useState, useRef, useCallback, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { revalidateRecipeCaches } from "@/app/recepti/actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Plus, Trash2, ImagePlus } from "lucide-react";
@@ -572,6 +573,7 @@ export function AddRecipeForm({ categories }: AddRecipeFormProps) {
         }
       }
 
+      await revalidateRecipeCaches();
       router.push(`/recepti/${slug}`);
       router.refresh();
     } catch (err) {

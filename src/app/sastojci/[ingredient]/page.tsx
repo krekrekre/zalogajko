@@ -4,6 +4,9 @@ import { RecipeCard } from "@/components/RecipeCard";
 import { BreadcrumbSchema } from "@/components/BreadcrumbSchema";
 import { getListingMetadata } from "@/lib/seo";
 
+// Public, read-only page: serve from cache and refresh in the background.
+export const revalidate = 900;
+
 export async function generateMetadata({
   params,
 }: {

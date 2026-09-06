@@ -6,14 +6,28 @@ import {
   getArticleBySlug,
   getRelatedArticles,
   formatArticleDate,
+  SAVETI_ARTICLES,
 } from "@/lib/articles";
 import { getListingMetadata } from "@/lib/seo";
 import { ArticleCard } from "@/components/articles/ArticleCard";
 import {
   getPublishedArticleBySlug,
+  getPublishedArticles,
   getRelatedArticles as getRelatedFromDb,
 } from "@/lib/queries/articles";
 import { sanitizeArticleHtml } from "@/lib/sanitize-html";
+
+// Public, read-only page: serve from cache and refresh in the background.
+export const revalidate = 3600;
+export async function generateStaticParams() {
+  const fromDb = await getPublishedArticles("saveti");
+  const slugs = new Set([
+    ...fromDb.map((a) => a.slug),
+    ...SAVETI_ARTICLES.map((a) => a.slug),
+  ]);
+  return [...slugs].map((slug) => ({ slug }));
+}
+
 
 const PLACEHOLDER_ARTICLE =
   "https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=800&q=80";

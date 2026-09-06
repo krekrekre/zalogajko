@@ -3,6 +3,9 @@ import { ArticleCard } from "@/components/articles/ArticleCard";
 import { getPublishedArticles } from "@/lib/queries/articles";
 import { SAVETI_ARTICLES } from "@/lib/articles";
 
+// Public, read-only page: serve from cache and refresh in the background.
+export const revalidate = 900;
+
 export const metadata = getListingMetadata({
   title: "Saveti",
   description:

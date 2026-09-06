@@ -6,7 +6,7 @@ import { PLACEHOLDER_IMAGES } from "@/lib/constants";
 interface Recipe {
   slug: string;
   title_sr: string;
-  description_sr?: string;
+  description_sr?: string | null;
   image_url?: string | null;
   created_at: string;
   categories?: Array<{ slug: string; name_sr: string }>;
