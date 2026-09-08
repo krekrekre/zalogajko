@@ -244,7 +244,7 @@ export function EditRecipeForm({
                     ),
                   )
                 }
-                className="min-h-[72px] flex-1 rounded-lg border border-[var(--ar-gray-300)] px-3 py-2 text-sm"
+                className="min-h-[72px] flex-1 break-words rounded-lg border border-[var(--ar-gray-300)] px-3 py-2 text-sm"
               />
               {directions.length > 1 && (
                 <button

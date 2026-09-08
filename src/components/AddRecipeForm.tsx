@@ -26,6 +26,16 @@ const SKILL_LEVELS = [
   { value: "tesko", label: "Teško" },
 ] as const;
 
+const MINUTES_DIGITS = 3;
+const SERVINGS_DIGITS = 2;
+const MAX_MINUTES = 999;
+const MAX_SERVINGS = 99;
+
+/** Keeps only digits and caps their count, so the field cannot exceed its digit limit. */
+function clampDigits(value: string, maxDigits: number) {
+  return value.replace(/\D/g, "").slice(0, maxDigits);
+}
+
 function slugify(text: string) {
   return text
     .toLowerCase()
@@ -76,7 +86,7 @@ function FormField({
         className="block text-sm font-medium text-[var(--color-primary)]"
       >
         {label}
-        {required && <span className="text-[var(--color-orange)]"> *</span>}
+        {required && <span className="text-red-600"> *</span>}
       </label>
       {children}
     </div>
@@ -84,9 +94,9 @@ function FormField({
 }
 
 const inputClass =
-  "w-full rounded-none border-2 border-gray-300 bg-[#f1f1e6] px-4 py-3 text-[15px] text-[var(--color-primary)] placeholder:text-gray-500 outline-none transition-all focus:bg-[#f1f1e6] focus-visible:border-[var(--color-orange)] focus-visible:ring-2 focus-visible:ring-[var(--color-orange)]/25";
+  "w-full break-words rounded-none border-2 border-gray-300 bg-[#f1f1e6] px-4 py-3 text-[15px] text-[var(--color-primary)] placeholder:text-gray-500 outline-none transition-all focus:bg-[#f1f1e6] focus-visible:border-[var(--color-orange)] focus-visible:ring-2 focus-visible:ring-[var(--color-orange)]/25";
 const inputClassSmall =
-  "rounded-none border-2 border-gray-300 bg-[#f1f1e6] px-3 py-2 text-sm text-[var(--color-primary)] placeholder:text-gray-500 outline-none transition-all focus:bg-[#f1f1e6] focus-visible:border-[var(--color-orange)] focus-visible:ring-2 focus-visible:ring-[var(--color-orange)]/25";
+  "break-words rounded-none border-2 border-gray-300 bg-[#f1f1e6] px-3 py-2 text-sm text-[var(--color-primary)] placeholder:text-gray-500 outline-none transition-all focus:bg-[#f1f1e6] focus-visible:border-[var(--color-orange)] focus-visible:ring-2 focus-visible:ring-[var(--color-orange)]/25";
 
 function CustomSelect({
   value,
@@ -126,7 +136,7 @@ function CustomSelect({
         className="block text-sm font-medium text-[var(--color-primary)]"
       >
         {label}
-        {required && <span className="text-[var(--color-orange)]"> *</span>}
+        {required && <span className="text-red-600"> *</span>}
       </label>
       <div ref={ref} className="relative">
         <button
@@ -869,12 +879,14 @@ export function AddRecipeForm({ categories }: AddRecipeFormProps) {
               <FormField label="Priprema (min)" required>
                 <Input
                   type="number"
+                  inputMode="numeric"
                   min={0}
+                  max={MAX_MINUTES}
                   placeholder="npr. 20"
                   value={prepTime === "" ? "" : prepTime}
                   onChange={(e) => {
-                    const v = e.target.value;
-                    setPrepTime(v === "" ? "" : parseInt(v, 10) || 0);
+                    const v = clampDigits(e.target.value, MINUTES_DIGITS);
+                    setPrepTime(v === "" ? "" : parseInt(v, 10));
                   }}
                   className={inputClass}
                 />
@@ -882,12 +894,14 @@ export function AddRecipeForm({ categories }: AddRecipeFormProps) {
               <FormField label="Kuvanje (min)">
                 <Input
                   type="number"
+                  inputMode="numeric"
                   min={0}
+                  max={MAX_MINUTES}
                   placeholder="npr. 60"
                   value={cookTime === "" ? "" : cookTime}
                   onChange={(e) => {
-                    const v = e.target.value;
-                    setCookTime(v === "" ? "" : parseInt(v, 10) || 0);
+                    const v = clampDigits(e.target.value, MINUTES_DIGITS);
+                    setCookTime(v === "" ? "" : parseInt(v, 10));
                   }}
                   className={inputClass}
                 />
@@ -895,14 +909,14 @@ export function AddRecipeForm({ categories }: AddRecipeFormProps) {
               <FormField label="Porcije" required>
                 <Input
                   type="number"
+                  inputMode="numeric"
                   min={1}
+                  max={MAX_SERVINGS}
                   placeholder="npr. 4"
                   value={servings === "" ? "" : servings}
                   onChange={(e) => {
-                    const v = e.target.value;
-                    setServings(
-                      v === "" ? "" : Math.max(1, parseInt(v, 10) || 1),
-                    );
+                    const v = clampDigits(e.target.value, SERVINGS_DIGITS);
+                    setServings(v === "" ? "" : Math.max(1, parseInt(v, 10)));
                   }}
                   className={inputClass}
                 />

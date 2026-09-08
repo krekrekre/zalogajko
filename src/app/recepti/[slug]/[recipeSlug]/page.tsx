@@ -141,7 +141,7 @@ export default async function RecipePage({
                 ))}
               </nav>
 
-              <h1 className="mt-3 text-3xl font-bold leading-tight text-[var(--ar-gray-900)] sm:text-4xl lg:text-[46px]">
+              <h1 className="mt-3 break-words text-3xl font-bold leading-tight text-[var(--ar-gray-900)] sm:text-4xl lg:text-[46px]">
                 {recipe.title_sr}
               </h1>
 
@@ -150,7 +150,7 @@ export default async function RecipePage({
               </div>
 
               {recipe.description_sr && (
-                <p className="mt-4 text-[var(--ar-gray-700)] leading-relaxed">
+                <p className="mt-4 whitespace-pre-line break-words text-[var(--ar-gray-700)] leading-relaxed">
                   {recipe.description_sr}
                 </p>
               )}
@@ -276,7 +276,7 @@ export default async function RecipePage({
                       <span className="inline-block font-semibold text-[var(--ar-gray-900)] border-b-2 border-[var(--ar-primary)] pb-1">
                         {step.step_number ?? index + 1}. korak
                       </span>
-                      <p className="mt-3 text-base sm:text-[18px]">
+                      <p className="mt-3 whitespace-pre-line break-words text-base sm:text-[18px]">
                         {step.instruction_sr}
                       </p>
                       {step.image_url && (
@@ -315,7 +315,7 @@ export default async function RecipePage({
                           strokeWidth={3}
                           aria-hidden
                         />
-                        <span>{item}</span>
+                        <span className="min-w-0 break-words">{item}</span>
                       </li>
                     ))}
                   </ul>
