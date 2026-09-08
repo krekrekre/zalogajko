@@ -9,12 +9,14 @@ export default async function AdminDashboardPage() {
     { count: approvedReviews },
     { count: deniedReviews },
     { count: pendingComments },
+    { count: pendingRecipes },
     { count: recipesCount },
   ] = await Promise.all([
     supabase.from("reviews").select("*", { count: "exact", head: true }).eq("status", "pending"),
     supabase.from("reviews").select("*", { count: "exact", head: true }).eq("status", "approved"),
     supabase.from("reviews").select("*", { count: "exact", head: true }).eq("status", "denied"),
     supabase.from("comments").select("*", { count: "exact", head: true }).eq("status", "pending"),
+    supabase.from("recipes").select("*", { count: "exact", head: true }).eq("status", "pending"),
     supabase.from("recipes").select("*", { count: "exact", head: true }),
   ]);
 
@@ -34,7 +36,7 @@ export default async function AdminDashboardPage() {
         Admin panel
       </h1>
       <p className="mt-1 text-sm text-[var(--ar-gray-600)]">
-        Upravljanje recenzijama i komentarima.
+        Upravljanje receptima, recenzijama i komentarima.
       </p>
       <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         <Link
@@ -79,6 +81,17 @@ export default async function AdminDashboardPage() {
           </p>
           <p className="mt-1 text-2xl font-bold text-[var(--ar-gray-900)]">
             {pendingComments ?? 0}
+          </p>
+        </Link>
+        <Link
+          href="/admin/recipes?status=pending"
+          className="rounded-none border border-[var(--ar-gray-200)] bg-white p-4 transition-shadow hover:shadow-md"
+        >
+          <p className="text-sm font-medium text-[var(--ar-gray-600)]">
+            Recepti na čekanju
+          </p>
+          <p className="mt-1 text-2xl font-bold text-[var(--ar-gray-900)]">
+            {pendingRecipes ?? 0}
           </p>
         </Link>
         <Link

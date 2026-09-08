@@ -24,7 +24,7 @@ export default async function ProfilPage() {
 
   const stats = await getProfileStats(user.id);
 
-  const [authoredRes, savedRes] = await Promise.all([
+  const [authoredRes, pendingRes, savedRes] = await Promise.all([
     supabase
       .from("recipes")
       .select("id, slug, title_sr, image_url, prep_time_minutes, cook_time_minutes")
@@ -32,6 +32,14 @@ export default async function ProfilPage() {
       .eq("status", "published")
       .order("updated_at", { ascending: false })
       .limit(6),
+    // A submitted recipe is invisible everywhere until an admin approves it,
+    // so show the author it is queued rather than letting it seem lost.
+    supabase
+      .from("recipes")
+      .select("id, title_sr, created_at")
+      .eq("author_id", user.id)
+      .eq("status", "pending")
+      .order("created_at", { ascending: false }),
     supabase
       .from("saved_recipes")
       .select("recipe_id")
@@ -45,6 +53,12 @@ export default async function ProfilPage() {
     image_url: string | null;
     prep_time_minutes: number;
     cook_time_minutes: number;
+  }>;
+
+  const pendingRecipes = (pendingRes.data || []) as Array<{
+    id: string;
+    title_sr: string;
+    created_at: string;
   }>;
 
   const recipeIds = [...new Set((savedRes.data || []).map((r) => r.recipe_id))];
@@ -143,6 +157,33 @@ export default async function ProfilPage() {
                     Dodaj prvi recept
                   </Link>
                 </p>
+              )}
+
+              {pendingRecipes.length > 0 && (
+                <div className="mt-6 border border-[var(--ar-gray-200)] bg-[#f1f1e6] p-4">
+                  <h3 className="text-sm font-bold uppercase tracking-wide text-[var(--color-primary)]">
+                    Čekaju odobrenje ({pendingRecipes.length})
+                  </h3>
+                  <p className="mt-1 text-sm text-[var(--ar-gray-600)]">
+                    Administrator ih pregleda pre objavljivanja. Do tada nisu
+                    vidljivi na sajtu.
+                  </p>
+                  <ul className="mt-3 space-y-2">
+                    {pendingRecipes.map((r) => (
+                      <li
+                        key={r.id}
+                        className="flex flex-wrap items-baseline justify-between gap-2 text-sm"
+                      >
+                        <span className="font-medium text-[var(--color-primary)]">
+                          {r.title_sr}
+                        </span>
+                        <span className="text-[var(--ar-gray-600)]">
+                          Poslato {new Date(r.created_at).toLocaleDateString("sr-RS")}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               )}
             </section>
 

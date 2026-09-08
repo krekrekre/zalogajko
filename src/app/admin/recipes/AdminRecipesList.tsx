@@ -2,7 +2,11 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { deleteRecipe } from "@/app/admin/recipes/actions";
+import {
+  approveRecipe,
+  deleteRecipe,
+  denyRecipe,
+} from "@/app/admin/recipes/actions";
 
 type RecipeRow = {
   id: string;
@@ -16,6 +20,24 @@ type RecipeRow = {
 
 export function AdminRecipesList({ recipes }: { recipes: RecipeRow[] }) {
   const router = useRouter();
+
+  async function handleApprove(recipe: RecipeRow) {
+    const err = await approveRecipe(recipe.id);
+    if (err) {
+      alert(err);
+      return;
+    }
+    router.refresh();
+  }
+
+  async function handleDeny(recipe: RecipeRow) {
+    const err = await denyRecipe(recipe.id);
+    if (err) {
+      alert(err);
+      return;
+    }
+    router.refresh();
+  }
 
   async function handleDelete(recipe: RecipeRow) {
     const confirmed = window.confirm(
@@ -67,7 +89,27 @@ export function AdminRecipesList({ recipes }: { recipes: RecipeRow[] }) {
             </span>
           </div>
 
-          <div className="mt-4">
+          <div className="mt-4 flex flex-wrap items-center gap-2">
+            {recipe.status !== "published" && (
+              <button
+                type="button"
+                onClick={() => handleApprove(recipe)}
+                className="cursor-pointer rounded-none bg-[var(--ar-primary)] px-3 py-1.5 text-sm font-medium text-white hover:bg-[var(--ar-primary-hover)]"
+              >
+                {recipe.status === "pending" ? "Odobri" : "Objavi"}
+              </button>
+            )}
+            {recipe.status !== "denied" && (
+              <button
+                type="button"
+                onClick={() => handleDeny(recipe)}
+                className="cursor-pointer rounded-none border border-[var(--ar-gray-300)] bg-white px-3 py-1.5 text-sm font-medium text-[var(--ar-gray-700)] hover:bg-[var(--ar-gray-100)]"
+              >
+                {recipe.status === "published"
+                  ? "Skloni sa sajta"
+                  : "Odbij"}
+              </button>
+            )}
             <button
               type="button"
               onClick={() => handleDelete(recipe)}

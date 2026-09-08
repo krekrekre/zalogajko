@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback, useEffect } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { revalidateRecipeCaches } from "@/app/recepti/actions";
@@ -221,7 +222,7 @@ export function AddRecipeForm({ categories }: AddRecipeFormProps) {
   const [cookTime, setCookTime] = useState<number | "">("");
   const [servings, setServings] = useState<number | "">("");
   const [skillLevel, setSkillLevel] = useState<string>("");
-  const [status] = useState<"published">("published");
+  const [submittedForReview, setSubmittedForReview] = useState(false);
   const [categoryId, setCategoryId] = useState<string>("");
   const [cuisineId, setCuisineId] = useState<string>("");
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -486,10 +487,12 @@ export function AddRecipeForm({ categories }: AddRecipeFormProps) {
           author_id: user.id,
           author_name: authorName,
           image_url: imageUrl,
-          status,
+          // No status: the database decides. An admin's recipe takes the
+          // column default and goes live; anyone else's is forced to
+          // 'pending' by the recipes_enforce_moderation trigger.
           skill_level: skillLevel || null,
         })
-        .select("id")
+        .select("id, status")
         .single();
 
       if (recipeError) throw recipeError;
@@ -583,14 +586,49 @@ export function AddRecipeForm({ categories }: AddRecipeFormProps) {
         }
       }
 
-      await revalidateRecipeCaches();
-      router.push(`/recepti/${slug}`);
-      router.refresh();
+      if (recipe.status === "published") {
+        await revalidateRecipeCaches();
+        router.push(`/recepti/${slug}`);
+        router.refresh();
+      } else {
+        setSubmittedForReview(true);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Nešto je pošlo po zlu.");
     } finally {
       setLoading(false);
     }
+  }
+
+  if (submittedForReview) {
+    return (
+      <div className="mx-auto mt-8 w-full max-w-[1220px]">
+        <div className="border-2 border-[var(--color-orange)] bg-[#f1f1e6] p-6 sm:p-8">
+          <h2 className="text-xl font-bold text-[var(--color-primary)]">
+            Recept je poslat na odobrenje
+          </h2>
+          <p className="mt-2 text-[15px] text-[var(--color-primary)]">
+            Administrator će ga pregledati pre objavljivanja. Do tada nije
+            vidljiv na sajtu — status možete pratiti na svom profilu.
+          </p>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <Link
+              href="/profil"
+              className="rounded-none bg-[var(--color-orange)] px-4 py-2.5 text-sm font-semibold uppercase tracking-wide text-[var(--color-primary)]"
+            >
+              Moj profil
+            </Link>
+            <button
+              type="button"
+              onClick={() => window.location.reload()}
+              className="cursor-pointer rounded-none border-2 border-[var(--color-orange)] px-4 py-2.5 text-sm font-semibold uppercase tracking-wide text-[var(--color-primary)]"
+            >
+              Dodaj još jedan recept
+            </button>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (

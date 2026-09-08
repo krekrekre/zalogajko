@@ -17,7 +17,12 @@ export default async function AdminRecipesPage({
 }) {
   const { status, q } = await searchParams;
   const filter =
-    status === "published" || status === "draft" ? status : "all";
+    status === "published" ||
+    status === "pending" ||
+    status === "denied" ||
+    status === "draft"
+      ? status
+      : "all";
   const searchTerm = (q ?? "").trim();
 
   const supabase = await createClient();
@@ -62,7 +67,8 @@ export default async function AdminRecipesPage({
         Recepti
       </h1>
       <p className="mt-1 text-sm text-[var(--ar-gray-600)]">
-        Brisanje recepata iz admin panela.
+        Odobravanje, odbijanje i brisanje recepata. Recepti koje pošalju
+        korisnici čekaju odobrenje pre nego što se pojave na sajtu.
       </p>
       <div className="mt-4 flex gap-2 border-b border-[var(--ar-gray-200)]">
         <Link
@@ -76,6 +82,16 @@ export default async function AdminRecipesPage({
           Svi
         </Link>
         <Link
+          href={getRecipesHref("pending", searchTerm)}
+          className={`border-b-2 px-3 py-2 text-sm font-medium ${
+            filter === "pending"
+              ? "border-[var(--ar-primary)] text-[var(--ar-primary)]"
+              : "border-transparent text-[var(--ar-gray-600)] hover:text-[var(--ar-gray-900)]"
+          }`}
+        >
+          Na čekanju
+        </Link>
+        <Link
           href={getRecipesHref("published", searchTerm)}
           className={`border-b-2 px-3 py-2 text-sm font-medium ${
             filter === "published"
@@ -84,6 +100,16 @@ export default async function AdminRecipesPage({
           }`}
         >
           Published
+        </Link>
+        <Link
+          href={getRecipesHref("denied", searchTerm)}
+          className={`border-b-2 px-3 py-2 text-sm font-medium ${
+            filter === "denied"
+              ? "border-[var(--ar-primary)] text-[var(--ar-primary)]"
+              : "border-transparent text-[var(--ar-gray-600)] hover:text-[var(--ar-gray-900)]"
+          }`}
+        >
+          Odbijeni
         </Link>
         <Link
           href={getRecipesHref("draft", searchTerm)}
