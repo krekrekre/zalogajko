@@ -73,7 +73,7 @@ export function AdminCommentsList({
               {new Date(c.created_at).toLocaleString("sr-RS")}
             </span>
           </div>
-          <p className="mt-2 text-sm text-[var(--ar-gray-700)]">{c.content}</p>
+          <p className="mt-2 whitespace-pre-line break-words text-sm text-[var(--ar-gray-700)]">{c.content}</p>
           <div className="mt-4 flex flex-wrap items-center gap-2">
             {currentFilter === "pending" && (
               <>

@@ -60,8 +60,8 @@ export function AdminReviewsList({
           className="rounded-none border border-[var(--ar-gray-200)] bg-white p-4"
         >
           <div className="flex flex-wrap items-start justify-between gap-2">
-            <div>
-              <p className="font-medium text-[var(--ar-gray-900)]">
+            <div className="min-w-0">
+              <p className="font-medium break-words text-[var(--ar-gray-900)]">
                 {r.recipe?.title_sr ?? "Recept"}
               </p>
               <Link
@@ -79,12 +79,12 @@ export function AdminReviewsList({
             </div>
           </div>
           {r.tags.length > 0 && (
-            <p className="mt-2 text-sm text-[var(--ar-gray-600)]">
+            <p className="mt-2 break-words text-sm text-[var(--ar-gray-600)]">
               Tagovi: {r.tags.join(", ")}
             </p>
           )}
           {r.content && (
-            <p className="mt-2 text-sm text-[var(--ar-gray-700)]">
+            <p className="mt-2 whitespace-pre-line break-words text-sm text-[var(--ar-gray-700)]">
               {r.content}
             </p>
           )}

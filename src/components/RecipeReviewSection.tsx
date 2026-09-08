@@ -310,7 +310,7 @@ export function RecipeReviewSection({
               onChange={(e) => setReviewText(e.target.value)}
               placeholder="Šta mislite o ovom receptu? Da li ste napravili neke izmene ili beleške?"
               rows={4}
-              className="mt-3 w-full rounded-none border border-[var(--ar-gray-300)] bg-white px-3 py-2 text-[var(--ar-gray-700)] placeholder:text-[var(--ar-gray-500)] focus:border-[var(--ar-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--ar-primary)]"
+              className="mt-3 w-full break-words rounded-none border border-[var(--ar-gray-300)] bg-white px-3 py-2 text-[var(--ar-gray-700)] placeholder:text-[var(--ar-gray-500)] focus:border-[var(--ar-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--ar-primary)]"
             />
           </div>
 
@@ -367,17 +367,17 @@ export function RecipeReviewSection({
           <div className="mt-4 divide-y divide-[var(--ar-gray-200)] border-t border-[var(--ar-gray-200)]">
             {reviews.slice(0, visibleReviewsCount).map((review) => (
               <article key={review.id} className="py-5">
-                <div className="flex items-start gap-3">
+                <div className="flex min-w-0 items-start gap-3">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={review.author_avatar_url || getAnimalAvatarForUser(review.user_id)}
                     alt={resolveReviewerName(review)}
-                    className="h-6 w-6 rounded-full object-cover"
+                    className="h-6 w-6 shrink-0 rounded-full object-cover"
                     loading="lazy"
                     referrerPolicy="no-referrer"
                   />
-                  <div>
-                    <p className="text-base font-semibold text-[var(--ar-gray-900)]">
+                  <div className="min-w-0">
+                    <p className="text-base font-semibold break-words text-[var(--ar-gray-900)]">
                       <Link
                         href={`/profil/${review.user_id}`}
                         className="hover:underline hover:decoration-[var(--color-accent)]"
@@ -412,7 +412,7 @@ export function RecipeReviewSection({
                 </div>
 
                 {review.content && (
-                  <p className="mt-3 whitespace-pre-line text-[var(--ar-gray-800)]">
+                  <p className="mt-3 whitespace-pre-line break-words text-[var(--ar-gray-800)]">
                     {review.content}
                   </p>
                 )}
