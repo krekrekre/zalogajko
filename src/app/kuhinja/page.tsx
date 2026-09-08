@@ -33,7 +33,7 @@ export default async function KuhinjaPage() {
     <div>
       <div className="mx-auto max-w-[1220px] px-8 py-10">
         <header className="text-center">
-          <h1 className="font-capriola text-3xl font-bold text-[var(--color-primary)] sm:text-4xl">
+          <h1 className="font-display text-3xl font-bold text-[var(--color-primary)] sm:text-4xl">
             Kuhinja
           </h1>
           <p className="mx-auto mt-2 max-w-2xl text-base text-[var(--ar-gray-700)]">
@@ -51,7 +51,7 @@ export default async function KuhinjaPage() {
                 <a
                   key={c.id}
                   href={`#${c.slug}`}
-                  className="rounded-full px-4 py-2 text-sm font-medium uppercase tracking-wide transition-colors bg-[var(--ar-gray-200)] text-[var(--ar-gray-700)] hover:bg-[var(--color-accent)]/20 hover:text-[var(--color-accent)]"
+                  className="rounded-full px-4 py-2 text-sm font-medium uppercase tracking-wide transition-colors bg-[var(--ar-gray-200)] text-[var(--ar-gray-700)] hover:bg-[var(--color-accent)]/20 hover:text-[var(--ar-primary-ink)]"
                 >
                   {c.slug.charAt(0).toUpperCase() + c.slug.slice(1)}
                 </a>

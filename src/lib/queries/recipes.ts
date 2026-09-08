@@ -1,5 +1,6 @@
 import { createPublicClient } from "@/lib/supabase/public";
 import { getAuthorDisplayName, getAuthorDisplayNames } from "@/lib/profile";
+import { resolveSearchTerms } from "@/lib/search-topics";
 
 const FALLBACK_AUTHOR = "Domaći kuvar";
 
@@ -169,6 +170,45 @@ export async function getPublishedRecipes(
         : row.author_name ?? FALLBACK_AUTHOR,
     };
   });
+}
+
+export type PublishedRecipe = Awaited<
+  ReturnType<typeof getPublishedRecipes>
+>[number];
+
+/**
+ * Recipes behind a search box or a "Popularne pretrage" chip.
+ *
+ * A known topic expands into several ingredient stems (see search-topics.ts),
+ * and each stem runs as its own indexed query because search_recipes() takes a
+ * single ingredient. One round trip per stem is a deliberate trade: the stem
+ * lists are short, the queries run in parallel, and every page that calls this
+ * is cached for minutes at a time -- cheaper than fetching rows to filter in
+ * JavaScript, which is what pushing search into Postgres was meant to end.
+ */
+export async function getRecipesForIngredientSearch(
+  query: string,
+  limit = 100,
+): Promise<PublishedRecipe[]> {
+  const terms = resolveSearchTerms(query);
+  if (terms.length === 0) return [];
+  if (terms.length === 1) {
+    return getPublishedRecipes(limit, 0, { ingredientQuery: terms[0] });
+  }
+
+  const pages = await Promise.all(
+    terms.map((term) => getPublishedRecipes(limit, 0, { ingredientQuery: term })),
+  );
+
+  // A recipe matching several stems ("svinjsko" and "slanina") appears once.
+  const byId = new Map<string, PublishedRecipe>();
+  for (const page of pages) {
+    for (const recipe of page) byId.set(recipe.id, recipe);
+  }
+
+  return [...byId.values()]
+    .sort((a, b) => Date.parse(b.created_at) - Date.parse(a.created_at))
+    .slice(0, limit);
 }
 
 /**

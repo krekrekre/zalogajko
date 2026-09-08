@@ -117,7 +117,7 @@ export function FeaturedRecipeCards({ recipes }: FeaturedRecipeCardsProps) {
         {/* Top row: heading (left), arrows (right) */}
         <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
           <div className="min-w-0">
-            <h2 className="font-capriola text-[30px] font-semibold text-[var(--color-primary)]">
+            <h2 className="font-display text-[30px] font-semibold text-[var(--color-primary)]">
               Počnite da čuvate ova jela
             </h2>
             <p className="mt-1 text-sm text-[var(--ar-gray-500)]">
@@ -130,7 +130,7 @@ export function FeaturedRecipeCards({ recipes }: FeaturedRecipeCardsProps) {
                 type="button"
                 onClick={() => scroll("left")}
                 disabled={!canScrollLeft}
-                className="flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-full border border-[var(--color-primary)] bg-white text-[var(--color-accent)] shadow-sm transition-all duration-200 disabled:opacity-40 hover:enabled:scale-105 hover:enabled:bg-[var(--ar-primary)] hover:enabled:text-white hover:enabled:border-[var(--ar-primary)]"
+                className="flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-full border border-[var(--color-primary)] bg-white text-[var(--ar-primary-ink)] shadow-sm transition-all duration-200 disabled:opacity-40 hover:enabled:scale-105 hover:enabled:bg-[var(--ar-primary)] hover:enabled:text-[var(--color-primary)] hover:enabled:border-[var(--ar-primary)]"
                 aria-label="Prethodne kartice"
               >
                 <ChevronLeft className="h-5 w-5" />
@@ -139,7 +139,7 @@ export function FeaturedRecipeCards({ recipes }: FeaturedRecipeCardsProps) {
                 type="button"
                 onClick={() => scroll("right")}
                 disabled={!canScrollRight}
-                className="flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-full border border-[var(--color-primary)] bg-white text-[var(--color-accent)] shadow-sm transition-all duration-200 disabled:opacity-40 hover:enabled:scale-105 hover:enabled:bg-[var(--ar-primary)] hover:enabled:text-white hover:enabled:border-[var(--ar-primary)]"
+                className="flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-full border border-[var(--color-primary)] bg-white text-[var(--ar-primary-ink)] shadow-sm transition-all duration-200 disabled:opacity-40 hover:enabled:scale-105 hover:enabled:bg-[var(--ar-primary)] hover:enabled:text-[var(--color-primary)] hover:enabled:border-[var(--ar-primary)]"
                 aria-label="Sledeće kartice"
               >
                 <ChevronRight className="h-5 w-5" />
@@ -219,7 +219,7 @@ function FeaturedFlipCard({
               className="object-cover"
               sizes="260px"
             />
-            <span className="absolute left-2 top-2 rounded bg-[#d97706] px-2 py-1 text-xs font-bold uppercase leading-tight text-white">
+            <span className="absolute left-2 top-2 rounded bg-[var(--ar-tag-amber)] px-2 py-1 text-xs font-bold uppercase leading-tight text-white">
               {tag}
             </span>
           </div>
@@ -279,7 +279,7 @@ function FeaturedFlipCard({
             {recipe.author_id ? (
               <Link
                 href={`/profil/${recipe.author_id}`}
-                className="hover:text-[var(--color-orange)] hover:underline"
+                className="hover:underline hover:decoration-[var(--color-accent)]"
                 onClick={(e) => e.stopPropagation()}
               >
                 {recipe.author_display_name || recipe.author_name || "Domaći kuvar"}
@@ -290,7 +290,7 @@ function FeaturedFlipCard({
           </cite>
           <Link
             href={getRecipeCanonicalPath(recipe)}
-            className="flex items-center justify-center gap-2 rounded-none bg-[var(--color-accent)] py-2.5 text-sm font-semibold text-white transition-colors hover:opacity-90"
+            className="flex items-center justify-center gap-2 rounded-none bg-[var(--color-accent)] py-2.5 text-sm font-semibold text-[var(--color-primary)] transition-colors hover:opacity-90"
             onClick={(e) => e.stopPropagation()}
           >
             <RotateCcw className="h-4 w-4" />

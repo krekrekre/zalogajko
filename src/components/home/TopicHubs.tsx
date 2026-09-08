@@ -35,7 +35,7 @@ export function TopicHubs() {
                 <li key={c.slug}>
                   <Link
                     href={`/recepti/${c.slug}`}
-                    className="rounded-lg px-4 py-2.5 text-sm font-medium text-[var(--ar-gray-700)] transition-colors hover:bg-[var(--ar-primary-light)] hover:text-[var(--ar-primary)]"
+                    className="rounded-lg px-4 py-2.5 text-sm font-medium text-[var(--ar-gray-700)] transition-colors hover:bg-[var(--ar-primary-light)] hover:text-[var(--ar-primary-ink)]"
                   >
                     {c.name_sr}
                   </Link>
@@ -52,7 +52,7 @@ export function TopicHubs() {
                 <li key={c.slug}>
                   <Link
                     href={`/recepti/${c.slug}`}
-                    className="rounded-lg px-4 py-2.5 text-sm font-medium text-[var(--ar-gray-700)] transition-colors hover:bg-[var(--ar-primary-light)] hover:text-[var(--ar-primary)]"
+                    className="rounded-lg px-4 py-2.5 text-sm font-medium text-[var(--ar-gray-700)] transition-colors hover:bg-[var(--ar-primary-light)] hover:text-[var(--ar-primary-ink)]"
                   >
                     {c.name_sr}
                   </Link>
@@ -61,7 +61,7 @@ export function TopicHubs() {
             </ul>
           </div>
           <div className="rounded-xl border border-[var(--ar-gray-200)] bg-[var(--ar-primary-light)] p-6 sm:col-span-2 lg:col-span-1">
-            <h3 className="text-sm font-semibold uppercase tracking-wider text-[var(--ar-primary)]">
+            <h3 className="text-sm font-semibold uppercase tracking-wider text-[var(--ar-primary-ink)]">
               Svi recepti
             </h3>
             <p className="mt-2 text-sm text-[var(--ar-gray-500)]">
@@ -69,7 +69,7 @@ export function TopicHubs() {
             </p>
             <Link
               href="/recepti"
-              className="mt-4 inline-block font-semibold text-[var(--ar-primary)] hover:text-[var(--ar-primary-hover)] hover:underline"
+              className="mt-4 inline-block font-semibold text-[var(--ar-primary-ink)] hover:text-[var(--ar-primary-ink-hover)] hover:underline"
             >
               Pregledaj sve →
             </Link>

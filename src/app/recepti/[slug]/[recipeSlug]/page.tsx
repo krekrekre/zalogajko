@@ -1,6 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
+import { Check, Heart } from "lucide-react";
 import { PLACEHOLDER_IMAGES } from "@/lib/constants";
 import {
   getRecipeBySlug,
@@ -159,7 +160,7 @@ export default async function RecipePage({
                 {recipe.author_id ? (
                   <Link
                     href={`/profil/${recipe.author_id}`}
-                    className="font-medium text-[var(--ar-gray-700)] hover:text-[var(--color-orange)] hover:underline"
+                    className="font-medium text-[var(--ar-gray-700)] hover:underline hover:decoration-[var(--color-accent)]"
                   >
                     {(recipe as { author_display_name?: string }).author_display_name || "Domaći kuvar"}
                   </Link>
@@ -239,7 +240,7 @@ export default async function RecipePage({
                   <p className="text-center">
                     <a
                       href="#nutrition"
-                      className="text-sm font-medium text-[var(--ar-primary)] underline hover:no-underline"
+                      className="text-sm font-medium text-[var(--color-primary)] underline decoration-[var(--color-accent)] hover:no-underline"
                     >
                       Pogledaj nutritivnu vrednost
                     </a>
@@ -298,19 +299,24 @@ export default async function RecipePage({
                 )}
               </div>
               {recipe.why_youll_love && recipe.why_youll_love.length > 0 && (
-                <div className="mt-12 border border-[var(--ar-primary)] bg-[#ffffff] p-4 sm:mt-[8vh] sm:p-6">
-                  <div className="flex flex-col items-center">
-                    <h2 className="text-center text-lg font-semibold uppercase tracking-wide text-[var(--ar-primary)]">
-                      Zašto ćete voleti ovaj recept
-                    </h2>
-                    <div className="mt-2 flex w-full">
-                      <span className="h-px flex-1 bg-[var(--ar-primary)]" />
-                      <span className="h-px flex-1 bg-[var(--ar-primary)]" />
-                    </div>
-                  </div>
-                  <ul className="mt-6 list-inside list-disc space-y-3 text-base text-[var(--ar-gray-900)] sm:text-[18px] [&_li::marker]:text-[var(--ar-primary)]">
+                <div className="mt-12 border-l-4 border-[var(--ar-primary)] bg-[#f1f1e6] p-5 sm:mt-[8vh] sm:p-8">
+                  <h2 className="flex items-center gap-2.5 text-lg font-semibold uppercase tracking-wide text-[var(--color-primary)] sm:text-xl">
+                    <Heart
+                      className="h-5 w-5 shrink-0 fill-[var(--ar-primary-ink)] text-[var(--ar-primary-ink)]"
+                      aria-hidden
+                    />
+                    Zašto ćete voleti ovaj recept
+                  </h2>
+                  <ul className="mt-5 space-y-3.5 text-base text-[var(--color-primary)] sm:text-[18px]">
                     {recipe.why_youll_love.map((item: string, i: number) => (
-                      <li key={i}>{item}</li>
+                      <li key={i} className="flex items-start gap-3">
+                        <Check
+                          className="mt-1 h-4 w-4 shrink-0 text-[var(--ar-primary-ink)]"
+                          strokeWidth={3}
+                          aria-hidden
+                        />
+                        <span>{item}</span>
+                      </li>
                     ))}
                   </ul>
                 </div>
@@ -319,7 +325,7 @@ export default async function RecipePage({
                 <div className="mt-8 bg-[#ffffff] p-4 sm:p-6 sm:pl-0">
                   <h2
                     id="nutrition"
-                    className="text-2xl font-semibold text-[var(--ar-gray-700)] sm:text-[36px]"
+                    className="scroll-mt-24 text-2xl font-semibold text-[var(--ar-gray-700)] sm:text-[36px]"
                   >
                     Nutritivna vrednost{" "}
                     <span className="block text-base font-normal text-[var(--ar-gray-600)] sm:inline sm:text-xl">

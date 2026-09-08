@@ -36,7 +36,7 @@ function Logo() {
       href="/"
       className="site-logo group inline-flex items-center gap-1 cursor-pointer text-red-600"
     >
-      <span className="text-[42px] font-semibold leading-none tracking-tight">
+      <span className="font-accent text-[42px] font-semibold leading-none tracking-tight">
         Zalogajko
       </span>
       <span
@@ -50,7 +50,7 @@ function Logo() {
 }
 
 const navLinkBase =
-  "whitespace-nowrap py-3 pr-6 text-[13px] font-semibold uppercase tracking-wide font-playpen-sans cursor-pointer transition-colors group";
+  "whitespace-nowrap py-3 pr-6 text-[13px] font-semibold uppercase tracking-wide cursor-pointer transition-colors group";
 
 const navLinkUnderline =
   "inline-block border-b border-transparent group-hover:border-[var(--color-orange)] transition-colors";
@@ -110,7 +110,7 @@ function HeaderUserBlock() {
         <Button
           asChild
           size="sm"
-          className="rounded-none bg-[var(--color-orange)] hover:bg-[var(--ar-primary-hover)] text-white text-[13px] cursor-pointer"
+          className="rounded-none bg-[var(--color-orange)] hover:bg-[var(--ar-primary-hover)] text-[var(--color-primary)] text-[13px] cursor-pointer"
         >
           <Link href="/recepti/novo">
             <PlusCircle className="w-4 h-4 mr-1" />
@@ -330,11 +330,11 @@ export function Header({ categories, ingredients }: HeaderProps) {
                   type="search"
                   name="sastojak"
                   placeholder="Pronađite recept ili sastojak"
-                  className="h-10 w-full rounded-none border border-gray-300 bg-white pl-4 pr-24 text-[14px] selection:bg-[var(--color-orange)] selection:text-[var(--color-primary)] focus-visible:border-[var(--color-orange)] focus-visible:ring-2 focus-visible:ring-[var(--color-orange)]/25 outline-none"
+                  className="h-10 w-full rounded-none border border-gray-300 bg-white pl-4 pr-12 text-[14px] [&::-webkit-search-cancel-button]:cursor-pointer selection:bg-[var(--color-orange)] selection:text-[var(--color-primary)] focus-visible:border-[var(--color-orange)] focus-visible:ring-2 focus-visible:ring-[var(--color-orange)]/25 outline-none"
                 />
                 <Button
                   type="submit"
-                  className="absolute right-0 top-0 h-10 cursor-pointer rounded-none bg-[var(--color-orange)] hover:bg-[var(--ar-primary-hover)] px-4"
+                  className="absolute right-0 top-0 h-10 w-10 cursor-pointer rounded-none bg-[var(--color-orange)] p-0 hover:bg-[var(--ar-primary-hover)]"
                 >
                   <Search className="w-4 h-4" />
                 </Button>
@@ -344,7 +344,7 @@ export function Header({ categories, ingredients }: HeaderProps) {
             <div className="hidden items-center gap-2 text-[13px] md:flex">
               <Link
                 href="/moji-recepti"
-                className="flex items-center gap-1 text-[var(--color-orange)] font-semibold hover:text-[var(--ar-primary-hover)] cursor-pointer"
+                className="flex items-center gap-1 text-[var(--color-orange)] font-semibold hover:text-[var(--ar-primary-ink-hover)] cursor-pointer"
               >
                 <Heart className="w-4 h-4 fill-[var(--color-orange)]" />
                 <span className="text-[13px]">Sačuvani</span>
@@ -400,7 +400,7 @@ export function Header({ categories, ingredients }: HeaderProps) {
                 onClick={closeMobileMenu}
                 className="inline-flex items-center gap-1 text-red-600"
               >
-                <span className="text-[38px] font-semibold leading-none tracking-tight">
+                <span className="font-accent text-[38px] font-semibold leading-none tracking-tight">
                   Zalogajko
                 </span>
                 <span
@@ -422,7 +422,7 @@ export function Header({ categories, ingredients }: HeaderProps) {
                 type="search"
                 name="sastojak"
                 placeholder="Pronađite recept ili sastojak"
-                className="h-12 w-full rounded-none border border-[var(--ar-gray-500)] bg-white pl-4 pr-14 text-base selection:bg-[var(--color-orange)] selection:text-[var(--color-primary)] focus-visible:border-[var(--color-orange)] focus-visible:ring-2 focus-visible:ring-[var(--color-orange)]/25 outline-none"
+                className="h-12 w-full rounded-none border border-[var(--ar-gray-500)] bg-white pl-4 pr-14 text-base [&::-webkit-search-cancel-button]:cursor-pointer selection:bg-[var(--color-orange)] selection:text-[var(--color-primary)] focus-visible:border-[var(--color-orange)] focus-visible:ring-2 focus-visible:ring-[var(--color-orange)]/25 outline-none"
               />
               <Button
                 type="submit"

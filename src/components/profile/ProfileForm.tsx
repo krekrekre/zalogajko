@@ -157,7 +157,7 @@ export function ProfileForm({ userId, profile, userEmail }: ProfileFormProps) {
             type="button"
             onClick={() => fileInputRef.current?.click()}
             disabled={uploading}
-            className="absolute bottom-0 right-0 flex h-9 w-9 items-center justify-center rounded-full border-2 border-white bg-[var(--color-orange)] text-white shadow hover:bg-[var(--ar-primary-hover)] disabled:opacity-50"
+            className="absolute bottom-0 right-0 flex h-9 w-9 items-center justify-center rounded-full border-2 border-white bg-[var(--color-orange)] text-[var(--color-primary)] shadow hover:bg-[var(--ar-primary-hover)] disabled:opacity-50"
             aria-label="Promeni profilnu sliku"
           >
             <Camera className="h-4 w-4" />
@@ -182,7 +182,7 @@ export function ProfileForm({ userId, profile, userEmail }: ProfileFormProps) {
           type="text"
           defaultValue={profile.author_name ?? ""}
           placeholder="npr. Ana Jovanović"
-          className="mt-1 max-w-md rounded-none border-[var(--ar-gray-300)] bg-white"
+          className="mt-1 max-w-md rounded-none border-[var(--ar-gray-300)] bg-white focus-visible:border-[var(--color-orange)] focus-visible:ring-2 focus-visible:ring-[var(--color-orange)]/20"
         />
         <p className="mt-1 text-xs text-[var(--ar-gray-500)]">
           Prikazuje se uz recepte i komentare. Ako ga promenite, menja se i na starim receptima i komentarima.
@@ -199,7 +199,7 @@ export function ProfileForm({ userId, profile, userEmail }: ProfileFormProps) {
           type="text"
           defaultValue={profile.first_name ?? ""}
           placeholder="Ime"
-          className="mt-1 max-w-md rounded-none border-[var(--ar-gray-300)] bg-white"
+          className="mt-1 max-w-md rounded-none border-[var(--ar-gray-300)] bg-white focus-visible:border-[var(--color-orange)] focus-visible:ring-2 focus-visible:ring-[var(--color-orange)]/20"
         />
       </div>
 
@@ -213,7 +213,7 @@ export function ProfileForm({ userId, profile, userEmail }: ProfileFormProps) {
           type="text"
           defaultValue={profile.last_name ?? ""}
           placeholder="Prezime"
-          className="mt-1 max-w-md rounded-none border-[var(--ar-gray-300)] bg-white"
+          className="mt-1 max-w-md rounded-none border-[var(--ar-gray-300)] bg-white focus-visible:border-[var(--color-orange)] focus-visible:ring-2 focus-visible:ring-[var(--color-orange)]/20"
         />
       </div>
 
@@ -268,7 +268,7 @@ export function ProfileForm({ userId, profile, userEmail }: ProfileFormProps) {
           type="text"
           defaultValue={profile.country ?? ""}
           placeholder="npr. Srbija"
-          className="mt-1 max-w-md rounded-none border-[var(--ar-gray-300)] bg-white"
+          className="mt-1 max-w-md rounded-none border-[var(--ar-gray-300)] bg-white focus-visible:border-[var(--color-orange)] focus-visible:ring-2 focus-visible:ring-[var(--color-orange)]/20"
         />
       </div>
 
@@ -282,7 +282,7 @@ export function ProfileForm({ userId, profile, userEmail }: ProfileFormProps) {
           type="text"
           defaultValue={profile.location ?? ""}
           placeholder="npr. Beograd"
-          className="mt-1 max-w-md rounded-none border-[var(--ar-gray-300)] bg-white"
+          className="mt-1 max-w-md rounded-none border-[var(--ar-gray-300)] bg-white focus-visible:border-[var(--color-orange)] focus-visible:ring-2 focus-visible:ring-[var(--color-orange)]/20"
         />
       </div>
 
@@ -296,7 +296,7 @@ export function ProfileForm({ userId, profile, userEmail }: ProfileFormProps) {
           rows={4}
           defaultValue={profile.about_me ?? ""}
           placeholder="Napišite nešto o sebi..."
-          className="mt-1 w-full max-w-md rounded-none border border-[var(--ar-gray-300)] bg-white px-4 py-3 text-[15px] text-[var(--color-primary)] placeholder:text-gray-500 outline-none focus:border-[var(--color-orange)] focus:ring-2 focus:ring-[var(--color-orange)]/25"
+          className="mt-1 w-full max-w-md rounded-none border border-[var(--ar-gray-300)] bg-white px-4 py-3 text-[15px] text-[var(--color-primary)] placeholder:text-gray-500 outline-none focus:border-[var(--color-orange)] focus:ring-2 focus:ring-[var(--color-orange)]/20"
         />
       </div>
 

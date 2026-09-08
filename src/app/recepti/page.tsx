@@ -1,5 +1,10 @@
 import Link from "next/link";
-import { getFilterCategories, getPublishedRecipes } from "@/lib/queries/recipes";
+import {
+  getFilterCategories,
+  getPublishedRecipes,
+  getRecipesForIngredientSearch,
+} from "@/lib/queries/recipes";
+import { resolveSearchLabel } from "@/lib/search-topics";
 import { getListingMetadata } from "@/lib/seo";
 import { CategoryRecipeSection } from "@/components/recipes/CategoryRecipeSection";
 import { RecipeCard } from "@/components/RecipeCard";
@@ -18,6 +23,9 @@ export default async function RecipesPage({
   const raw = await searchParams;
   const sastojak = typeof raw?.sastojak === "string" ? raw.sastojak.trim() : "";
   const isSearch = sastojak.length > 0;
+  // A popular-search chip carries a topic name; show its own spelling ("Voće"),
+  // not whatever casing arrived in the URL.
+  const searchLabel = resolveSearchLabel(sastojak);
 
   let categories: Awaited<ReturnType<typeof getFilterCategories>> = [];
 
@@ -37,17 +45,15 @@ export default async function RecipesPage({
 
   let searchRecipes: Awaited<ReturnType<typeof getPublishedRecipes>> = [];
   if (isSearch) {
-    searchRecipes = await getPublishedRecipes(100, 0, {
-      ingredientQuery: sastojak,
-    });
+    searchRecipes = await getRecipesForIngredientSearch(sastojak);
   }
 
   return (
     <div>
       <div className="mx-auto max-w-[1220px] px-8 py-10">
         <header className="text-center">
-          <h1 className="font-capriola text-3xl font-bold text-[var(--color-primary)] sm:text-4xl">
-            {isSearch ? `Recepti sa: ${sastojak}` : "Recepti"}
+          <h1 className="font-display text-3xl font-bold text-[var(--color-primary)] sm:text-4xl">
+            {isSearch ? `Recepti sa: ${searchLabel}` : "Recepti"}
           </h1>
           <p className="mx-auto mt-2 max-w-2xl text-base text-[var(--ar-gray-700)]">
             {isSearch
@@ -57,7 +63,7 @@ export default async function RecipesPage({
           {isSearch && (
             <Link
               href="/recepti"
-              className="mt-4 inline-block text-sm font-semibold text-[var(--color-accent)] hover:text-[var(--ar-primary-hover)] hover:underline"
+              className="mt-4 inline-block text-sm font-semibold text-[var(--ar-primary-ink)] hover:text-[var(--ar-primary-ink-hover)] hover:underline"
             >
               ← Pregledaj sve recepte
             </Link>
@@ -85,8 +91,8 @@ export default async function RecipesPage({
               </div>
             ) : (
               <p className="py-12 text-center text-[var(--ar-gray-500)]">
-                Nema recepta sa sastojkom &quot;{sastojak}&quot;. Pokušajte drugi sastojak ili{" "}
-                <Link href="/recepti" className="font-semibold text-[var(--color-accent)] hover:underline">
+                Nema recepta sa sastojkom &quot;{searchLabel}&quot;. Pokušajte drugi sastojak ili{" "}
+                <Link href="/recepti" className="font-semibold text-[var(--ar-primary-ink)] hover:underline">
                   pregledajte sve recepte
                 </Link>
                 .
@@ -104,7 +110,7 @@ export default async function RecipesPage({
                     <a
                       key={c.id}
                       href={`#${c.slug}`}
-                      className="rounded-full px-4 py-2 text-sm font-medium uppercase tracking-wide transition-colors bg-[var(--ar-gray-200)] text-[var(--ar-gray-700)] hover:bg-[var(--color-accent)]/20 hover:text-[var(--color-accent)]"
+                      className="rounded-full px-4 py-2 text-sm font-medium uppercase tracking-wide transition-colors bg-[var(--ar-gray-200)] text-[var(--ar-gray-700)] hover:bg-[var(--color-accent)]/20 hover:text-[var(--ar-primary-ink)]"
                     >
                       {c.name_sr}
                     </a>

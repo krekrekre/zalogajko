@@ -26,7 +26,7 @@ export async function BlogSection() {
         </div>
         <Link
           href="/blog"
-          className="mt-8 inline-block font-semibold text-[var(--color-accent)] hover:text-[var(--ar-primary-hover)] hover:underline"
+          className="mt-8 inline-block font-semibold text-[var(--ar-primary-ink)] hover:text-[var(--ar-primary-ink-hover)] hover:underline"
         >
           Pregledaj sve članke →
         </Link>

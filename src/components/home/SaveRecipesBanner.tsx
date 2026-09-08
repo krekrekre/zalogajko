@@ -41,7 +41,7 @@ export function SaveRecipesBanner() {
         <div className="flex flex-col items-center gap-4 rounded-2xl bg-white p-8 text-center sm:flex-row sm:justify-between sm:text-left">
           <div>
             <h3 className="flex items-center gap-2 text-xl font-bold text-[var(--ar-gray-700)]">
-              <Heart className="h-6 w-6 shrink-0 fill-[var(--ar-primary)] text-[var(--ar-primary)]" aria-hidden />
+              <Heart className="h-6 w-6 shrink-0 fill-[var(--ar-primary-ink)] text-[var(--ar-primary-ink)]" aria-hidden />
               {isLoggedIn ? "Pregledajte recepte" : "Počnite da čuvate recepte"}
             </h3>
             <p className="mt-1 text-[var(--ar-gray-500)]">

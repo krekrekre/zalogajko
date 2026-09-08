@@ -32,7 +32,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
           className="site-logo group mb-4 inline-flex items-center gap-1 cursor-pointer text-red-600"
           aria-label="Nazad na početnu"
         >
-          <span className="text-[42px] font-semibold leading-none tracking-tight">
+          <span className="font-accent text-[42px] font-semibold leading-none tracking-tight">
             Zalogajko
           </span>
           <span

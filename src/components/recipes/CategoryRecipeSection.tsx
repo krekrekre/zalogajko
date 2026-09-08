@@ -41,13 +41,13 @@ export function CategoryRecipeSection({
         <header className="mb-6 flex items-end justify-between gap-4 pr-2">
           <Link
             href={sectionHref}
-            className="border-b-2 border-[var(--color-accent)] pb-1 font-capriola text-xl font-bold text-[var(--color-primary)] transition-colors hover:text-[var(--color-accent)] sm:text-2xl"
+            className="border-b-2 border-[var(--color-accent)] pb-1 font-display text-xl font-bold text-[var(--color-primary)] transition-colors hover:text-[var(--ar-primary-ink)] sm:text-2xl"
           >
             <h2 className="inline">{title}</h2>
           </Link>
           <Link
             href={sectionHref}
-            className="shrink-0 border-2 border-[var(--color-primary)] bg-white px-3.5 py-1.75 text-xs font-semibold uppercase tracking-wide text-[var(--color-primary)] transition-all hover:border-[var(--color-accent)] hover:bg-[var(--color-accent)] hover:text-white"
+            className="shrink-0 border-2 border-[var(--color-primary)] bg-white px-3.5 py-1.75 text-xs font-semibold uppercase tracking-wide text-[var(--color-primary)] transition-all hover:border-[var(--color-accent)] hover:bg-[var(--color-accent)] hover:text-[var(--color-primary)]"
           >
             Vidi sve
           </Link>

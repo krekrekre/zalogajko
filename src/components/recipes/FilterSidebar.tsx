@@ -83,7 +83,7 @@ export function FilterSidebar({
   return (
     <aside className="w-full shrink-0 lg:w-72">
       <div className="border border-[var(--ar-gray-200)] bg-white p-5">
-        <h3 className="font-capriola text-lg font-semibold text-[var(--color-primary)]">
+        <h3 className="font-display text-lg font-semibold text-[var(--color-primary)]">
           Filteri
         </h3>
 
@@ -91,7 +91,7 @@ export function FilterSidebar({
           <div>
             <Link
               href="/recepti"
-              className="block py-1.5 text-sm font-medium text-[var(--ar-gray-700)] hover:text-[var(--color-accent)]"
+              className="block py-1.5 text-sm font-medium text-[var(--ar-gray-700)] hover:text-[var(--ar-primary-ink)]"
             >
               Svi recepti
             </Link>
@@ -109,8 +109,8 @@ export function FilterSidebar({
                     href={buildQueryString(baseParams, { kategorija: c.slug })}
                     className={`block py-1.5 px-2 text-sm transition-colors ${
                       activeCategory === c.slug
-                        ? "font-medium text-[var(--color-accent)] bg-[var(--ar-gray-100)]"
-                        : "text-[var(--ar-gray-700)] hover:bg-[var(--ar-gray-100)] hover:text-[var(--color-accent)]"
+                        ? "font-medium text-[var(--ar-primary-ink)] bg-[var(--ar-gray-100)]"
+                        : "text-[var(--ar-gray-700)] hover:bg-[var(--ar-gray-100)] hover:text-[var(--ar-primary-ink)]"
                     }`}
                   >
                     {c.name_sr}
@@ -134,8 +134,8 @@ export function FilterSidebar({
                     })}
                     className={`block py-1.5 px-2 text-sm transition-colors ${
                       (activeSkill ?? "") === opt.value
-                        ? "font-medium text-[var(--color-accent)] bg-[var(--ar-gray-100)]"
-                        : "text-[var(--ar-gray-700)] hover:bg-[var(--ar-gray-100)] hover:text-[var(--color-accent)]"
+                        ? "font-medium text-[var(--ar-primary-ink)] bg-[var(--ar-gray-100)]"
+                        : "text-[var(--ar-gray-700)] hover:bg-[var(--ar-gray-100)] hover:text-[var(--ar-primary-ink)]"
                     }`}
                   >
                     {opt.label}
@@ -159,8 +159,8 @@ export function FilterSidebar({
                     })}
                     className={`block py-1.5 px-2 text-sm transition-colors ${
                       (activeTime ?? "") === opt.value
-                        ? "font-medium text-[var(--color-accent)] bg-[var(--ar-gray-100)]"
-                        : "text-[var(--ar-gray-700)] hover:bg-[var(--ar-gray-100)] hover:text-[var(--color-accent)]"
+                        ? "font-medium text-[var(--ar-primary-ink)] bg-[var(--ar-gray-100)]"
+                        : "text-[var(--ar-gray-700)] hover:bg-[var(--ar-gray-100)] hover:text-[var(--ar-primary-ink)]"
                     }`}
                   >
                     {opt.label}
@@ -203,8 +203,8 @@ export function FilterSidebar({
                   href={buildQueryString(baseParams, { kuhinja: undefined })}
                   className={`block py-1.5 px-2 text-sm transition-colors ${
                     !activeCuisine
-                      ? "font-medium text-[var(--color-accent)] bg-[var(--ar-gray-100)]"
-                      : "text-[var(--ar-gray-700)] hover:bg-[var(--ar-gray-100)] hover:text-[var(--color-accent)]"
+                      ? "font-medium text-[var(--ar-primary-ink)] bg-[var(--ar-gray-100)]"
+                      : "text-[var(--ar-gray-700)] hover:bg-[var(--ar-gray-100)] hover:text-[var(--ar-primary-ink)]"
                   }`}
                 >
                   Bilo koja
@@ -216,8 +216,8 @@ export function FilterSidebar({
                     href={buildQueryString(baseParams, { kuhinja: c.slug })}
                     className={`block py-1.5 px-2 text-sm transition-colors ${
                       activeCuisine === c.slug
-                        ? "font-medium text-[var(--color-accent)] bg-[var(--ar-gray-100)]"
-                        : "text-[var(--ar-gray-700)] hover:bg-[var(--ar-gray-100)] hover:text-[var(--color-accent)]"
+                        ? "font-medium text-[var(--ar-primary-ink)] bg-[var(--ar-gray-100)]"
+                        : "text-[var(--ar-gray-700)] hover:bg-[var(--ar-gray-100)] hover:text-[var(--ar-primary-ink)]"
                     }`}
                   >
                     {c.name_sr}

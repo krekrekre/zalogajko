@@ -220,8 +220,8 @@ export function SaveRecipeDropdown({
           className ??
           `inline-flex w-1/2 cursor-pointer items-center justify-center gap-2 border-b border-r border-[var(--ar-gray-250)] px-4 py-3 text-sm font-semibold uppercase tracking-wide transition-colors disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto sm:border-b-0 sm:border-r sm:px-5 sm:py-2.5 ${
             isSaved
-              ? "bg-[var(--ar-primary)] text-white hover:bg-[var(--ar-primary-hover)]"
-              : "bg-[var(--ar-primary)] text-white hover:bg-[var(--ar-primary-hover)]"
+              ? "bg-[var(--ar-primary)] text-[var(--color-primary)] hover:bg-[var(--ar-primary-hover)]"
+              : "bg-[var(--ar-primary)] text-[var(--color-primary)] hover:bg-[var(--ar-primary-hover)]"
           }`
         }
       >
@@ -310,7 +310,7 @@ export function SaveRecipeDropdown({
         <button
           type="button"
           onClick={closeModal}
-          className="cursor-pointer bg-[var(--ar-primary)] px-6 py-2 text-sm font-bold text-white shadow-sm hover:bg-[var(--ar-primary-hover)] transition-colors"
+          className="cursor-pointer bg-[var(--ar-primary)] px-6 py-2 text-sm font-bold text-[var(--color-primary)] shadow-sm hover:bg-[var(--ar-primary-hover)] transition-colors"
         >
           Sačuvaj
         </button>

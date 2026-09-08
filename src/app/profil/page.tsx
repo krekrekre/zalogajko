@@ -103,17 +103,18 @@ export default async function ProfilPage() {
             </div>
 
             <section className="mt-8 border-t border-[var(--ar-gray-200)] pt-8">
-              <h2 className="text-xl font-semibold text-[var(--ar-gray-900)]">
-                Moji recepti
-              </h2>
+              <header className="flex items-center justify-between gap-4">
+                <h2 className="text-xl font-semibold text-[var(--ar-gray-900)]">
+                  Moji recepti
+                </h2>
+                {authoredRecipes.length > 0 && (
+                  <Link href="/moji-recepti/autorski" className="shrink-0 border-2 border-[var(--color-primary)] bg-white px-3.5 py-1.5 text-xs font-semibold uppercase tracking-wide text-[var(--color-primary)] transition-all hover:border-[var(--color-accent)] hover:bg-[var(--color-accent)] hover:text-[var(--color-primary)]">
+                    Vidi sve
+                  </Link>
+                )}
+              </header>
               {authoredRecipes.length > 0 ? (
                 <>
-                  <Link
-                    href="/moji-recepti/autorski"
-                    className="mt-2 inline-block text-sm font-medium text-[var(--color-orange)] hover:underline"
-                  >
-                    Otvori sve moje recepte →
-                  </Link>
                   <div className="mt-6 grid gap-4 sm:grid-cols-2 sm:gap-6">
                     {authoredRecipes.slice(0, 6).map((r) => (
                       <RecipeCard
@@ -129,7 +130,7 @@ export default async function ProfilPage() {
                   {stats.recipeCount > 6 && (
                     <Link
                       href="/moji-recepti/autorski"
-                      className="mt-4 inline-block text-sm font-medium text-[var(--color-orange)] hover:underline"
+                      className="mt-4 inline-block text-sm font-medium text-[var(--ar-primary-ink)] hover:underline"
                     >
                       Vidi sve recepte ({stats.recipeCount}) →
                     </Link>
@@ -138,7 +139,7 @@ export default async function ProfilPage() {
               ) : (
                 <p className="mt-4 text-[var(--ar-gray-500)]">
                   Još niste objavili nijedan recept.{" "}
-                  <Link href="/recepti/novo" className="text-[var(--color-orange)] hover:underline">
+                  <Link href="/recepti/novo" className="text-[var(--ar-primary-ink)] hover:underline">
                     Dodaj prvi recept
                   </Link>
                 </p>
@@ -146,15 +147,16 @@ export default async function ProfilPage() {
             </section>
 
             <section className="mt-10 border-t border-[var(--ar-gray-200)] pt-10">
-              <h2 className="text-xl font-semibold text-[var(--ar-gray-900)]">
-                Sačuvani recepti
-              </h2>
-              <Link
-                href="/moji-recepti"
-                className="mt-2 inline-block text-sm font-medium text-[var(--color-orange)] hover:underline"
-              >
-                Otvori sve sačuvane recepte →
-              </Link>
+              <header className="flex items-center justify-between gap-4">
+                <h2 className="text-xl font-semibold text-[var(--ar-gray-900)]">
+                  Sačuvani recepti
+                </h2>
+                {recipes.length > 0 && (
+                  <Link href="/moji-recepti" className="shrink-0 border-2 border-[var(--color-primary)] bg-white px-3.5 py-1.5 text-xs font-semibold uppercase tracking-wide text-[var(--color-primary)] transition-all hover:border-[var(--color-accent)] hover:bg-[var(--color-accent)] hover:text-[var(--color-primary)]">
+                    Vidi sve
+                  </Link>
+                )}
+              </header>
               <div className="mt-6 grid gap-4 sm:grid-cols-2 sm:gap-6">
                 {recipes.slice(0, 4).map((r) => (
                   <RecipeCard
@@ -170,7 +172,7 @@ export default async function ProfilPage() {
               {recipes.length === 0 && (
                 <p className="mt-4 text-[var(--ar-gray-500)]">
                   Niste sačuvali nijedan recept.{" "}
-                  <Link href="/recepti" className="text-[var(--color-orange)] hover:underline">
+                  <Link href="/recepti" className="text-[var(--ar-primary-ink)] hover:underline">
                     Pregledaj recepte
                   </Link>
                 </p>
@@ -178,7 +180,7 @@ export default async function ProfilPage() {
               {recipes.length > 4 && (
                 <Link
                   href="/moji-recepti"
-                  className="mt-4 inline-block text-sm font-medium text-[var(--color-orange)] hover:underline"
+                  className="mt-4 inline-block text-sm font-medium text-[var(--ar-primary-ink)] hover:underline"
                 >
                   Prikaži svih {recipes.length} sačuvanih recepta →
                 </Link>

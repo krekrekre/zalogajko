@@ -22,7 +22,7 @@ function StarRating({ avg }: { avg: number }) {
   const full = Math.min(5, Math.floor(avg));
   return (
     <span
-      className="inline-flex items-center gap-0.5 text-[var(--ar-primary)]"
+      className="inline-flex items-center gap-0.5 text-[var(--ar-primary-ink)]"
       aria-hidden
     >
       {[...Array(5)].map((_, i) => (
@@ -67,7 +67,7 @@ function SectionCard({ recipe }: { recipe: SectionRecipe }) {
         <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--ar-gray-500)]">
           {categoryName}
         </span>
-        <h3 className="mt-1 line-clamp-2 text-xl font-semibold leading-tight text-[var(--color-primary)] transition-colors group-hover:text-[var(--ar-primary)] group-hover:underline group-hover:decoration-[var(--color-orange)] sm:text-[23px]">
+        <h3 className="mt-1 line-clamp-2 text-xl font-semibold leading-tight text-[var(--color-primary)] group-hover:underline group-hover:decoration-[var(--color-accent)] sm:text-[23px]">
           {recipe.title_sr}
         </h3>
         {recipe.rating_count > 0 && (
@@ -93,7 +93,7 @@ export function MeatlessMealIdeas({ recipes }: MeatlessMealIdeasProps) {
         <div className="flex items-center justify-center">
           <Link
             href="/recepti"
-            className="inline-flex items-center gap-1 text-center text-[30px] font-bold text-[var(--color-primary)] transition-colors hover:text-[var(--ar-primary)] hover:underline hover:decoration-[var(--ar-primary)] hover:decoration-2 hover:underline-offset-2"
+            className="inline-flex items-center gap-1 text-center text-[30px] font-bold text-[var(--color-primary)] hover:underline hover:decoration-[var(--color-accent)] hover:decoration-2 hover:underline-offset-2"
           >
             Ideje za obroke bez mesa
             <ChevronRight className="h-7 w-7" aria-hidden />

@@ -41,7 +41,7 @@ export function SastojciSearchForm({
       />
       <button
         type="submit"
-        className="flex shrink-0 cursor-pointer items-center justify-center border-l border-[var(--ar-gray-200)] px-4 text-[var(--ar-gray-600)] transition-colors hover:bg-[var(--color-accent)] hover:text-white"
+        className="flex shrink-0 cursor-pointer items-center justify-center border-l border-[var(--ar-gray-200)] px-4 text-[var(--ar-gray-600)] transition-colors hover:bg-[var(--color-accent)] hover:text-[var(--color-primary)]"
         aria-label="Pretraži"
       >
         <Search className="h-4 w-4" />

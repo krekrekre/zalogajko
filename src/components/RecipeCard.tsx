@@ -28,7 +28,7 @@ function StarRating({ avg }: { avg: number }) {
   const full = Math.min(5, Math.floor(avg));
   return (
     <span
-      className="inline-flex items-center gap-0.5 text-[var(--ar-primary)]"
+      className="inline-flex items-center gap-0.5 text-[var(--ar-primary-ink)]"
       aria-label={`${avg.toFixed(1)} od 5 zvezdica`}
     >
       {[...Array(5)].map((_, i) => (
@@ -72,13 +72,13 @@ export function RecipeCard({
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         />
         {tag && (
-          <span className="absolute right-2 top-2 rounded-full bg-[var(--ar-primary)] px-2 py-1 text-[11px] font-semibold text-white sm:right-3 sm:top-3 sm:px-2.5 sm:text-xs">
+          <span className="absolute right-2 top-2 rounded-full bg-[var(--ar-primary)] px-2 py-1 text-[11px] font-semibold text-[var(--color-primary)] sm:right-3 sm:top-3 sm:px-2.5 sm:text-xs">
             {tag}
           </span>
         )}
       </div>
       <div className="flex flex-1 flex-col bg-transparent p-3 sm:p-4">
-        <h3 className="font-playpen-sans line-clamp-2 text-xl font-semibold leading-tight text-[var(--ar-gray-700)] transition-colors group-hover:text-[var(--ar-primary)] group-hover:underline group-hover:decoration-[var(--color-accent)] sm:text-[23px]">
+        <h3 className="line-clamp-2 text-xl font-semibold leading-tight text-[var(--ar-gray-700)] group-hover:underline group-hover:decoration-[var(--color-accent)] sm:text-[23px]">
           {title}
         </h3>
         {ratingCount > 0 && (

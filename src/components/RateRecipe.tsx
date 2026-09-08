@@ -91,7 +91,7 @@ export function RateRecipe({
             onMouseEnter={() => setHover(star)}
             onMouseLeave={() => setHover(null)}
             className={`text-2xl transition-transform hover:scale-110 disabled:opacity-50 ${
-              star <= display ? "text-[var(--ar-primary)]" : "text-[var(--ar-gray-200)]"
+              star <= display ? "text-[var(--ar-primary-ink)]" : "text-[var(--ar-gray-200)]"
             }`}
           >
             ★

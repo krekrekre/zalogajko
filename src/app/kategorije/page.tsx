@@ -59,7 +59,7 @@ export default async function CategoriesPage() {
                 <Link
                   key={c.slug}
                   href={`/recepti/${c.slug}`}
-                  className="rounded-lg border border-[var(--ar-gray-200)] bg-white px-4 py-2.5 text-sm font-medium text-[var(--ar-gray-700)] shadow-sm hover:border-[var(--ar-primary)] hover:bg-[var(--ar-primary-light)] hover:text-[var(--ar-primary)]"
+                  className="rounded-lg border border-[var(--ar-gray-200)] bg-white px-4 py-2.5 text-sm font-medium text-[var(--ar-gray-700)] shadow-sm hover:border-[var(--ar-primary)] hover:bg-[var(--ar-primary-light)] hover:text-[var(--ar-primary-ink)]"
                 >
                   {c.name_sr}
                 </Link>

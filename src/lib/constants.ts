@@ -30,18 +30,36 @@ export const STATS = {
   cooks: "Domaćih kuvara",
 };
 
-// Popular searches for homepage (Serbian cuisine)
-// category: true = link to /recepti/{slug}, else link to /sastojci/{slug}
-export const POPULAR_SEARCHES = [
-  { label: "Piletina", slug: "piletina" },
-  { label: "Govedina", slug: "govedina" },
-  { label: "Svinjetina", slug: "svinjetina" },
-  { label: "Pasta", slug: "pasta" },
-  { label: "Voće", slug: "voce" },
-  { label: "Povrće", slug: "povrce" },
-  { label: "Glavna jela", slug: "glavna-jela", category: true },
-  { label: "Kolači", slug: "kolaci", category: true },
-] as const;
+// Popular searches for the homepage "Šta biste želeli da skuvate?" section.
+//
+// Two kinds of chip, both landing on a page that lists recipes:
+//   - a topic goes to /sastojci/{Topic}, which expands into the ingredient
+//     stems in search-topics.ts (a chip labelled "Piletina" has to find
+//     "Pileći batak", which a literal search for "piletina" never did);
+//   - a category goes to /recepti/{slug} and must match a real meal_type slug
+//     from the categories table, or the page redirects to /recepti.
+export type PopularSearch = { label: string; href: string };
+
+const topicSearch = (label: string): PopularSearch => ({
+  label,
+  href: `/sastojci/${encodeURIComponent(label)}`,
+});
+
+const categorySearch = (label: string, slug: string): PopularSearch => ({
+  label,
+  href: `/recepti/${slug}`,
+});
+
+export const POPULAR_SEARCHES: readonly PopularSearch[] = [
+  topicSearch("Piletina"),
+  topicSearch("Govedina"),
+  topicSearch("Svinjetina"),
+  topicSearch("Pasta"),
+  topicSearch("Voće"),
+  topicSearch("Povrće"),
+  categorySearch("Glavna jela", "glavna-jela"),
+  categorySearch("Kolači", "kolaci"),
+];
 
 /**
  * Search engines are let in unless NEXT_PUBLIC_ALLOW_INDEXING is exactly "false".

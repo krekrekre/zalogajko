@@ -227,7 +227,7 @@ export function RecipeReviewSection({
         <p className="mt-4 text-sm text-[var(--ar-gray-600)]">
           <Link
             href="/login"
-            className="font-medium text-[var(--ar-primary)] underline hover:no-underline"
+            className="font-medium text-[var(--ar-primary-ink)] underline hover:no-underline"
           >
             Ulogujte se
           </Link>{" "}
@@ -287,8 +287,8 @@ export function RecipeReviewSection({
                 {tagsForRating.map((tag) => {
                   const isSelected = selectedTags.includes(tag);
                   const tagClass = isSelected
-                    ? "border-[var(--ar-primary)] bg-[var(--ar-primary)] text-white"
-                    : "border-[var(--ar-gray-700)] bg-white text-[var(--ar-gray-700)] hover:bg-[var(--ar-primary)] hover:text-white hover:border-[var(--ar-primary)]";
+                    ? "border-[var(--ar-primary)] bg-[var(--ar-primary)] text-[var(--color-primary)]"
+                    : "border-[var(--ar-gray-700)] bg-white text-[var(--ar-gray-700)] hover:bg-[var(--ar-primary)] hover:text-[var(--color-primary)] hover:border-[var(--ar-primary)]";
                   return (
                     <button
                       key={tag}
@@ -380,7 +380,7 @@ export function RecipeReviewSection({
                     <p className="text-base font-semibold text-[var(--ar-gray-900)]">
                       <Link
                         href={`/profil/${review.user_id}`}
-                        className="hover:text-[var(--color-orange)] hover:underline"
+                        className="hover:underline hover:decoration-[var(--color-accent)]"
                       >
                         {resolveReviewerName(review)}
                       </Link>

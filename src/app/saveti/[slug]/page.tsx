@@ -102,7 +102,7 @@ export default async function SavetiArticlePage({ params }: Props) {
                 {article.category}
               </span>
             )}
-            <h1 className="mt-3 font-capriola text-3xl font-bold leading-tight text-[var(--ar-gray-900)] sm:text-4xl lg:text-[46px]">
+            <h1 className="mt-3 font-display text-3xl font-bold leading-tight text-[var(--ar-gray-900)] sm:text-4xl lg:text-[46px]">
               {article.title}
             </h1>
             <time
@@ -131,7 +131,7 @@ export default async function SavetiArticlePage({ params }: Props) {
             <div className="mt-10 border-t border-[var(--ar-gray-200)] pt-6">
               <Link
                 href="/saveti"
-                className="inline-flex items-center text-sm font-semibold text-[var(--color-accent)] hover:text-[var(--ar-primary-hover)] hover:underline"
+                className="inline-flex items-center text-sm font-semibold text-[var(--ar-primary-ink)] hover:text-[var(--ar-primary-ink-hover)] hover:underline"
               >
                 ← Nazad na savete
               </Link>

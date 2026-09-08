@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { getPublishedRecipes } from "@/lib/queries/recipes";
+import { getRecipesForIngredientSearch } from "@/lib/queries/recipes";
+import { resolveSearchLabel } from "@/lib/search-topics";
 import { RecipeCard } from "@/components/RecipeCard";
 import { BreadcrumbSchema } from "@/components/BreadcrumbSchema";
 import { getListingMetadata } from "@/lib/seo";
@@ -13,7 +14,10 @@ export async function generateMetadata({
   params: Promise<{ ingredient: string }>;
 }) {
   const { ingredient } = await params;
-  const name = decodeURIComponent(ingredient);
+  // Topic pages have one spelling ("Voće"), so /sastojci/voce and
+  // /sastojci/Vo%C4%87e share a canonical instead of splitting the same page in
+  // two. A plain ingredient name resolves to itself.
+  const name = resolveSearchLabel(decodeURIComponent(ingredient));
   return getListingMetadata({
     title: `Recepti sa: ${name}`,
     description: `Recepti koji sadrže sastojak ${name}.`,
@@ -27,11 +31,10 @@ export default async function SastojciIngredientPage({
   params: Promise<{ ingredient: string }>;
 }) {
   const { ingredient } = await params;
-  const ingredientName = decodeURIComponent(ingredient);
+  const query = decodeURIComponent(ingredient);
+  const ingredientName = resolveSearchLabel(query);
 
-  const recipes = await getPublishedRecipes(100, 0, {
-    ingredientQuery: ingredientName,
-  });
+  const recipes = await getRecipesForIngredientSearch(query);
 
   const breadcrumbItems = [
     { name: "Sastojci A–Ž", path: "/sastojci" },
@@ -51,7 +54,7 @@ export default async function SastojciIngredientPage({
             {ingredientName}
           </span>
         </nav>
-        <h1 className="font-capriola text-3xl font-bold text-[var(--color-primary)] sm:text-4xl">
+        <h1 className="font-display text-3xl font-bold text-[var(--color-primary)] sm:text-4xl">
           Recepti sa: {ingredientName}
         </h1>
         <p className="mt-2 text-[var(--ar-gray-700)]">

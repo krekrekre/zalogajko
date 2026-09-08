@@ -45,7 +45,7 @@ export default async function AuthoredRecipesPage() {
                 <div>
                   <Link
                     href={`/recepti/${recipe.slug}`}
-                    className="font-medium text-[var(--ar-gray-800)] hover:text-[var(--ar-primary)]"
+                    className="font-medium text-[var(--ar-gray-800)] hover:text-[var(--ar-primary-ink)]"
                   >
                     {recipe.title_sr}
                   </Link>

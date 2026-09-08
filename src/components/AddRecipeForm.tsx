@@ -628,7 +628,7 @@ export function AddRecipeForm({ categories }: AddRecipeFormProps) {
                       }
                       className={`cursor-pointer rounded-none border-2 px-4 py-2.5 text-sm font-medium transition-colors ${
                         skillLevel === s.value
-                          ? "border-[var(--color-orange)] bg-[var(--color-orange)] text-white"
+                          ? "border-[var(--color-orange)] bg-[var(--color-orange)] text-[var(--color-primary)]"
                           : "border-gray-300 bg-[#f1f1e6] text-[var(--color-primary)] hover:border-[var(--color-orange)]/50"
                       }`}
                     >

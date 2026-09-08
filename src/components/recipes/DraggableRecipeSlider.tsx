@@ -91,7 +91,7 @@ export function DraggableRecipeSlider({ recipes, categorySlug }: DraggableRecipe
         <button
           ref={prevRef}
           type="button"
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 border-[var(--color-primary)] bg-white text-[var(--color-primary)] transition-all hover:border-[var(--color-accent)] hover:bg-[var(--color-accent)] hover:text-white focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] focus:ring-offset-2 [&.swiper-button-disabled]:cursor-not-allowed [&.swiper-button-disabled]:opacity-30 [&.swiper-button-disabled]:hover:border-[var(--color-primary)] [&.swiper-button-disabled]:hover:bg-white [&.swiper-button-disabled]:hover:text-[var(--color-primary)]"
+          className="flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-full border-2 border-[var(--color-primary)] bg-white text-[var(--color-primary)] transition-all hover:border-[var(--color-accent)] hover:bg-[var(--color-accent)] hover:text-[var(--color-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] focus:ring-offset-2 [&.swiper-button-disabled]:cursor-not-allowed [&.swiper-button-disabled]:opacity-30 [&.swiper-button-disabled]:hover:border-[var(--color-primary)] [&.swiper-button-disabled]:hover:bg-white [&.swiper-button-disabled]:hover:text-[var(--color-primary)]"
           aria-label="Pomeri levo"
         >
           <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
@@ -101,7 +101,7 @@ export function DraggableRecipeSlider({ recipes, categorySlug }: DraggableRecipe
         <button
           ref={nextRef}
           type="button"
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 border-[var(--color-primary)] bg-white text-[var(--color-primary)] transition-all hover:border-[var(--color-accent)] hover:bg-[var(--color-accent)] hover:text-white focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] focus:ring-offset-2 [&.swiper-button-disabled]:cursor-not-allowed [&.swiper-button-disabled]:opacity-30 [&.swiper-button-disabled]:hover:border-[var(--color-primary)] [&.swiper-button-disabled]:hover:bg-white [&.swiper-button-disabled]:hover:text-[var(--color-primary)]"
+          className="flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-full border-2 border-[var(--color-primary)] bg-white text-[var(--color-primary)] transition-all hover:border-[var(--color-accent)] hover:bg-[var(--color-accent)] hover:text-[var(--color-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] focus:ring-offset-2 [&.swiper-button-disabled]:cursor-not-allowed [&.swiper-button-disabled]:opacity-30 [&.swiper-button-disabled]:hover:border-[var(--color-primary)] [&.swiper-button-disabled]:hover:bg-white [&.swiper-button-disabled]:hover:text-[var(--color-primary)]"
           aria-label="Pomeri desno"
         >
           <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">

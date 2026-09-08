@@ -52,7 +52,7 @@ export function ServingMultiplier({
           type="button"
           onClick={() => setMult(0.5)}
           className={`rounded-none px-3 py-1.5 text-sm font-medium transition-colors ${
-            mult === 0.5 ? "bg-[var(--ar-primary)] text-white" : "bg-[var(--ar-gray-100)] text-[var(--ar-gray-700)] hover:bg-[var(--ar-gray-200)]"
+            mult === 0.5 ? "bg-[var(--ar-primary)] text-[var(--color-primary)]" : "bg-[var(--ar-gray-100)] text-[var(--ar-gray-700)] hover:bg-[var(--ar-gray-200)]"
           }`}
         >
           ½x
@@ -61,7 +61,7 @@ export function ServingMultiplier({
           type="button"
           onClick={() => setMult(1)}
           className={`rounded-none px-3 py-1.5 text-sm font-medium transition-colors ${
-            mult === 1 ? "bg-[var(--ar-primary)] text-white" : "bg-[var(--ar-gray-100)] text-[var(--ar-gray-700)] hover:bg-[var(--ar-gray-200)]"
+            mult === 1 ? "bg-[var(--ar-primary)] text-[var(--color-primary)]" : "bg-[var(--ar-gray-100)] text-[var(--ar-gray-700)] hover:bg-[var(--ar-gray-200)]"
           }`}
         >
           1x
@@ -70,7 +70,7 @@ export function ServingMultiplier({
           type="button"
           onClick={() => setMult(2)}
           className={`rounded-none px-3 py-1.5 text-sm font-medium transition-colors ${
-            mult === 2 ? "bg-[var(--ar-primary)] text-white" : "bg-[var(--ar-gray-100)] text-[var(--ar-gray-700)] hover:bg-[var(--ar-gray-200)]"
+            mult === 2 ? "bg-[var(--ar-primary)] text-[var(--color-primary)]" : "bg-[var(--ar-gray-100)] text-[var(--ar-gray-700)] hover:bg-[var(--ar-gray-200)]"
           }`}
         >
           2x
@@ -83,12 +83,12 @@ export function ServingMultiplier({
         {sorted.map((ing) => (
           <li key={ing.id} className="flex flex-wrap gap-x-2 gap-y-0">
             {ing.amount && (
-              <span className="text-base text-[var(--ar-gray-500)] sm:text-[18px]">
+              <span className="text-base font-semibold text-[var(--color-primary)] sm:text-[18px]">
                 {multiplyAmount(ing.amount, mult)}
               </span>
             )}
             {"unit_sr" in ing && (ing as { unit_sr?: string }).unit_sr && (
-              <span className="text-base text-[var(--ar-gray-500)] sm:text-[18px]">
+              <span className="text-base font-semibold text-[var(--color-primary)] sm:text-[18px]">
                 {(ing as { unit_sr: string }).unit_sr}
               </span>
             )}

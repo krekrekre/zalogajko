@@ -1,26 +1,30 @@
 import type { Metadata } from "next";
-import { Capriola, DynaPuff, Playpen_Sans } from "next/font/google";
+import { Bricolage_Grotesque, Nunito_Sans, Playpen_Sans } from "next/font/google";
 import "./globals.css";
 import { AppShell } from "@/components/AppShell";
 import { SiteSchema } from "@/components/SiteSchema";
 import { ALLOW_INDEXING, DEFAULT_META } from "@/lib/constants";
 import { getFilterCategories } from "@/lib/queries/recipes";
 
-const capriola = Capriola({
-  variable: "--font-capriola",
-  subsets: ["latin"],
-  weight: ["400"],
+// Three roles, not three decorations. Display carries the headings, body
+// carries everything you actually read, and the handwriting face is an accent
+// -- it was the body font, which made a 7-step method hard work to follow.
+// latin-ext is explicit because Serbian needs č ć š ž đ.
+const bricolageDisplay = Bricolage_Grotesque({
+  variable: "--font-display",
+  subsets: ["latin", "latin-ext"],
+  display: "swap",
 });
 
-const dynaPuff = DynaPuff({
-  variable: "--font-dynapuff",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+const nunitoBody = Nunito_Sans({
+  variable: "--font-body",
+  subsets: ["latin", "latin-ext"],
+  display: "swap",
 });
 
-const playpenSans = Playpen_Sans({
-  variable: "--font-playpen-sans",
-  subsets: ["latin"],
+const playpenAccent = Playpen_Sans({
+  variable: "--font-accent",
+  subsets: ["latin", "latin-ext"],
   display: "swap",
 });
 
@@ -51,8 +55,8 @@ export default async function RootLayout({
   ];
 
   return (
-    <html lang="sr">
-      <body className={`${capriola.variable} ${dynaPuff.variable} ${playpenSans.variable} ${playpenSans.className} font-sans antialiased bg-white`}>
+    <html lang="sr" data-scroll-behavior="smooth">
+      <body className={`${bricolageDisplay.variable} ${nunitoBody.variable} ${playpenAccent.variable} ${nunitoBody.className} font-sans antialiased bg-white`}>
         <SiteSchema />
         <AppShell categories={categories} ingredients={sastojciDropdownItems}>
           {children}

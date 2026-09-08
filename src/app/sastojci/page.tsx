@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Trash2 } from "lucide-react";
 import { getDistinctIngredients } from "@/lib/queries/recipes";
+import { normalizeSearchText } from "@/lib/search-topics";
 import { SastojciSearchForm } from "@/components/sastojci/SastojciSearchForm";
 import { getListingMetadata } from "@/lib/seo";
 
@@ -79,13 +80,17 @@ export default async function SastojciPage({
 }) {
   const raw = await searchParams;
   const qRaw = (raw?.q ?? "").trim();
-  const q = qRaw.toLowerCase();
+  // Fold diacritics, the way the recipe search does: someone typing on a
+  // keyboard without our letters searches "sargarepa" and means "Šargarepa".
+  const q = normalizeSearchText(qRaw);
   const letterFilter = raw?.letter?.toUpperCase();
 
   let ingredients = await getDistinctIngredients(2000);
 
   if (q) {
-    ingredients = ingredients.filter((name) => name.toLowerCase().includes(q));
+    ingredients = ingredients.filter((name) =>
+      normalizeSearchText(name).includes(q),
+    );
   }
   if (letterFilter) {
     ingredients = ingredients.filter((l) => getFirstLetter(l) === letterFilter);
@@ -105,7 +110,7 @@ export default async function SastojciPage({
   return (
     <div className="min-h-screen bg-white">
       <div className="mx-auto max-w-[1220px] px-4 py-8 sm:px-6 lg:px-8">
-        <h1 className="font-capriola text-3xl font-bold text-[var(--ar-gray-900)] sm:text-4xl">
+        <h1 className="font-display text-3xl font-bold text-[var(--ar-gray-900)] sm:text-4xl">
           Sastojci A–Ž
         </h1>
         <div className="mt-4">
@@ -153,7 +158,7 @@ export default async function SastojciPage({
                     href={href}
                     className={`inline-flex h-9 w-9 items-center justify-center rounded-none border-2 text-sm font-semibold transition-colors ${
                       isActive
-                        ? "border-[var(--color-accent)] bg-[var(--color-accent)] text-white"
+                        ? "border-[var(--color-accent)] bg-[var(--color-accent)] text-[var(--color-primary)]"
                         : "border-[var(--color-accent)] bg-white text-[var(--ar-gray-900)] hover:bg-[var(--color-accent)]/10"
                     }`}
                   >

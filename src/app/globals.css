@@ -11,15 +11,29 @@
   --color-accent: #46deb6;
   --color-orange: #46deb6;
   --color-white: #ffffff;
+  /* Fill only: #46deb6 is 1.70:1 on white. Legible behind navy text (8.46:1). */
   --ar-primary: #46deb6;
   --ar-primary-hover: #3bc4a5;
+  /* Ink: same hue, dark enough to read on white (5.27:1) and cream (4.64:1). */
+  --ar-primary-ink: #0d7a63;
+  --ar-primary-ink-hover: #0a6350;
   --ar-accent: #46deb6;
   --ar-accent-hover: #3bc4a5;
   --ar-primary-light: #ffffff;
   --ar-gray-100: #ffffff;
   --ar-gray-200: #ebebeb;
+  /* 300 is a border colour (42 of its 44 uses); the rest of the ramp is text,
+     so every step below carries at least 4.5:1 on white and on cream #f1f1e6. */
+  --ar-gray-300: #d4d4d4;
+  --ar-gray-400: #6d6d6d;
   --ar-gray-500: #6b6b6b;
+  --ar-gray-600: #4f4f4f;
   --ar-gray-700: #202557;
+  --ar-gray-800: #202557;
+  --ar-gray-900: #202557;
+  /* Featured-card tag. Darker than the #d97706 it replaces so white label text
+     clears AA (5.02:1 rather than 3.19:1). */
+  --ar-tag-amber: #b45309;
   --footer-text: #f1f1e6;
   --ar-card-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   --ar-card-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.12);
@@ -67,9 +81,9 @@
   --color-ar-accent: var(--ar-accent);
   --color-ar-accent-hover: var(--ar-accent-hover);
   --color-ar-primary-light: var(--ar-primary-light);
-  --font-sans: var(--font-playpen-sans);
-  --font-capriola: var(--font-capriola);
-  --font-dynapuff: var(--font-dynapuff);
+  --font-sans: var(--font-body);
+  --font-display: var(--font-display);
+  --font-accent: var(--font-accent);
   --font-mono: var(--font-geist-mono);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -110,19 +124,24 @@
 }
 
 body {
-  font-family: var(--font-playpen-sans), "Playpen Sans", system-ui, sans-serif;
+  font-family: var(--font-body), "Nunito Sans", system-ui, sans-serif;
   color: var(--color-primary);
   background-color: var(--background);
 }
 
-/* Ensure text uses primary color by default */
-* {
-  color: inherit;
-}
+/* Default text colour.
+   These MUST stay inside @layer base. Unlayered CSS beats every layer
+   regardless of specificity, so while these rules sat outside a layer they
+   overrode Tailwind's text-* utilities (which live in @layer utilities) on
+   every element listed below — i.e. on essentially all text on the site. */
+@layer base {
+  * {
+    color: inherit;
+  }
 
-/* Set default text color to primary */
-p, span, a, h1, h2, h3, h4, h5, h6, li, td, th, label, input, textarea, select, button, div {
-  color: var(--color-primary);
+  p, span, a, h1, h2, h3, h4, h5, h6, li, td, th, label, input, textarea, select, button, div {
+    color: var(--color-primary);
+  }
 }
 
 /* Links that opt in to custom color (e.g. search pills) – more specific so they win without !important */
@@ -144,12 +163,12 @@ footer a:hover {
   color: var(--ar-primary-hover) !important;
 }
 
-/* Trust banner: force white text and Capriola font */
+/* Trust banner: force white text and the display font */
 .trust-banner,
 .trust-banner p,
 .trust-banner span {
   color: #ffffff !important;
-  font-family: var(--font-capriola), "Capriola", sans-serif !important;
+  font-family: var(--font-display), "Bricolage Grotesque", system-ui, sans-serif !important;
 }
 
 /* Logo: use accent color */
@@ -243,30 +262,25 @@ footer a:hover {
   scrollbar-width: none;
 }
 
-/* Capriola font for titles */
-.font-capriola {
-  font-family: var(--font-capriola), "Capriola", sans-serif;
+/* Display face: headings and anything that should read as a title. */
+.font-display {
+  font-family: var(--font-display), "Bricolage Grotesque", system-ui, sans-serif;
 }
 
-/* DynaPuff font (legacy) */
-.font-dynapuff {
-  font-family: var(--font-dynapuff), "DynaPuff", cursive;
-  font-weight: 500;
+/* Handwriting accent: logo, callout headings, recipe-card titles. Short text
+   only -- it is a handwriting model, not a reading face. */
+.font-accent {
+  font-family: var(--font-accent), "Playpen Sans", system-ui, sans-serif;
 }
 
-/* Playpen Sans font for body text */
-.font-playpen-sans {
-  font-family: var(--font-playpen-sans), "Playpen Sans", system-ui, sans-serif;
-}
-
-/* Apply Capriola to all headings (titles) by default */
+/* Display face on every heading by default */
 h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-capriola), "Capriola", sans-serif;
+  font-family: var(--font-display), "Bricolage Grotesque", system-ui, sans-serif;
 }
 
-/* Apply Playpen Sans to all body text elements */
+/* Reading face on everything else */
 p, span, a, li, td, th, label, input, textarea, select, button {
-  font-family: var(--font-playpen-sans), "Playpen Sans", system-ui, sans-serif;
+  font-family: var(--font-body), "Nunito Sans", system-ui, sans-serif;
 }
 
 /* Auth forms (login / registration) */
@@ -279,7 +293,7 @@ p, span, a, li, td, th, label, input, textarea, select, button {
 }
 
 .auth-form-title {
-  font-family: var(--font-capriola), "Capriola", sans-serif;
+  font-family: var(--font-display), "Bricolage Grotesque", system-ui, sans-serif;
   font-size: 1.75rem;
   color: var(--ar-gray-700);
   margin-bottom: 1.5rem;
@@ -338,7 +352,8 @@ p, span, a, li, td, th, label, input, textarea, select, button {
   width: 100%;
   border-radius: 0;
   background: var(--ar-primary) !important;
-  color: #fff !important;
+  /* Navy on the teal fill: 8.46:1. White here was 1.70:1. */
+  color: var(--color-primary) !important;
   font-weight: 600;
   margin-top: 0.25rem;
   transition: background 0.2s;
@@ -362,13 +377,13 @@ p, span, a, li, td, th, label, input, textarea, select, button {
 
 .auth-form-link {
   font-weight: 500;
-  color: var(--ar-primary);
+  color: var(--ar-primary-ink);
   text-underline-offset: 2px;
 }
 
 .auth-form-link:hover {
   text-decoration: underline;
-  color: var(--ar-primary-hover);
+  color: var(--ar-primary-ink-hover);
 }
 
 .auth-form-back {
@@ -380,7 +395,7 @@ p, span, a, li, td, th, label, input, textarea, select, button {
 }
 
 .auth-form-back:hover {
-  color: var(--ar-primary);
+  color: var(--ar-primary-ink);
 }
 
 /* Recipe slider: smoother transitions and 4th card scale effect */
@@ -428,7 +443,9 @@ p, span, a, li, td, th, label, input, textarea, select, button {
   margin-top: 0;
 }
 
-/* In-page anchors (e.g. recepti / kuhinja category tags): smooth scroll when motion is OK */
+/* In-page anchors (e.g. recepti / kuhinja category tags): smooth scroll when
+   motion is OK. Next.js overrides this with `auto` and warns unless <html>
+   also carries data-scroll-behavior="smooth" -- see app/layout.tsx. */
 @media (prefers-reduced-motion: no-preference) {
   html {
     scroll-behavior: smooth;

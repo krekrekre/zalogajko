@@ -172,7 +172,7 @@ export function NotificationDropdown() {
         type="button"
         aria-label="Obaveštenja"
         aria-expanded={open}
-        className="relative flex items-center justify-center p-2 text-[var(--color-accent)] hover:text-[var(--ar-accent-hover)] transition-colors rounded-none cursor-pointer"
+        className="relative flex items-center justify-center p-2 text-[var(--ar-primary-ink)] hover:text-[var(--ar-primary-ink-hover)] transition-colors rounded-none cursor-pointer"
       >
         <Bell className="w-5 h-5" strokeWidth={2} />
         {count > 0 && (

@@ -15,7 +15,7 @@ export function ProfilePreviewSection({ children }: ProfilePreviewSectionProps) 
       <button
         type="button"
         onClick={() => setExpanded((e) => !e)}
-        className="flex w-full cursor-pointer items-center gap-2 text-left text-lg font-semibold text-[var(--color-orange)] hover:underline"
+        className="flex w-full cursor-pointer items-center gap-2 text-left text-lg font-semibold text-[var(--color-primary)] hover:underline hover:decoration-[var(--color-accent)]"
         aria-expanded={expanded}
       >
         {expanded ? (

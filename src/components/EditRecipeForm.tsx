@@ -283,7 +283,7 @@ export function EditRecipeForm({
         <Button
           type="submit"
           disabled={loading}
-          className="bg-[var(--color-orange)] text-white hover:bg-[var(--ar-primary-hover)]"
+          className="bg-[var(--color-orange)] text-[var(--color-primary)] hover:bg-[var(--ar-primary-hover)]"
         >
           {loading ? "Čuvanje..." : "Sačuvaj izmene"}
         </Button>

@@ -76,7 +76,7 @@ export default async function MojiReceptiPage({
             href="/moji-recepti"
             className={`inline-block rounded-none border px-3 py-1.5 text-sm font-medium transition-colors ${
               !selectedListId
-                ? "border-[var(--color-accent)] bg-[var(--color-accent)] text-white"
+                ? "border-[var(--color-accent)] bg-[var(--color-accent)] text-[var(--color-primary)]"
                 : "border-[var(--ar-gray-300)] bg-white text-[var(--color-primary)] hover:border-[var(--color-accent)] hover:bg-[var(--ar-gray-50)]"
             }`}
           >
@@ -92,7 +92,7 @@ export default async function MojiReceptiPage({
                 href={`/moji-recepti?list=${encodeURIComponent(list.id)}`}
                 className={`inline-block rounded-none border px-3 py-1.5 text-sm font-medium transition-colors ${
                   isSelected
-                    ? "border-[var(--color-accent)] bg-[var(--color-accent)] text-white"
+                    ? "border-[var(--color-accent)] bg-[var(--color-accent)] text-[var(--color-primary)]"
                     : "border-[var(--ar-gray-300)] bg-white text-[var(--color-primary)] hover:border-[var(--color-accent)] hover:bg-[var(--ar-gray-50)]"
                 }`}
               >

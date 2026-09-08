@@ -135,7 +135,7 @@ function LatestCard({
           <span>|</span>
           <span>{timeAgo}</span>
         </div>
-        <h4 className="line-clamp-2 text-[16px] font-medium leading-snug text-[var(--color-primary)] transition-colors group-hover:text-[var(--ar-primary)] group-hover:underline group-hover:decoration-[var(--color-accent)]">
+        <h4 className="line-clamp-2 text-[17px] font-semibold leading-snug text-[var(--color-primary)] group-hover:underline group-hover:decoration-[var(--color-accent)]">
           {recipe.title_sr}
         </h4>
       </div>
@@ -180,7 +180,7 @@ export function HeroSection({
                 >
                   {featuredCategory}
                 </span>
-                <span className="mt-2 block text-[30px] font-bold text-[var(--color-primary)] leading-tight tracking-tight font-capriola transition-colors group-hover:text-[var(--ar-primary)] group-hover:underline group-hover:decoration-[var(--color-accent)]">
+                <span className="mt-2 block text-[30px] font-bold text-[var(--color-primary)] leading-tight tracking-tight font-display group-hover:underline group-hover:decoration-[var(--color-accent)]">
                   {featured.title_sr}
                 </span>
                 {featured.description_sr && (
@@ -195,7 +195,7 @@ export function HeroSection({
           {/* Right: Latest recipes (newest first; excludes featured) */}
           <div className="lg:w-[35%] lg:max-w-[380px]">
             <div className="mb-4 border-b-4 border-[var(--ar-primary)]">
-              <h2 className="font-capriola text-[36px] font-bold leading-tight tracking-tight text-[var(--color-primary)]">
+              <h2 className="font-display text-[36px] font-bold leading-tight tracking-tight text-[var(--color-primary)]">
                 Najnovije
               </h2>
             </div>
