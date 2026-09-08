@@ -38,7 +38,7 @@ export function SaveRecipesBanner() {
   return (
     <section className="bg-white pt-[7vh] pb-[7vh]">
       <div className="mx-auto max-w-[1220px] border border-[var(--ar-primary)] rounded-none">
-        <div className="flex flex-col items-center gap-4 rounded-2xl bg-white p-8 text-center sm:flex-row sm:justify-between sm:text-left">
+        <div className="flex flex-col items-center gap-4 rounded-none bg-white p-8 text-center sm:flex-row sm:justify-between sm:text-left">
           <div>
             <h3 className="flex items-center gap-2 text-xl font-bold text-[var(--ar-gray-700)]">
               <Heart className="h-6 w-6 shrink-0 fill-[var(--ar-primary-ink)] text-[var(--ar-primary-ink)]" aria-hidden />

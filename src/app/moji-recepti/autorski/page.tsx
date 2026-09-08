@@ -35,7 +35,7 @@ export default async function AuthoredRecipesPage() {
       </p>
 
       {recipes.length > 0 ? (
-        <div className="mt-8 overflow-hidden rounded-xl border border-[var(--ar-gray-200)] bg-white">
+        <div className="mt-8 overflow-hidden rounded-none border border-[var(--ar-gray-200)] bg-white">
           <ul className="divide-y divide-[var(--ar-gray-200)]">
             {recipes.map((recipe) => (
               <li

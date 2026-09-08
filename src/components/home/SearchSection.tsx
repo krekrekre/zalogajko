@@ -12,7 +12,7 @@ export function SearchSection() {
           {/* Left: What would you like to cook? + search */}
           <div className="min-w-0 flex-1 lg:max-w-xl">
             <h2 className="font-display flex items-center gap-2 text-lg font-semibold text-[var(--color-primary)] sm:text-2xl">
-              <span className="flex h-8 w-8 items-center justify-center rounded bg-[#f1f1e6]">
+              <span className="flex h-8 w-8 items-center justify-center rounded-none bg-[#f1f1e6]">
                 <ChefHat
                   className="h-5 w-5 shrink-0 fill-[var(--ar-primary-ink)] text-[var(--ar-primary-ink)]"
                   aria-hidden

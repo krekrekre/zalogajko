@@ -50,7 +50,7 @@ export default async function CategoriesPage() {
       </p>
       <div className="mt-10 space-y-10">
         {Object.entries(byType).map(([type, cats]) => (
-          <div key={type} className="rounded-xl border border-[var(--ar-gray-200)] bg-[var(--ar-gray-100)] p-6">
+          <div key={type} className="rounded-none border border-[var(--ar-gray-200)] bg-[var(--ar-gray-100)] p-6">
             <h2 className="text-lg font-semibold text-[var(--ar-gray-700)]">
               {typeLabels[type] || type}
             </h2>
@@ -59,7 +59,7 @@ export default async function CategoriesPage() {
                 <Link
                   key={c.slug}
                   href={`/recepti/${c.slug}`}
-                  className="rounded-lg border border-[var(--ar-gray-200)] bg-white px-4 py-2.5 text-sm font-medium text-[var(--ar-gray-700)] shadow-sm hover:border-[var(--ar-primary)] hover:bg-[var(--ar-primary-light)] hover:text-[var(--ar-primary-ink)]"
+                  className="rounded-none border border-[var(--ar-gray-200)] bg-white px-4 py-2.5 text-sm font-medium text-[var(--ar-gray-700)] shadow-sm hover:border-[var(--ar-primary)] hover:bg-[var(--ar-primary-light)] hover:text-[var(--ar-primary-ink)]"
                 >
                   {c.name_sr}
                 </Link>
@@ -69,7 +69,7 @@ export default async function CategoriesPage() {
         ))}
       </div>
       {categories.length === 0 && (
-        <p className="rounded-xl border border-[var(--ar-gray-200)] bg-[var(--ar-gray-100)] py-12 text-center text-[var(--ar-gray-500)]">
+        <p className="rounded-none border border-[var(--ar-gray-200)] bg-[var(--ar-gray-100)] py-12 text-center text-[var(--ar-gray-500)]">
           Nema kategorija. Pokrenite SQL skriptu u Supabase da dodate početne
           kategorije.
         </p>

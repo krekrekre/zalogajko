@@ -110,7 +110,7 @@ export default async function RecipesPage({
                     <a
                       key={c.id}
                       href={`#${c.slug}`}
-                      className="rounded-full px-4 py-2 text-sm font-medium uppercase tracking-wide transition-colors bg-[var(--ar-gray-200)] text-[var(--ar-gray-700)] hover:bg-[var(--color-accent)]/20 hover:text-[var(--ar-primary-ink)]"
+                      className="rounded-none px-4 py-2 text-sm font-medium uppercase tracking-wide transition-colors bg-[var(--ar-gray-200)] text-[var(--ar-gray-700)] hover:bg-[var(--color-accent)]/20 hover:text-[var(--ar-primary-ink)]"
                     >
                       {c.name_sr}
                     </a>

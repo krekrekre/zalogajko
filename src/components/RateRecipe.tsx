@@ -64,7 +64,7 @@ export function RateRecipe({
 
   if (isOwnRecipe) {
     return (
-      <div id="rate" className="no-print mt-8 rounded-xl border border-[var(--ar-gray-200)] bg-[#ffffff] p-6">
+      <div id="rate" className="no-print mt-8 rounded-none border border-[var(--ar-gray-200)] bg-[#ffffff] p-6">
         <h3 className="font-semibold text-[var(--ar-gray-700)]">Ocenite recept</h3>
         <p className="mt-2 text-sm text-[var(--ar-gray-500)]">
           Ne možete oceniti sopstveni recept.
@@ -79,7 +79,7 @@ export function RateRecipe({
   }
 
   return (
-    <div id="rate" className="no-print mt-8 rounded-xl border border-[var(--ar-gray-200)] bg-[#ffffff] p-6">
+    <div id="rate" className="no-print mt-8 rounded-none border border-[var(--ar-gray-200)] bg-[#ffffff] p-6">
       <h3 className="font-semibold text-[var(--ar-gray-700)]">Ocenite recept</h3>
       <div className="mt-3 flex items-center gap-1">
         {[1, 2, 3, 4, 5].map((star) => (

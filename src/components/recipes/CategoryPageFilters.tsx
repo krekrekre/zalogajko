@@ -51,7 +51,7 @@ export function CategoryPageFilters({
           <Link
             key={opt.value}
             href={buildCategoryUrl(categorySlug, opt.value, activeVreme, basePath)}
-            className={`rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors ${
+            className={`rounded-none px-3.5 py-1.5 text-sm font-medium transition-colors ${
               activeTezina === opt.value
                 ? "bg-[var(--color-accent)] text-[var(--color-primary)]"
                 : "bg-[var(--ar-gray-200)] text-[var(--ar-gray-700)] hover:bg-[var(--color-accent)]/20 hover:text-[var(--ar-primary-ink)]"
@@ -69,7 +69,7 @@ export function CategoryPageFilters({
           <Link
             key={opt.value || "any"}
             href={buildCategoryUrl(categorySlug, activeTezina, opt.value || undefined, basePath)}
-            className={`rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors ${
+            className={`rounded-none px-3.5 py-1.5 text-sm font-medium transition-colors ${
               (activeVreme ?? "") === opt.value
                 ? "bg-[var(--color-accent)] text-[var(--color-primary)]"
                 : "bg-[var(--ar-gray-200)] text-[var(--ar-gray-700)] hover:bg-[var(--color-accent)]/20 hover:text-[var(--ar-primary-ink)]"
@@ -82,7 +82,7 @@ export function CategoryPageFilters({
       {(activeTezina || activeVreme) && (
         <Link
           href={`${basePath}/${categorySlug}`}
-          className="ml-auto rounded-full border border-[var(--ar-gray-300)] bg-white px-3.5 py-1.5 text-sm font-medium text-[var(--ar-gray-600)] transition-colors hover:border-[var(--color-accent)] hover:bg-[var(--color-accent)]/10 hover:text-[var(--ar-primary-ink)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] focus:ring-offset-2"
+          className="ml-auto rounded-none border border-[var(--ar-gray-300)] bg-white px-3.5 py-1.5 text-sm font-medium text-[var(--ar-gray-600)] transition-colors hover:border-[var(--color-accent)] hover:bg-[var(--color-accent)]/10 hover:text-[var(--ar-primary-ink)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)] focus:ring-offset-2"
         >
           Očisti filtere
         </Link>

@@ -67,13 +67,13 @@ export function ReviewsSection({ recipeId }: ReviewsSectionProps) {
             onChange={(e) => setContent(e.target.value)}
             placeholder="Napišite svoju recenziju..."
             rows={3}
-            className="w-full rounded-xl border border-[var(--ar-gray-200)] px-4 py-3 text-[var(--ar-gray-700)] placeholder-[var(--ar-gray-500)] focus:border-[var(--ar-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--ar-primary)]"
+            className="w-full rounded-none border border-[var(--ar-gray-200)] px-4 py-3 text-[var(--ar-gray-700)] placeholder-[var(--ar-gray-500)] focus:border-[var(--ar-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--ar-primary)]"
             required
           />
           <button
             type="submit"
             disabled={submitting}
-            className="mt-3 rounded-lg bg-[var(--ar-primary)] px-5 py-2.5 text-sm font-medium text-[var(--color-primary)] hover:bg-[var(--ar-primary-hover)] disabled:opacity-50"
+            className="mt-3 rounded-none bg-[var(--ar-primary)] px-5 py-2.5 text-sm font-medium text-[var(--color-primary)] hover:bg-[var(--ar-primary-hover)] disabled:opacity-50"
           >
             {submitting ? "Šaljem..." : "Pošalji recenziju"}
           </button>
@@ -88,7 +88,7 @@ export function ReviewsSection({ recipeId }: ReviewsSectionProps) {
       )}
       <div className="mt-6 space-y-4">
         {reviews.map((r) => (
-          <div key={r.id} className="rounded-xl border border-[var(--ar-gray-200)] bg-[var(--ar-gray-100)] p-4">
+          <div key={r.id} className="rounded-none border border-[var(--ar-gray-200)] bg-[var(--ar-gray-100)] p-4">
             <p className="text-[var(--ar-gray-700)]">{r.content}</p>
             <p className="mt-2 text-sm text-[var(--ar-gray-500)]">
               {getReviewAuthor()} •{" "}

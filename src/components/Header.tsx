@@ -98,7 +98,7 @@ function HeaderUserBlock() {
   if (loading) {
     return (
       <div
-        className="flex items-center gap-2 ml-2 h-9 w-20 bg-[var(--ar-gray-200)] rounded animate-pulse"
+        className="flex items-center gap-2 ml-2 h-9 w-20 bg-[var(--ar-gray-200)] rounded-none animate-pulse"
         aria-hidden
       />
     );
@@ -145,7 +145,7 @@ function HeaderUserBlock() {
                 <Link
                   href="/profil"
                   onClick={() => setAccountOpen(false)}
-                  className="flex w-full items-center gap-2 px-3 py-2.5 text-sm text-[var(--color-primary)] hover:bg-[var(--ar-gray-200)] cursor-pointer rounded"
+                  className="flex w-full items-center gap-2 px-3 py-2.5 text-sm text-[var(--color-primary)] hover:bg-[var(--ar-gray-200)] cursor-pointer rounded-none"
                   role="menuitem"
                 >
                   <User className="w-4 h-4" />
@@ -154,7 +154,7 @@ function HeaderUserBlock() {
                 <Link
                   href="/moji-recepti"
                   onClick={() => setAccountOpen(false)}
-                  className="flex w-full items-center gap-2 px-3 py-2.5 text-sm text-[var(--color-primary)] hover:bg-[var(--ar-gray-200)] cursor-pointer rounded"
+                  className="flex w-full items-center gap-2 px-3 py-2.5 text-sm text-[var(--color-primary)] hover:bg-[var(--ar-gray-200)] cursor-pointer rounded-none"
                   role="menuitem"
                 >
                   <Heart className="w-4 h-4" />
@@ -163,7 +163,7 @@ function HeaderUserBlock() {
                 <Link
                   href="/moji-recepti/autorski"
                   onClick={() => setAccountOpen(false)}
-                  className="flex w-full items-center gap-2 px-3 py-2.5 text-sm text-[var(--color-primary)] hover:bg-[var(--ar-gray-200)] cursor-pointer rounded"
+                  className="flex w-full items-center gap-2 px-3 py-2.5 text-sm text-[var(--color-primary)] hover:bg-[var(--ar-gray-200)] cursor-pointer rounded-none"
                   role="menuitem"
                 >
                   <PlusCircle className="w-4 h-4" />
@@ -175,7 +175,7 @@ function HeaderUserBlock() {
                     setAccountOpen(false);
                     handleSignOut();
                   }}
-                  className="flex w-full items-center gap-2 px-3 py-2.5 text-sm text-[var(--color-primary)] hover:bg-[var(--ar-gray-200)] cursor-pointer rounded"
+                  className="flex w-full items-center gap-2 px-3 py-2.5 text-sm text-[var(--color-primary)] hover:bg-[var(--ar-gray-200)] cursor-pointer rounded-none"
                   role="menuitem"
                 >
                   <LogOut className="w-4 h-4" />
@@ -362,7 +362,7 @@ export function Header({ categories, ingredients }: HeaderProps) {
                   setMobileMenuOpen(true);
                 }
               }}
-              className="inline-flex items-center justify-center rounded-md p-2 text-[var(--color-primary)] md:hidden"
+              className="inline-flex items-center justify-center rounded-none p-2 text-[var(--color-primary)] md:hidden"
               aria-label={mobileMenuOpen ? "Zatvori meni" : "Otvori meni"}
               aria-expanded={mobileMenuOpen}
               aria-controls="mobile-main-menu"

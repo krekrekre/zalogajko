@@ -139,7 +139,7 @@ export default async function SavetiArticlePage({ params }: Props) {
           </article>
 
           <aside className="hidden min-w-0 lg:block" aria-label="Reklame">
-            <div className="sticky top-8 flex min-h-[400px] items-center justify-center rounded-xl border border-dashed border-[var(--ar-gray-300)] bg-[var(--ar-gray-50)] text-sm text-[var(--ar-gray-500)]">
+            <div className="sticky top-8 flex min-h-[400px] items-center justify-center rounded-none border border-dashed border-[var(--ar-gray-300)] bg-[var(--ar-gray-50)] text-sm text-[var(--ar-gray-500)]">
               Reklama (300×250)
             </div>
           </aside>

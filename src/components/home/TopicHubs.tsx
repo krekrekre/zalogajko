@@ -26,7 +26,7 @@ export function TopicHubs() {
           Istražite kategorije
         </h2>
         <div className="mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-          <div className="rounded-xl border border-[var(--ar-gray-200)] bg-[var(--ar-gray-100)] p-6">
+          <div className="rounded-none border border-[var(--ar-gray-200)] bg-[var(--ar-gray-100)] p-6">
             <h3 className="text-sm font-semibold uppercase tracking-wider text-[var(--ar-gray-500)]">
               Vrste jela
             </h3>
@@ -35,7 +35,7 @@ export function TopicHubs() {
                 <li key={c.slug}>
                   <Link
                     href={`/recepti/${c.slug}`}
-                    className="rounded-lg px-4 py-2.5 text-sm font-medium text-[var(--ar-gray-700)] transition-colors hover:bg-[var(--ar-primary-light)] hover:text-[var(--ar-primary-ink)]"
+                    className="rounded-none px-4 py-2.5 text-sm font-medium text-[var(--ar-gray-700)] transition-colors hover:bg-[var(--ar-primary-light)] hover:text-[var(--ar-primary-ink)]"
                   >
                     {c.name_sr}
                   </Link>
@@ -43,7 +43,7 @@ export function TopicHubs() {
               ))}
             </ul>
           </div>
-          <div className="rounded-xl border border-[var(--ar-gray-200)] bg-[var(--ar-gray-100)] p-6">
+          <div className="rounded-none border border-[var(--ar-gray-200)] bg-[var(--ar-gray-100)] p-6">
             <h3 className="text-sm font-semibold uppercase tracking-wider text-[var(--ar-gray-500)]">
               Kuhinje
             </h3>
@@ -52,7 +52,7 @@ export function TopicHubs() {
                 <li key={c.slug}>
                   <Link
                     href={`/recepti/${c.slug}`}
-                    className="rounded-lg px-4 py-2.5 text-sm font-medium text-[var(--ar-gray-700)] transition-colors hover:bg-[var(--ar-primary-light)] hover:text-[var(--ar-primary-ink)]"
+                    className="rounded-none px-4 py-2.5 text-sm font-medium text-[var(--ar-gray-700)] transition-colors hover:bg-[var(--ar-primary-light)] hover:text-[var(--ar-primary-ink)]"
                   >
                     {c.name_sr}
                   </Link>
@@ -60,7 +60,7 @@ export function TopicHubs() {
               ))}
             </ul>
           </div>
-          <div className="rounded-xl border border-[var(--ar-gray-200)] bg-[var(--ar-primary-light)] p-6 sm:col-span-2 lg:col-span-1">
+          <div className="rounded-none border border-[var(--ar-gray-200)] bg-[var(--ar-primary-light)] p-6 sm:col-span-2 lg:col-span-1">
             <h3 className="text-sm font-semibold uppercase tracking-wider text-[var(--ar-primary-ink)]">
               Svi recepti
             </h3>

@@ -219,7 +219,7 @@ function FeaturedFlipCard({
               className="object-cover"
               sizes="260px"
             />
-            <span className="absolute left-2 top-2 rounded bg-[var(--ar-tag-amber)] px-2 py-1 text-xs font-bold uppercase leading-tight text-white">
+            <span className="absolute left-2 top-2 rounded-none bg-[var(--ar-tag-amber)] px-2 py-1 text-xs font-bold uppercase leading-tight text-white">
               {tag}
             </span>
           </div>

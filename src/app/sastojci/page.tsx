@@ -129,7 +129,7 @@ export default async function SastojciPage({
             </span>
             <Link
               href="/sastojci"
-              className="ml-4 inline-flex items-center gap-2 rounded px-2 py-1 text-[var(--ar-gray-500)] transition-colors hover:bg-red-50 hover:text-red-600"
+              className="ml-4 inline-flex items-center gap-2 rounded-none px-2 py-1 text-[var(--ar-gray-500)] transition-colors hover:bg-red-50 hover:text-red-600"
               aria-label="Očisti filtere"
             >
               <Trash2 className="h-3.5 w-3.5" />

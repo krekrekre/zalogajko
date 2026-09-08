@@ -295,7 +295,7 @@ export function RecipeReviewSection({
                       type="button"
                       onClick={() => toggleTag(tag)}
                       className={
-                        "cursor-pointer rounded-full border px-3 py-1.5 text-sm transition-colors " +
+                        "cursor-pointer rounded-none border px-3 py-1.5 text-sm transition-colors " +
                         tagClass
                       }
                     >

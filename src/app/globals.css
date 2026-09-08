@@ -37,7 +37,8 @@
   --footer-text: #f1f1e6;
   --ar-card-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   --ar-card-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.12);
-  --radius: 0.625rem;
+  /* Square by design. Kept as a token because shadcn components read it. */
+  --radius: 0;
   --background: #ffffff;
   --foreground: #202557;
   --card: #ffffff;
@@ -114,13 +115,13 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --radius-2xl: calc(var(--radius) + 8px);
-  --radius-3xl: calc(var(--radius) + 12px);
-  --radius-4xl: calc(var(--radius) + 16px);
+  --radius-sm: 0;
+  --radius-md: 0;
+  --radius-lg: 0;
+  --radius-xl: 0;
+  --radius-2xl: 0;
+  --radius-3xl: 0;
+  --radius-4xl: 0;
 }
 
 body {

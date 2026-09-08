@@ -140,12 +140,12 @@ export function EditRecipeForm({
   return (
     <form onSubmit={handleSave} className="mt-6 space-y-8">
       {error && (
-        <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+        <div className="rounded-none border border-red-200 bg-red-50 p-3 text-sm text-red-700">
           {error}
         </div>
       )}
 
-      <section className="rounded-xl border border-[var(--ar-gray-200)] bg-white p-5">
+      <section className="rounded-none border border-[var(--ar-gray-200)] bg-white p-5">
         <h2 className="text-lg font-semibold text-[var(--ar-gray-700)]">Sastojci</h2>
         <p className="mt-1 text-sm text-[var(--ar-gray-500)]">
           Ispravite listu sastojaka i sačuvajte.
@@ -164,7 +164,7 @@ export function EditRecipeForm({
                     ),
                   )
                 }
-                className="w-24 rounded-lg border border-[var(--ar-gray-300)] px-3 py-2 text-sm"
+                className="w-24 rounded-none border border-[var(--ar-gray-300)] px-3 py-2 text-sm"
               />
               <input
                 type="text"
@@ -177,7 +177,7 @@ export function EditRecipeForm({
                     ),
                   )
                 }
-                className="w-20 rounded-lg border border-[var(--ar-gray-300)] px-3 py-2 text-sm"
+                className="w-20 rounded-none border border-[var(--ar-gray-300)] px-3 py-2 text-sm"
               />
               <input
                 type="text"
@@ -190,7 +190,7 @@ export function EditRecipeForm({
                     ),
                   )
                 }
-                className="min-w-[200px] flex-1 rounded-lg border border-[var(--ar-gray-300)] px-3 py-2 text-sm"
+                className="min-w-[200px] flex-1 rounded-none border border-[var(--ar-gray-300)] px-3 py-2 text-sm"
               />
               {ingredients.length > 1 && (
                 <button
@@ -200,7 +200,7 @@ export function EditRecipeForm({
                       prev.filter((_, idx) => idx !== i),
                     )
                   }
-                  className="rounded p-2 text-red-600 hover:bg-red-50"
+                  className="rounded-none p-2 text-red-600 hover:bg-red-50"
                   aria-label="Ukloni sastojak"
                 >
                   <Trash2 className="h-4 w-4" />
@@ -225,7 +225,7 @@ export function EditRecipeForm({
         </div>
       </section>
 
-      <section className="rounded-xl border border-[var(--ar-gray-200)] bg-white p-5">
+      <section className="rounded-none border border-[var(--ar-gray-200)] bg-white p-5">
         <h2 className="text-lg font-semibold text-[var(--ar-gray-700)]">Koraci pripreme</h2>
         <div className="mt-4 space-y-3">
           {directions.map((row, i) => (
@@ -244,7 +244,7 @@ export function EditRecipeForm({
                     ),
                   )
                 }
-                className="min-h-[72px] flex-1 break-words rounded-lg border border-[var(--ar-gray-300)] px-3 py-2 text-sm"
+                className="min-h-[72px] flex-1 break-words rounded-none border border-[var(--ar-gray-300)] px-3 py-2 text-sm"
               />
               {directions.length > 1 && (
                 <button
@@ -254,7 +254,7 @@ export function EditRecipeForm({
                       prev.filter((_, idx) => idx !== i),
                     )
                   }
-                  className="mt-1 rounded p-2 text-red-600 hover:bg-red-50"
+                  className="mt-1 rounded-none p-2 text-red-600 hover:bg-red-50"
                   aria-label="Ukloni korak"
                 >
                   <Trash2 className="h-4 w-4" />

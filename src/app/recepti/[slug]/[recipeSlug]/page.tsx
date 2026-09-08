@@ -385,7 +385,7 @@ export default async function RecipePage({
 
             {/* Right column: ads (300px) - only beside main article */}
             <aside className="hidden min-w-0 lg:block" aria-label="Reklame">
-              <div className="sticky top-8 min-h-[400px] rounded-xl border border-dashed border-[var(--ar-gray-300)] bg-[var(--ar-gray-50)] flex items-center justify-center text-sm text-[var(--ar-gray-500)]">
+              <div className="sticky top-8 min-h-[400px] rounded-none border border-dashed border-[var(--ar-gray-300)] bg-[var(--ar-gray-50)] flex items-center justify-center text-sm text-[var(--ar-gray-500)]">
                 Reklama (300×250)
               </div>
             </aside>
