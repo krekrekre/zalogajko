@@ -34,6 +34,9 @@
   /* Featured-card tag. Darker than the #d97706 it replaces so white label text
      clears AA (5.02:1 rather than 3.19:1). */
   --ar-tag-amber: #b45309;
+  /* The save heart. The one warm note in a teal/navy palette, so it reads as
+     "favourite" rather than as another brand colour. */
+  --ar-heart-red: #d62839;
   --footer-text: #f1f1e6;
   --ar-card-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   --ar-card-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.12);

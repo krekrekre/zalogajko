@@ -2,12 +2,16 @@
 
 import { useRef, useState, useEffect } from "react";
 import Link from "next/link";
+import { Swiper, SwiperSlide } from "swiper/react";
+import type { Swiper as SwiperType } from "swiper";
 import { getRecipeCanonicalPath } from "@/lib/recipe-path";
 import Image from "next/image";
 import { PLACEHOLDER_IMAGES } from "@/lib/constants";
 import { getSavedRecipeIds } from "@/lib/saved-recipes";
 import { SaveRecipeDropdown } from "@/components/SaveRecipeDropdown";
-import { RotateCcw, ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+
+import "swiper/css";
 
 // Category tags – yellow-orange banner style (top-left on image)
 const FEATURED_TAGS = [
@@ -18,6 +22,9 @@ const FEATURED_TAGS = [
   "Za svečanu priliku",
   "Brza večera",
 ];
+
+const ARROW_CLASS =
+  "flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-full border border-[var(--color-primary)] bg-white text-[var(--ar-primary-ink)] shadow-sm transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-40 hover:enabled:scale-105 hover:enabled:border-[var(--ar-primary)] hover:enabled:bg-[var(--ar-primary)] hover:enabled:text-[var(--color-primary)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-primary)]";
 
 function formatTime(minutes: number) {
   if (minutes >= 60) {
@@ -69,10 +76,19 @@ interface FeaturedRecipeCardsProps {
 }
 
 export function FeaturedRecipeCards({ recipes }: FeaturedRecipeCardsProps) {
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(true);
+  const swiperRef = useRef<SwiperType | null>(null);
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
+  // Swiper owns the scroll position, so the arrows' enabled state has to be
+  // mirrored back into React rather than read on render.
+  const [atStart, setAtStart] = useState(true);
+  const [atEnd, setAtEnd] = useState(false);
+  const [locked, setLocked] = useState(false);
+
+  const syncNav = (swiper: SwiperType) => {
+    setAtStart(swiper.isBeginning);
+    setAtEnd(swiper.isEnd);
+    setLocked(swiper.isLocked);
+  };
 
   useEffect(() => {
     getSavedRecipeIds().then(setSavedIds);
@@ -85,30 +101,6 @@ export function FeaturedRecipeCards({ recipes }: FeaturedRecipeCardsProps) {
       else next.delete(recipeId);
       return next;
     });
-  };
-
-  const updateScrollState = () => {
-    const el = scrollRef.current;
-    if (!el) return;
-    setCanScrollLeft(el.scrollLeft > 0);
-    setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 1);
-  };
-
-  useEffect(() => {
-    updateScrollState();
-    const el = scrollRef.current;
-    if (!el) return;
-    const ro = new ResizeObserver(updateScrollState);
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, [recipes.length]);
-
-  const scroll = (dir: "left" | "right") => {
-    const el = scrollRef.current;
-    if (!el) return;
-    const step = 280;
-    el.scrollBy({ left: dir === "left" ? -step : step, behavior: "smooth" });
-    setTimeout(updateScrollState, 300);
   };
 
   return (
@@ -128,18 +120,18 @@ export function FeaturedRecipeCards({ recipes }: FeaturedRecipeCardsProps) {
             <div className="flex items-center gap-2">
               <button
                 type="button"
-                onClick={() => scroll("left")}
-                disabled={!canScrollLeft}
-                className="flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-full border border-[var(--color-primary)] bg-white text-[var(--ar-primary-ink)] shadow-sm transition-all duration-200 disabled:opacity-40 hover:enabled:scale-105 hover:enabled:bg-[var(--ar-primary)] hover:enabled:text-[var(--color-primary)] hover:enabled:border-[var(--ar-primary)]"
+                onClick={() => swiperRef.current?.slidePrev()}
+                disabled={atStart || locked}
+                className={ARROW_CLASS}
                 aria-label="Prethodne kartice"
               >
                 <ChevronLeft className="h-5 w-5" />
               </button>
               <button
                 type="button"
-                onClick={() => scroll("right")}
-                disabled={!canScrollRight}
-                className="flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-full border border-[var(--color-primary)] bg-white text-[var(--ar-primary-ink)] shadow-sm transition-all duration-200 disabled:opacity-40 hover:enabled:scale-105 hover:enabled:bg-[var(--ar-primary)] hover:enabled:text-[var(--color-primary)] hover:enabled:border-[var(--ar-primary)]"
+                onClick={() => swiperRef.current?.slideNext()}
+                disabled={atEnd || locked}
+                className={ARROW_CLASS}
                 aria-label="Sledeće kartice"
               >
                 <ChevronRight className="h-5 w-5" />
@@ -148,28 +140,40 @@ export function FeaturedRecipeCards({ recipes }: FeaturedRecipeCardsProps) {
           )}
         </div>
 
-        {/* Horizontal scroll of cards */}
-        <div
-          ref={scrollRef}
-          onScroll={updateScrollState}
-          className="mt-8 flex gap-5 overflow-x-auto no-scrollbar pb-2"
-        >
-          {recipes.map((recipe, idx) => (
-            <FeaturedFlipCard
-              key={recipe.id}
-              recipe={recipe}
-              tag={FEATURED_TAGS[idx % FEATURED_TAGS.length]}
-              savedIds={savedIds}
-              onToggleSave={onToggleSave}
-            />
-          ))}
-        </div>
-
+        {/* Slider – drag to scroll, same feel as the recipe rails */}
         {recipes.length > 0 && (
-          <p className="mt-4 flex items-center justify-center gap-2 text-[18px] text-[var(--ar-gray-500)]">
-            Klikni da preokrenes
-            <RotateCcw className="h-5 w-5 shrink-0" aria-hidden />
-          </p>
+          <Swiper
+            spaceBetween={24}
+            slidesPerView="auto"
+            grabCursor
+            watchSlidesProgress
+            speed={550}
+            resistanceRatio={0.9}
+            threshold={5}
+            longSwipesRatio={0.3}
+            onSwiper={(swiper: SwiperType) => {
+              swiperRef.current = swiper;
+              syncNav(swiper);
+            }}
+            onProgress={syncNav}
+            onResize={syncNav}
+            onUpdate={syncNav}
+            className="recipe-slider mt-8 !overflow-hidden"
+          >
+            {recipes.map((recipe, idx) => (
+              <SwiperSlide
+                key={recipe.id}
+                className="recipe-slider__slide !w-[260px] sm:!w-[280px]"
+              >
+                <FeaturedRecipeCard
+                  recipe={recipe}
+                  tag={FEATURED_TAGS[idx % FEATURED_TAGS.length]}
+                  savedIds={savedIds}
+                  onToggleSave={onToggleSave}
+                />
+              </SwiperSlide>
+            ))}
+          </Swiper>
         )}
 
         {recipes.length === 0 && (
@@ -182,7 +186,7 @@ export function FeaturedRecipeCards({ recipes }: FeaturedRecipeCardsProps) {
   );
 }
 
-function FeaturedFlipCard({
+function FeaturedRecipeCard({
   recipe,
   tag,
   savedIds,
@@ -193,111 +197,109 @@ function FeaturedFlipCard({
   savedIds: Set<string>;
   onToggleSave: (recipeId: string, saved: boolean) => void;
 }) {
-  const [flipped, setFlipped] = useState(false);
   const isSaved = savedIds.has(recipe.id);
   const totalTime = recipe.prep_time_minutes + recipe.cook_time_minutes;
-  const cardWidth = 260;
+  const href = getRecipeCanonicalPath(recipe);
+  const authorName =
+    recipe.author_display_name || recipe.author_name || "Domaći kuvar";
 
   return (
-    <div
-      className="group shrink-0 cursor-pointer perspective-[1000px]"
-      style={{ width: cardWidth }}
-      onClick={() => setFlipped((f) => !f)}
-    >
-      <div
-        className={`relative h-[380px] transition-transform duration-500 [transform-style:preserve-3d] ${
-          flipped ? "[transform:rotateY(180deg)]" : ""
-        }`}
+    <article className="group flex h-full flex-col overflow-hidden border border-[var(--ar-gray-200)] bg-white shadow-[var(--ar-card-shadow)] transition-shadow duration-200 hover:shadow-[var(--ar-card-shadow-hover)]">
+      {/* The title below carries the same link for keyboard and screen readers. */}
+      <Link
+        href={href}
+        draggable={false}
+        className="relative block h-[168px] shrink-0 overflow-hidden bg-[var(--ar-gray-100)]"
+        tabIndex={-1}
+        aria-hidden
       >
-        {/* Front – match image: white card, tag top-left, title, stars+count, time, Save button */}
-        <div className="absolute inset-0 flex min-h-0 flex-col overflow-hidden border border-[var(--ar-gray-200)] bg-white shadow-[var(--ar-card-shadow)] [backface-visibility:hidden]">
-          <div className="relative h-[168px] shrink-0 overflow-hidden bg-[var(--ar-gray-100)]">
-            <Image
-              src={recipe.image_url || PLACEHOLDER_IMAGES.default}
-              alt={recipe.title_sr}
-              fill
-              className="object-cover"
-              sizes="260px"
-            />
-            <span className="absolute left-2 top-2 rounded-none bg-[var(--ar-tag-amber)] px-2 py-1 text-xs font-bold uppercase leading-tight text-white">
-              {tag}
-            </span>
-          </div>
-          <div className="flex flex-1 flex-col p-3">
-            <h3 className="text-[23px] font-semibold leading-tight text-[var(--color-primary)] line-clamp-2">
-              {recipe.title_sr}
-            </h3>
-            <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-[var(--ar-gray-500)]">
-              {recipe.rating_count > 0 && (
-                <>
-                  {recipe.rating_avg != null && (
-                    <StarRating avg={recipe.rating_avg} />
-                  )}
-                  <span>({recipe.rating_count})</span>
-                </>
-              )}
-              <span className="flex items-center gap-1">
-                <svg
-                  className="h-4 w-4 shrink-0"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <circle cx="12" cy="12" r="10" />
-                  <path d="M12 6v6l4 2" />
-                </svg>
-                {formatTime(totalTime)}
-              </span>
-            </div>
-            <div className="mt-auto pt-2" onClick={(e) => e.stopPropagation()}>
-              <SaveRecipeDropdown
-                recipeId={recipe.id}
-                isSaved={isSaved}
-                onSaved={() => onToggleSave(recipe.id, true)}
-                onUnsaved={() => onToggleSave(recipe.id, false)}
-                variant="button"
-                fullWidth
-                saveLabel="Sačuvaj recept"
-                recipeTitle={recipe.title_sr}
-                recipeImageUrl={recipe.image_url}
-                className="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-none border border-[var(--color-primary)] bg-white py-2.5 text-[16px] font-bold text-[var(--color-primary)] transition-all duration-200 hover:scale-105 hover:bg-[var(--ar-gray-100)]"
-              />
-            </div>
-          </div>
+        <Image
+          src={recipe.image_url || PLACEHOLDER_IMAGES.default}
+          alt=""
+          fill
+          draggable={false}
+          className="object-cover transition-transform duration-500 group-hover:scale-105"
+          sizes="280px"
+        />
+        <span className="absolute left-2 top-2 bg-[var(--ar-tag-amber)] px-2 py-1 text-xs font-bold uppercase leading-tight text-white">
+          {tag}
+        </span>
+      </Link>
+
+      <div className="flex flex-1 flex-col p-3">
+        <h3 className="text-[23px] font-semibold leading-tight text-[var(--color-primary)]">
+          <Link
+            href={href}
+            draggable={false}
+            className="line-clamp-2 hover:underline hover:decoration-[var(--color-accent)]"
+          >
+            {recipe.title_sr}
+          </Link>
+        </h3>
+
+        <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-[var(--ar-gray-500)]">
+          {recipe.rating_count > 0 && (
+            <>
+              {recipe.rating_avg != null && <StarRating avg={recipe.rating_avg} />}
+              <span>({recipe.rating_count})</span>
+            </>
+          )}
+          <span className="flex items-center gap-1">
+            <svg
+              className="h-4 w-4 shrink-0"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <circle cx="12" cy="12" r="10" />
+              <path d="M12 6v6l4 2" />
+            </svg>
+            {formatTime(totalTime)}
+          </span>
         </div>
 
-        {/* Back – quote */}
-        <div className="absolute inset-0 flex flex-col justify-between border border-[var(--ar-gray-200)] bg-[var(--ar-primary-light)] p-5 shadow-[var(--ar-card-shadow)] [backface-visibility:hidden] [transform:rotateY(180deg)]">
-          <p className="line-clamp-4 text-[var(--color-primary)] italic">
-            &ldquo;
-            {recipe.review_quote || "Ovaj recept je preporuka zajednice."}
-            &rdquo;
+        {recipe.review_quote && (
+          <p className="mt-2 line-clamp-2 text-sm italic leading-snug text-[var(--ar-gray-600)]">
+            &ldquo;{recipe.review_quote}&rdquo;
           </p>
-          <cite className="block text-sm text-[var(--ar-gray-500)] not-italic">
-            —{" "}
-            {recipe.author_id ? (
-              <Link
-                href={`/profil/${recipe.author_id}`}
-                className="hover:underline hover:decoration-[var(--color-accent)]"
-                onClick={(e) => e.stopPropagation()}
-              >
-                {recipe.author_display_name || recipe.author_name || "Domaći kuvar"}
-              </Link>
-            ) : (
-              recipe.author_display_name || recipe.author_name || "Domaći kuvar"
-            )}
-          </cite>
-          <Link
-            href={getRecipeCanonicalPath(recipe)}
-            className="flex items-center justify-center gap-2 rounded-none bg-[var(--color-accent)] py-2.5 text-sm font-semibold text-[var(--color-primary)] transition-colors hover:opacity-90"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <RotateCcw className="h-4 w-4" />
-            Vidi recept
-          </Link>
+        )}
+
+        <p className="mt-1.5 text-xs text-[var(--ar-gray-500)]">
+          {recipe.author_id ? (
+            <Link
+              href={`/profil/${recipe.author_id}`}
+              draggable={false}
+              className="hover:underline hover:decoration-[var(--color-accent)]"
+            >
+              {authorName}
+            </Link>
+          ) : (
+            authorName
+          )}
+        </p>
+
+        <div className="mt-auto pt-3">
+          <SaveRecipeDropdown
+            recipeId={recipe.id}
+            isSaved={isSaved}
+            onSaved={() => onToggleSave(recipe.id, true)}
+            onUnsaved={() => onToggleSave(recipe.id, false)}
+            variant="button"
+            fullWidth
+            saveLabel="Sačuvaj recept"
+            savedLabel="Sačuvano"
+            recipeTitle={recipe.title_sr}
+            recipeImageUrl={recipe.image_url}
+            className="group/save inline-flex w-full cursor-pointer items-center justify-center gap-2 border border-[var(--color-primary)] bg-white py-2.5 text-[16px] font-bold text-[var(--color-primary)] transition-colors duration-200 hover:bg-[#faf9f2] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-primary)] disabled:cursor-not-allowed disabled:opacity-50"
+            heartClassName={`size-[18px] shrink-0 transition-[fill,stroke,transform] duration-200 ${
+              isSaved
+                ? "fill-[var(--ar-heart-red)] stroke-[var(--ar-heart-red)]"
+                : "fill-transparent group-hover/save:scale-110 group-hover/save:fill-[var(--ar-heart-red)] group-hover/save:stroke-[var(--ar-heart-red)] group-focus-visible/save:fill-[var(--ar-heart-red)] group-focus-visible/save:stroke-[var(--ar-heart-red)]"
+            }`}
+          />
         </div>
       </div>
-    </div>
+    </article>
   );
 }

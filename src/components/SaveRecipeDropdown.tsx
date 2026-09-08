@@ -227,7 +227,7 @@ export function SaveRecipeDropdown({
       >
         {saving ? "..." : isSaved ? savedLabel : saveLabel}
         <Heart
-          className={`size-4 ${isSaved ? "fill-current" : ""}`}
+          className={heartClassName ?? `size-4 ${isSaved ? "fill-current" : ""}`}
           strokeWidth={2}
         />
       </button>
