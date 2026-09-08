@@ -142,6 +142,15 @@ body {
   p, span, a, h1, h2, h3, h4, h5, h6, li, td, th, label, input, textarea, select, button, div {
     color: var(--color-primary);
   }
+
+  /* User-submitted text (recipe titles, ingredients, steps, reviews) can contain
+     a single unbroken run of characters. Without this it cannot wrap, so it
+     spills out of its column and drags a horizontal scrollbar onto the page.
+     overflow-wrap inherits, so one declaration covers every text node; it only
+     breaks a word that would otherwise overflow, and utilities still win. */
+  body {
+    overflow-wrap: break-word;
+  }
 }
 
 /* Links that opt in to custom color (e.g. search pills) – more specific so they win without !important */

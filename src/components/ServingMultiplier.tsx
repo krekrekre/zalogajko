@@ -81,7 +81,7 @@ export function ServingMultiplier({
       </div>
       <ul className="mt-4 space-y-2 text-base sm:text-[18px]">
         {sorted.map((ing) => (
-          <li key={ing.id} className="flex min-w-0 flex-wrap gap-x-2 gap-y-0">
+          <li key={ing.id} className="flex flex-wrap gap-x-2 gap-y-0 wrap-anywhere">
             {ing.amount && (
               <span className="text-base font-semibold text-[var(--color-primary)] sm:text-[18px]">
                 {multiplyAmount(ing.amount, mult)}
@@ -92,7 +92,7 @@ export function ServingMultiplier({
                 {(ing as { unit_sr: string }).unit_sr}
               </span>
             )}
-            <span className="min-w-0 break-words text-base text-[var(--ar-gray-700)] sm:text-[18px]">{ing.name_sr}</span>
+            <span className="text-base text-[var(--ar-gray-700)] sm:text-[18px]">{ing.name_sr}</span>
           </li>
         ))}
       </ul>
