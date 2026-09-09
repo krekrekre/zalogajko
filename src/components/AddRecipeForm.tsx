@@ -86,11 +86,14 @@ const statBoxClass =
 function Section({
   title,
   hint,
+  required,
   children,
   className = "mt-12",
 }: {
   title: string;
   hint?: string;
+  /** Whole sections can be mandatory too, not just single fields. */
+  required?: boolean;
   children: React.ReactNode;
   className?: string;
 }) {
@@ -99,6 +102,7 @@ function Section({
       <div className="inline-block border-b-4 border-[var(--ar-primary)]">
         <h2 className="font-display text-[26px] font-bold leading-tight tracking-tight text-[var(--color-primary)] sm:text-[30px]">
           {title}
+          {required && <span className="text-red-600"> *</span>}
         </h2>
       </div>
       {hint && (
@@ -752,7 +756,11 @@ export function AddRecipeForm({
         </div>
       </Section>
 
-      <Section title="Fotografija" hint="Glavna slika jela, u formatu 4:3.">
+      <Section
+        title="Fotografija"
+        hint="Glavna slika jela, u formatu 4:3."
+        required
+      >
         <label
           htmlFor="image-upload"
           className="group block w-full max-w-[480px] cursor-pointer"
@@ -887,6 +895,7 @@ export function AddRecipeForm({
       <Section
         title="Sastojci"
         hint="Enter prelazi na sledeće polje i otvara novi red."
+        required
       >
         <div className="hidden gap-2 sm:flex">
           <div className="grid flex-1 grid-cols-[104px_88px_minmax(0,1fr)] gap-2">
@@ -980,6 +989,7 @@ export function AddRecipeForm({
       <Section
         title="Uputstvo"
         hint="Enter otvara sledeći korak, Shift+Enter novi red u istom koraku."
+        required
       >
         <div className="space-y-7">
           {directions.map((dir, i) => (

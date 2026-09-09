@@ -73,11 +73,13 @@ export function AdminRecipesList({ recipes }: { recipes: RecipeRow[] }) {
               <p className="font-medium text-[var(--ar-gray-900)]">
                 {recipe.title_sr}
               </p>
+              {/* Not /recepti/<slug>: that is the category route, and an
+                  unpublished recipe is invisible to the public page anyway. */}
               <Link
-                href={`/recepti/${recipe.slug}`}
-                className="text-sm text-[var(--ar-primary)] hover:underline"
+                href={`/admin/recipes/${recipe.slug}/pregled`}
+                className="text-sm font-medium text-[var(--ar-primary-ink)] hover:underline"
               >
-                /recepti/{recipe.slug}
+                Pogledaj ceo recept
               </Link>
               <p className="mt-1 text-sm text-[var(--ar-gray-600)]">
                 Autor: {recipe.author_name || "Domaći kuvar"} • Status:{" "}
