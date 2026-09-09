@@ -412,7 +412,7 @@ export default async function RecipePage({
           <div
             className="py-10 sm:py-12"
             style={{
-              background: "linear-gradient(to bottom, #ffffff 0%, #ffffff 20%, #f1f1e6 20%, #f1f1e6 100%)",
+              background: "linear-gradient(to bottom, #ffffff 0%, #ffffff 20%, var(--ar-cream) 20%, var(--ar-cream) 100%)",
             }}
           >
             <div className="mx-auto max-w-[1220px] px-4 sm:px-6 lg:px-8">

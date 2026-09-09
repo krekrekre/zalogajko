@@ -181,7 +181,7 @@ export function EditRecipeForm({
 
   if (revisionSent) {
     return (
-      <div className="mt-6 border-2 border-[var(--color-orange)] bg-[#f1f1e6] p-6">
+      <div className="mt-6 border-2 border-[var(--color-orange)] bg-[var(--ar-cream)] p-6">
         <h2 className="text-xl font-bold text-[var(--color-primary)]">
           Izmene su poslate na odobrenje
         </h2>
@@ -210,7 +210,7 @@ export function EditRecipeForm({
   return (
     <form onSubmit={handleSave} className="mt-6 space-y-8">
       {isPublished && (
-        <div className="rounded-none border border-[var(--ar-gray-300)] bg-[#f1f1e6] p-3 text-sm text-[var(--color-primary)]">
+        <div className="rounded-none border border-[var(--ar-gray-300)] bg-[var(--ar-cream)] p-3 text-sm text-[var(--color-primary)]">
           Ovaj recept je objavljen, pa izmene idu administratoru na odobrenje.
           Objavljena verzija ostaje na sajtu do tada.
         </div>

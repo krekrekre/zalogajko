@@ -66,7 +66,7 @@ const outlineButtonClass =
   "inline-flex cursor-pointer items-center justify-center gap-2 rounded-none border-2 border-[var(--color-primary)] bg-white px-5 py-2.5 text-[12px] font-bold uppercase tracking-wider text-[var(--color-primary)] transition-colors hover:border-[var(--ar-primary)] hover:bg-[var(--ar-primary)]";
 
 const removeButtonClass =
-  "inline-flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-none text-[var(--ar-gray-500)] transition-colors hover:bg-[#f1f1e6] hover:text-red-700";
+  "inline-flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-none text-[var(--ar-gray-500)] transition-colors hover:bg-[var(--ar-cream)] hover:text-red-700";
 
 const labelClass = "block text-sm font-bold text-[var(--ar-gray-900)]";
 
@@ -216,7 +216,7 @@ function CustomSelect({
               onChange("");
               setOpen(false);
             }}
-            className={`w-full cursor-pointer px-4 py-2.5 text-left text-sm transition-colors hover:bg-[#f1f1e6] ${!value ? "font-semibold text-[var(--color-primary)]" : "text-[var(--ar-gray-600)]"}`}
+            className={`w-full cursor-pointer px-4 py-2.5 text-left text-sm transition-colors hover:bg-[var(--ar-cream)] ${!value ? "font-semibold text-[var(--color-primary)]" : "text-[var(--ar-gray-600)]"}`}
           >
             {placeholder}
           </button>
@@ -230,7 +230,7 @@ function CustomSelect({
                 onChange(opt.value);
                 setOpen(false);
               }}
-              className={`w-full cursor-pointer px-4 py-2.5 text-left text-sm transition-colors hover:bg-[#f1f1e6] ${value === opt.value ? "bg-[#f1f1e6] font-semibold text-[var(--color-primary)]" : "text-[var(--color-primary)]"}`}
+              className={`w-full cursor-pointer px-4 py-2.5 text-left text-sm transition-colors hover:bg-[var(--ar-cream)] ${value === opt.value ? "bg-[var(--ar-cream)] font-semibold text-[var(--color-primary)]" : "text-[var(--color-primary)]"}`}
             >
               {opt.label}
             </button>
@@ -635,7 +635,7 @@ export function AddRecipeForm({ categories }: AddRecipeFormProps) {
 
   if (submittedForReview) {
     return (
-      <div className="mt-8 border-l-4 border-[var(--ar-primary)] bg-[#f1f1e6] p-5 sm:p-8">
+      <div className="mt-8 border-l-4 border-[var(--ar-primary)] bg-[var(--ar-cream)] p-5 sm:p-8">
         <h2 className="flex items-center gap-2.5 text-lg font-semibold uppercase tracking-wide text-[var(--color-primary)] sm:text-xl">
           <Check
             className="h-5 w-5 shrink-0 text-[var(--ar-primary-ink)]"

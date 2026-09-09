@@ -53,7 +53,7 @@ export function SaveRecipesBanner() {
           <Button asChild size="lg" className="shrink-0 rounded-none">
             <Link
               href={isLoggedIn ? "/recepti" : "/signup"}
-              style={{ color: "#f1f1e6" }}
+              style={{ color: "var(--ar-cream)" }}
             >
               {isLoggedIn ? "Pregledaj recepte" : "Registruj se"}
             </Link>

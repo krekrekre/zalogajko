@@ -160,7 +160,7 @@ export default async function ProfilPage() {
               )}
 
               {pendingRecipes.length > 0 && (
-                <div className="mt-6 border border-[var(--ar-gray-200)] bg-[#f1f1e6] p-4">
+                <div className="mt-6 border border-[var(--ar-gray-200)] bg-[var(--ar-cream)] p-4">
                   <h3 className="text-sm font-bold uppercase tracking-wide text-[var(--color-primary)]">
                     Čekaju odobrenje ({pendingRecipes.length})
                   </h3>

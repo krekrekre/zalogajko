@@ -34,10 +34,22 @@
   /* Featured-card tag. Darker than the #d97706 it replaces so white label text
      clears AA (5.02:1 rather than 3.19:1). */
   --ar-tag-amber: #b45309;
+  /* The warm counterpoint to a cool navy/teal palette. Ink, not fill: 5.29:1
+     on white and 4.65:1 on cream, so it clears AA on both surfaces. Never put
+     it on navy -- 2.71:1 there, which fails. */
+  --ar-terracotta: #b8472a;
   /* The save heart. The one warm note in a teal/navy palette, so it reads as a
      favourite rather than as another brand colour. */
   --ar-heart-red: #d62839;
-  --footer-text: #f1f1e6;
+  /* The second surface. Every band, callout and hover tint that is not white
+     is this one -- it was hardcoded in 16 files before it had a name. Light
+     enough that navy body text clears AA on it. */
+  --ar-cream: #f1f1e6;
+  /* A warmer surface than cream, for tags and bands that should carry some
+     heat. Fill only, and it is a good one: navy on it reads 10.38:1, better
+     than navy on the teal fill at 8.46:1. */
+  --ar-sand: #f0d9a8;
+  --footer-text: var(--ar-cream);
   --ar-card-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   --ar-card-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.12);
   /* Square by design. Kept as a token because shadcn components read it. */
@@ -159,7 +171,7 @@ body {
 
 /* Links that opt in to custom color (e.g. search pills) – more specific so they win without !important */
 a[data-text-tint="light"] {
-  color: #f1f1e6;
+  color: var(--ar-cream);
 }
 
 /* Footer: light text on primary background */

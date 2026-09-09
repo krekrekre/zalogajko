@@ -65,7 +65,7 @@ export default async function EditRecipePage({
       </p>
 
       {pendingRevisions > 0 && (
-        <p className="mt-3 border border-[var(--ar-gray-300)] bg-[#f1f1e6] p-3 text-sm text-[var(--color-primary)]">
+        <p className="mt-3 border border-[var(--ar-gray-300)] bg-[var(--ar-cream)] p-3 text-sm text-[var(--color-primary)]">
           Već imate {pendingRevisions === 1 ? "izmenu koja čeka" : "izmene koje čekaju"}{" "}
           odobrenje. Novo slanje dodaje još jedan predlog.
         </p>

@@ -12,7 +12,7 @@ export default async function NewRecipePage() {
           The header's desktop nav carries mb-8 for every other page, so pull
           that back here to sit the band flush under it. The nav is hidden
           below md, where there is no gap to close. */}
-      <div className="border-b border-[var(--ar-gray-200)] bg-[#f1f1e6] md:-mt-8">
+      <div className="border-b border-[var(--ar-gray-200)] bg-[var(--ar-cream)] md:-mt-8">
         <div className="mx-auto max-w-[1060px] px-4 py-10 sm:px-6 sm:py-12 lg:px-8">
           <div className="max-w-[760px]">
             <h1 className="break-words text-3xl font-bold leading-tight text-[var(--ar-gray-900)] sm:text-4xl lg:text-[46px]">

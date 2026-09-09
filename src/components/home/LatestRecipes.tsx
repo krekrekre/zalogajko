@@ -16,7 +16,7 @@ interface LatestRecipesProps {
 
 export function LatestRecipes({ recipes }: LatestRecipesProps) {
   return (
-    <section className="border-b border-[var(--ar-gray-200)] bg-[#f1f1e6] pt-[7vh] pb-[7vh]">
+    <section className="border-b border-[var(--ar-gray-200)] bg-[var(--ar-cream)] pt-[7vh] pb-[7vh]">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div className="mb-4 border-b-4 border-[var(--ar-primary)]">

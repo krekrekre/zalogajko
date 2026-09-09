@@ -56,7 +56,7 @@ function Column({
     <div
       className={`min-w-0 border p-3 ${
         tone === "proposed"
-          ? "border-[var(--ar-primary)] bg-[#f1f1e6]"
+          ? "border-[var(--ar-primary)] bg-[var(--ar-cream)]"
           : "border-[var(--ar-gray-200)] bg-white"
       }`}
     >

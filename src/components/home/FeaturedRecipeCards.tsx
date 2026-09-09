@@ -104,7 +104,7 @@ export function FeaturedRecipeCards({ recipes }: FeaturedRecipeCardsProps) {
   };
 
   return (
-    <section className="border-b border-[var(--ar-gray-200)] bg-[#f1f1e6] pt-[7vh] pb-[7vh]">
+    <section className="border-b border-[var(--ar-gray-200)] bg-[var(--ar-cream)] pt-[7vh] pb-[7vh]">
       <div className="mx-auto max-w-[1284px] px-8">
         {/* Top row: heading (left), arrows (right) */}
         <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">

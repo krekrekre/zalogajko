@@ -234,7 +234,7 @@ export function RecipeReviewSection({
           da biste ostavili recenziju.
         </p>
       ) : (
-        <div className="mt-6 rounded-none border-[2rem] border-[#f1f1e6] bg-white p-5 sm:p-6">
+        <div className="mt-6 rounded-none border-[2rem] border-[color:var(--ar-cream)] bg-white p-5 sm:p-6">
           <h3 className="text-lg font-bold text-[var(--ar-gray-900)]">
             {recipeTitle}
           </h3>

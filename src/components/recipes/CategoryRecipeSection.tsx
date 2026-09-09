@@ -35,7 +35,7 @@ export function CategoryRecipeSection({
   return (
     <section
       id={slug}
-      className={`scroll-mt-24 py-10 ${variant === "white" ? "bg-white" : "bg-[#f1f1e6]"}`}
+      className={`scroll-mt-24 py-10 ${variant === "white" ? "bg-white" : "bg-[var(--ar-cream)]"}`}
     >
       <div className="mx-auto max-w-[1220px] px-2.5">
         <header className="mb-6 flex items-end justify-between gap-4 pr-2">

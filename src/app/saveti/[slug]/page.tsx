@@ -147,7 +147,7 @@ export default async function SavetiArticlePage({ params }: Props) {
       </div>
 
       {related.length > 0 && (
-        <div className="mt-8 w-full bg-[#f1f1e6] py-10 sm:py-12">
+        <div className="mt-8 w-full bg-[var(--ar-cream)] py-10 sm:py-12">
           <div className="mx-auto max-w-[1220px] px-4 sm:px-6 lg:px-8">
             <h2 className="text-xl font-semibold text-[var(--ar-gray-700)]">
               Pročitajte još
