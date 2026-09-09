@@ -72,7 +72,7 @@ export function RecipeCard({
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         />
         {tag && (
-          <span className="absolute right-2 top-2 rounded-none bg-[var(--ar-primary)] px-2 py-1 text-[11px] font-semibold text-[var(--color-primary)] sm:right-3 sm:top-3 sm:px-2.5 sm:text-xs">
+          <span className="absolute right-2 top-2 rounded-none bg-[var(--ar-primary)] px-2 py-1 text-[11px] font-semibold text-white sm:right-3 sm:top-3 sm:px-2.5 sm:text-xs">
             {tag}
           </span>
         )}

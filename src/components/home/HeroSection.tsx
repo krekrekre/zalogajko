@@ -223,7 +223,7 @@ export function HeroSection({
             <div className="mt-4">
               <Link
                 href="/recepti"
-                className="inline-block border-2 border-[var(--color-primary)] bg-white px-6 py-3 text-[12px] font-bold uppercase tracking-wider text-[var(--color-primary)] transition-all duration-200 hover:scale-105 hover:bg-[var(--ar-primary)] hover:text-[var(--color-primary)] hover:border-[var(--ar-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ar-primary)] focus-visible:ring-offset-2"
+                className="inline-block border-2 border-[var(--color-primary)] bg-white px-6 py-3 text-[12px] font-bold uppercase tracking-wider text-[var(--color-primary)] transition-all duration-200 hover:scale-105 hover:bg-[var(--ar-primary)] hover:text-white hover:border-[var(--ar-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ar-primary)] focus-visible:ring-offset-2"
               >
                 Vidi više
               </Link>

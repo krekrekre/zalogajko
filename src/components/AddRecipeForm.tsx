@@ -75,7 +75,7 @@ const microLabelClass =
 
 /** The recipe page's stat box: hairline frame under a thick, pale teal rule. */
 const statBoxClass =
-  "border border-[color:color-mix(in_srgb,black_20%,transparent)] border-t-12 border-t-[color:color-mix(in_srgb,#46deb6_20%,transparent)] bg-white p-4 sm:p-6";
+  "border border-[color:color-mix(in_srgb,black_20%,transparent)] border-t-12 border-t-[color:color-mix(in_srgb,#d84316_20%,transparent)] bg-white p-4 sm:p-6";
 
 function Section({
   title,
@@ -651,7 +651,7 @@ export function AddRecipeForm({ categories }: AddRecipeFormProps) {
         <div className="mt-6 flex flex-wrap gap-3">
           <Link
             href="/profil"
-            className="inline-block rounded-none border-2 border-[var(--ar-primary)] bg-[var(--ar-primary)] px-6 py-3 text-[12px] font-bold uppercase tracking-wider text-[var(--color-primary)] transition-colors hover:border-[var(--ar-primary-hover)] hover:bg-[var(--ar-primary-hover)]"
+            className="inline-block rounded-none border-2 border-[var(--ar-primary)] bg-[var(--ar-primary)] px-6 py-3 text-[12px] font-bold uppercase tracking-wider text-white transition-colors hover:border-[var(--ar-primary-hover)] hover:bg-[var(--ar-primary-hover)]"
           >
             Moj profil
           </Link>
@@ -863,7 +863,7 @@ export function AddRecipeForm({ categories }: AddRecipeFormProps) {
                 aria-pressed={skillLevel === s.value}
                 className={`cursor-pointer rounded-none px-3 py-1.5 text-sm font-medium transition-colors ${
                   skillLevel === s.value
-                    ? "bg-[var(--ar-primary)] text-[var(--color-primary)]"
+                    ? "bg-[var(--ar-primary)] text-white"
                     : "border border-[var(--ar-gray-300)] bg-white text-[var(--ar-gray-700)] hover:bg-[var(--ar-gray-200)]"
                 }`}
               >
@@ -1225,7 +1225,7 @@ export function AddRecipeForm({ categories }: AddRecipeFormProps) {
           <button
             type="submit"
             disabled={loading}
-            className="inline-block cursor-pointer rounded-none border-2 border-[var(--ar-primary)] bg-[var(--ar-primary)] px-10 py-4 text-[13px] font-bold uppercase tracking-wider text-[var(--color-primary)] transition-colors hover:border-[var(--ar-primary-hover)] hover:bg-[var(--ar-primary-hover)] disabled:cursor-not-allowed disabled:opacity-60"
+            className="inline-block cursor-pointer rounded-none border-2 border-[var(--ar-primary)] bg-[var(--ar-primary)] px-10 py-4 text-[13px] font-bold uppercase tracking-wider text-white transition-colors hover:border-[var(--ar-primary-hover)] hover:bg-[var(--ar-primary-hover)] disabled:cursor-not-allowed disabled:opacity-60"
           >
             {loading ? "Čuvanje..." : "Sačuvaj recept"}
           </button>

@@ -57,7 +57,7 @@ export function ServingMultiplier({
           type="button"
           onClick={() => setMult(0.5)}
           className={`rounded-none px-3 py-1.5 text-sm font-medium transition-colors ${
-            mult === 0.5 ? "bg-[var(--ar-primary)] text-[var(--color-primary)]" : "bg-[var(--ar-gray-100)] text-[var(--ar-gray-700)] hover:bg-[var(--ar-gray-200)]"
+            mult === 0.5 ? "bg-[var(--ar-primary)] text-white" : "bg-[var(--ar-gray-100)] text-[var(--ar-gray-700)] hover:bg-[var(--ar-gray-200)]"
           }`}
         >
           ½x
@@ -66,7 +66,7 @@ export function ServingMultiplier({
           type="button"
           onClick={() => setMult(1)}
           className={`rounded-none px-3 py-1.5 text-sm font-medium transition-colors ${
-            mult === 1 ? "bg-[var(--ar-primary)] text-[var(--color-primary)]" : "bg-[var(--ar-gray-100)] text-[var(--ar-gray-700)] hover:bg-[var(--ar-gray-200)]"
+            mult === 1 ? "bg-[var(--ar-primary)] text-white" : "bg-[var(--ar-gray-100)] text-[var(--ar-gray-700)] hover:bg-[var(--ar-gray-200)]"
           }`}
         >
           1x
@@ -75,7 +75,7 @@ export function ServingMultiplier({
           type="button"
           onClick={() => setMult(2)}
           className={`rounded-none px-3 py-1.5 text-sm font-medium transition-colors ${
-            mult === 2 ? "bg-[var(--ar-primary)] text-[var(--color-primary)]" : "bg-[var(--ar-gray-100)] text-[var(--ar-gray-700)] hover:bg-[var(--ar-gray-200)]"
+            mult === 2 ? "bg-[var(--ar-primary)] text-white" : "bg-[var(--ar-gray-100)] text-[var(--ar-gray-700)] hover:bg-[var(--ar-gray-200)]"
           }`}
         >
           2x

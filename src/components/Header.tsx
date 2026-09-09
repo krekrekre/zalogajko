@@ -110,7 +110,7 @@ function HeaderUserBlock() {
         <Button
           asChild
           size="sm"
-          className="rounded-none bg-[var(--color-orange)] hover:bg-[var(--ar-primary-hover)] text-[var(--color-primary)] text-[13px] cursor-pointer"
+          className="rounded-none bg-[var(--color-orange)] hover:bg-[var(--ar-primary-hover)] text-white text-[13px] cursor-pointer"
         >
           <Link href="/recepti/novo">
             <PlusCircle className="w-4 h-4 mr-1" />
@@ -330,7 +330,7 @@ export function Header({ categories, ingredients }: HeaderProps) {
                   type="search"
                   name="sastojak"
                   placeholder="Pronađite recept ili sastojak"
-                  className="h-10 w-full rounded-none border border-gray-300 bg-white pl-4 pr-12 text-[14px] [&::-webkit-search-cancel-button]:cursor-pointer selection:bg-[var(--color-orange)] selection:text-[var(--color-primary)] focus-visible:border-[var(--color-orange)] focus-visible:ring-2 focus-visible:ring-[var(--color-orange)]/25 outline-none"
+                  className="h-10 w-full rounded-none border border-gray-300 bg-white pl-4 pr-12 text-[14px] [&::-webkit-search-cancel-button]:cursor-pointer selection:bg-[var(--color-orange)] selection:text-white focus-visible:border-[var(--color-orange)] focus-visible:ring-2 focus-visible:ring-[var(--color-orange)]/25 outline-none"
                 />
                 <Button
                   type="submit"
@@ -422,7 +422,7 @@ export function Header({ categories, ingredients }: HeaderProps) {
                 type="search"
                 name="sastojak"
                 placeholder="Pronađite recept ili sastojak"
-                className="h-12 w-full rounded-none border border-[var(--ar-gray-500)] bg-white pl-4 pr-14 text-base [&::-webkit-search-cancel-button]:cursor-pointer selection:bg-[var(--color-orange)] selection:text-[var(--color-primary)] focus-visible:border-[var(--color-orange)] focus-visible:ring-2 focus-visible:ring-[var(--color-orange)]/25 outline-none"
+                className="h-12 w-full rounded-none border border-[var(--ar-gray-500)] bg-white pl-4 pr-14 text-base [&::-webkit-search-cancel-button]:cursor-pointer selection:bg-[var(--color-orange)] selection:text-white focus-visible:border-[var(--color-orange)] focus-visible:ring-2 focus-visible:ring-[var(--color-orange)]/25 outline-none"
               />
               <Button
                 type="submit"

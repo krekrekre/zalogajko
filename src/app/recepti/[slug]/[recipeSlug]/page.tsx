@@ -196,7 +196,7 @@ export default async function RecipePage({
                   priority
                 />
               </div>
-              <div className="mt-6 overflow-hidden border border-[color:color-mix(in_srgb,black_20%,transparent)] border-t-12 border-t-[color:color-mix(in_srgb,#46deb6_20%,transparent)] bg-[#ffffff] p-4 sm:p-6">
+              <div className="mt-6 overflow-hidden border border-[color:color-mix(in_srgb,black_20%,transparent)] border-t-12 border-t-[color:color-mix(in_srgb,#d84316_20%,transparent)] bg-[#ffffff] p-4 sm:p-6">
                 <div className="grid grid-cols-3 gap-x-10 gap-y-4">
                   <div>
                     <p className="text-sm font-bold text-[var(--ar-gray-900)]">

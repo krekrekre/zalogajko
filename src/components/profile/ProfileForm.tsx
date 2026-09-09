@@ -157,7 +157,7 @@ export function ProfileForm({ userId, profile, userEmail }: ProfileFormProps) {
             type="button"
             onClick={() => fileInputRef.current?.click()}
             disabled={uploading}
-            className="absolute bottom-0 right-0 flex h-9 w-9 items-center justify-center rounded-full border-2 border-white bg-[var(--color-orange)] text-[var(--color-primary)] shadow hover:bg-[var(--ar-primary-hover)] disabled:opacity-50"
+            className="absolute bottom-0 right-0 flex h-9 w-9 items-center justify-center rounded-full border-2 border-white bg-[var(--color-orange)] text-white shadow hover:bg-[var(--ar-primary-hover)] disabled:opacity-50"
             aria-label="Promeni profilnu sliku"
           >
             <Camera className="h-4 w-4" />

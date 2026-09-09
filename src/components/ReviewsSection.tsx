@@ -73,7 +73,7 @@ export function ReviewsSection({ recipeId }: ReviewsSectionProps) {
           <button
             type="submit"
             disabled={submitting}
-            className="mt-3 rounded-none bg-[var(--ar-primary)] px-5 py-2.5 text-sm font-medium text-[var(--color-primary)] hover:bg-[var(--ar-primary-hover)] disabled:opacity-50"
+            className="mt-3 rounded-none bg-[var(--ar-primary)] px-5 py-2.5 text-sm font-medium text-white hover:bg-[var(--ar-primary-hover)] disabled:opacity-50"
           >
             {submitting ? "Šaljem..." : "Pošalji recenziju"}
           </button>

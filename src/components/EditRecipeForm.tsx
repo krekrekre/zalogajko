@@ -192,7 +192,7 @@ export function EditRecipeForm({
         <div className="mt-6 flex flex-wrap gap-3">
           <Link
             href={`/recepti/${slug}`}
-            className="rounded-none bg-[var(--color-orange)] px-4 py-2.5 text-sm font-semibold uppercase tracking-wide text-[var(--color-primary)]"
+            className="rounded-none bg-[var(--color-orange)] px-4 py-2.5 text-sm font-semibold uppercase tracking-wide text-white"
           >
             Nazad na recept
           </Link>
@@ -377,7 +377,7 @@ export function EditRecipeForm({
         <Button
           type="submit"
           disabled={loading}
-          className="bg-[var(--color-orange)] text-[var(--color-primary)] hover:bg-[var(--ar-primary-hover)]"
+          className="bg-[var(--color-orange)] text-white hover:bg-[var(--ar-primary-hover)]"
         >
           {loading ? "Čuvanje..." : "Sačuvaj izmene"}
         </Button>

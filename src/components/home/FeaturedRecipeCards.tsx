@@ -24,7 +24,7 @@ const FEATURED_TAGS = [
 ];
 
 const ARROW_CLASS =
-  "flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-full border border-[var(--color-primary)] bg-white text-[var(--ar-primary-ink)] shadow-sm transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-40 hover:enabled:scale-105 hover:enabled:border-[var(--ar-primary)] hover:enabled:bg-[var(--ar-primary)] hover:enabled:text-[var(--color-primary)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-primary)]";
+  "flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-full border border-[var(--color-primary)] bg-white text-[var(--ar-primary-ink)] shadow-sm transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-40 hover:enabled:scale-105 hover:enabled:border-[var(--ar-primary)] hover:enabled:bg-[var(--ar-primary)] hover:enabled:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-primary)]";
 
 function formatTime(minutes: number) {
   if (minutes >= 60) {

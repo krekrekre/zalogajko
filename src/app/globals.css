@@ -8,17 +8,20 @@
   --color-primary: #202557;
   --color-primary-65: rgba(32, 37, 87, 0.65);
   --color-primary-50: rgba(32, 37, 87, 0.5);
-  --color-accent: #46deb6;
-  --color-orange: #46deb6;
+  --color-accent: #d84316;
+  --color-orange: #d84316;
   --color-white: #ffffff;
-  /* Fill only: #46deb6 is 1.70:1 on white. Legible behind navy text (8.46:1). */
-  --ar-primary: #46deb6;
-  --ar-primary-hover: #3bc4a5;
-  /* Ink: same hue, dark enough to read on white (5.27:1) and cream (4.64:1). */
-  --ar-primary-ink: #0d7a63;
-  --ar-primary-ink-hover: #0a6350;
-  --ar-accent: #46deb6;
-  --ar-accent-hover: #3bc4a5;
+  /* Fill only, and it carries white text, not navy: white on it is 4.44:1 and
+     navy only 3.23:1. Chosen deliberately at 4.44 -- a hair under AA, which
+     #d33f13 would clear if that ever matters more than the exact hue. */
+  --ar-primary: #d84316;
+  --ar-primary-hover: #c43c12;
+  /* Ink: same hue, dark enough to read on white (5.78:1) and cream (5.08:1).
+     The fill itself is too light for body text on either. */
+  --ar-primary-ink: #b83911;
+  --ar-primary-ink-hover: #a3320e;
+  --ar-accent: #d84316;
+  --ar-accent-hover: #c43c12;
   --ar-primary-light: #ffffff;
   --ar-gray-100: #ffffff;
   --ar-gray-200: #ebebeb;
@@ -66,7 +69,7 @@
   --secondary-foreground: #202557;
   --muted: oklch(0.97 0 0);
   --muted-foreground: #202557;
-  --accent: #46deb6;
+  --accent: #d84316;
   --accent-foreground: #ffffff;
   --destructive: oklch(0.577 0.245 27.325);
   --border: oklch(0.922 0 0);
@@ -184,8 +187,10 @@ footer li,
 footer div {
   color: var(--footer-text) !important;
 }
+/* The footer sits on navy, where the accent is only 2.73:1. Sand is 10.38:1
+   there and stays in the warm family. */
 footer a:hover {
-  color: var(--ar-primary-hover) !important;
+  color: var(--ar-sand) !important;
 }
 
 /* Trust banner: force white text and the display font */

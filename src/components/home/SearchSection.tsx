@@ -31,7 +31,7 @@ export function SearchSection() {
                 />
                 <button
                   type="submit"
-                  className="flex w-12 shrink-0 cursor-pointer items-center justify-center bg-[var(--ar-primary)] text-[var(--color-primary)] transition-colors hover:bg-[var(--ar-primary-hover)]"
+                  className="flex w-12 shrink-0 cursor-pointer items-center justify-center bg-[var(--ar-primary)] text-white transition-colors hover:bg-[var(--ar-primary-hover)]"
                   aria-label="Pretraži"
                 >
                   <Search className="h-5 w-5" />
@@ -50,7 +50,7 @@ export function SearchSection() {
                 <Link
                   key={search.href}
                   href={search.href}
-                  className="rounded-none bg-[var(--ar-primary)] px-3 py-2 text-center text-xs font-medium text-[var(--color-primary)] transition-colors hover:opacity-90 sm:text-sm"
+                  className="rounded-none bg-[var(--ar-primary)] px-3 py-2 text-center text-xs font-medium text-white transition-colors hover:opacity-90 sm:text-sm"
                 >
                   {search.label}
                 </Link>

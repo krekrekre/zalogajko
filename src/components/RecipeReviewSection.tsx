@@ -287,8 +287,8 @@ export function RecipeReviewSection({
                 {tagsForRating.map((tag) => {
                   const isSelected = selectedTags.includes(tag);
                   const tagClass = isSelected
-                    ? "border-[var(--ar-primary)] bg-[var(--ar-primary)] text-[var(--color-primary)]"
-                    : "border-[var(--ar-gray-700)] bg-white text-[var(--ar-gray-700)] hover:bg-[var(--ar-primary)] hover:text-[var(--color-primary)] hover:border-[var(--ar-primary)]";
+                    ? "border-[var(--ar-primary)] bg-[var(--ar-primary)] text-white"
+                    : "border-[var(--ar-gray-700)] bg-white text-[var(--ar-gray-700)] hover:bg-[var(--ar-primary)] hover:text-white hover:border-[var(--ar-primary)]";
                   return (
                     <button
                       key={tag}
@@ -441,7 +441,7 @@ export function RecipeReviewSection({
                       Math.min(prev + REVIEWS_PAGE_SIZE, reviews.length),
                     )
                   }
-                  className="inline-block cursor-pointer border-2 border-[var(--color-primary)] bg-white px-6 py-3 text-[12px] font-bold uppercase tracking-wider text-[var(--color-primary)] transition-all duration-200 hover:scale-105 hover:bg-[var(--ar-primary)] hover:text-[var(--color-primary)] hover:border-[var(--ar-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ar-primary)] focus-visible:ring-offset-2"
+                  className="inline-block cursor-pointer border-2 border-[var(--color-primary)] bg-white px-6 py-3 text-[12px] font-bold uppercase tracking-wider text-[var(--color-primary)] transition-all duration-200 hover:scale-105 hover:bg-[var(--ar-primary)] hover:text-white hover:border-[var(--ar-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ar-primary)] focus-visible:ring-offset-2"
                 >
                   Učitaj još
                 </button>
