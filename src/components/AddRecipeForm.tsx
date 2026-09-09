@@ -17,6 +17,12 @@ interface Category {
 
 interface AddRecipeFormProps {
   categories: Category[];
+  /**
+   * Fired once the recipe has gone to the moderation queue. The page uses it
+   * to drop its own heading: the confirmation should be the whole screen, not
+   * a note under a form that is no longer there.
+   */
+  onSubmittedForReview?: () => void;
 }
 
 const SKILL_LEVELS = [
@@ -63,7 +69,7 @@ const inputClassSmall =
   "w-full break-words rounded-none border border-[var(--ar-gray-300)] bg-white px-3 py-2 text-sm leading-5 text-[var(--color-primary)] placeholder:text-[var(--ar-gray-500)] outline-none transition-colors focus-visible:border-[var(--color-orange)] focus-visible:ring-2 focus-visible:ring-[var(--color-orange)]/25";
 
 const outlineButtonClass =
-  "inline-flex cursor-pointer items-center justify-center gap-2 rounded-none border-2 border-[var(--color-primary)] bg-white px-5 py-2.5 text-[12px] font-bold uppercase tracking-wider text-[var(--color-primary)] transition-colors hover:border-[var(--ar-primary)] hover:bg-[var(--ar-primary)]";
+  "inline-flex cursor-pointer items-center justify-center gap-2 rounded-none border-2 border-[var(--color-primary)] bg-white px-5 py-2.5 text-[12px] font-bold uppercase tracking-wider text-[var(--color-primary)] transition-colors hover:border-[var(--ar-primary)] hover:bg-[var(--ar-primary)] hover:text-white";
 
 const removeButtonClass =
   "inline-flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-none text-[var(--ar-gray-500)] transition-colors hover:bg-[var(--ar-cream)] hover:text-red-700";
@@ -241,7 +247,10 @@ function CustomSelect({
   );
 }
 
-export function AddRecipeForm({ categories }: AddRecipeFormProps) {
+export function AddRecipeForm({
+  categories,
+  onSubmittedForReview,
+}: AddRecipeFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -625,6 +634,7 @@ export function AddRecipeForm({ categories }: AddRecipeFormProps) {
         router.refresh();
       } else {
         setSubmittedForReview(true);
+        onSubmittedForReview?.();
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Nešto je pošlo po zlu.");

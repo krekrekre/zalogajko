@@ -382,8 +382,9 @@ p, span, a, li, td, th, label, input, textarea, select, button {
   width: 100%;
   border-radius: 0;
   background: var(--ar-primary) !important;
-  /* Navy on the teal fill: 8.46:1. White here was 1.70:1. */
-  color: var(--color-primary) !important;
+  /* White on the warm fill: 4.44:1. Navy, which the teal fill used to carry,
+     is only 3.23:1 on it. */
+  color: #ffffff !important;
   font-weight: 600;
   margin-top: 0.25rem;
   transition: background 0.2s;
