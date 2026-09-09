@@ -61,16 +61,20 @@ export default async function KuhinjaPage() {
         </div>
       )}
 
-      {cuisineRecipes.map(({ category, recipes }, index) => (
-        <CategoryRecipeSection
-          key={category.id}
-          title={category.slug.charAt(0).toUpperCase() + category.slug.slice(1)}
-          slug={category.slug}
-          recipes={recipes}
-          variant={index % 2 === 0 ? "white" : "cream"}
-          basePath="/kuhinja"
-        />
-      ))}
+      {/* Empty cuisines render nothing, so drop them before the index that
+          drives the alternating background is worked out. */}
+      {cuisineRecipes
+        .filter(({ recipes }) => recipes.length > 0)
+        .map(({ category, recipes }, index) => (
+          <CategoryRecipeSection
+            key={category.id}
+            title={category.slug.charAt(0).toUpperCase() + category.slug.slice(1)}
+            slug={category.slug}
+            recipes={recipes}
+            variant={index % 2 === 0 ? "white" : "cream"}
+            basePath="/kuhinja"
+          />
+        ))}
     </div>
   );
 }

@@ -120,15 +120,20 @@ export default async function RecipesPage({
             </div>
           )}
 
-          {categoryRecipes.map(({ category, recipes }, index) => (
-            <CategoryRecipeSection
-              key={category.id}
-              title={category.name_sr}
-              slug={category.slug}
-              recipes={recipes}
-              variant={index % 2 === 0 ? "white" : "cream"}
-            />
-          ))}
+          {/* Filter before mapping: CategoryRecipeSection renders nothing for
+              an empty category, so an empty one left in the list would still
+              consume an index and hand two neighbours the same background. */}
+          {categoryRecipes
+            .filter(({ recipes }) => recipes.length > 0)
+            .map(({ category, recipes }, index) => (
+              <CategoryRecipeSection
+                key={category.id}
+                title={category.name_sr}
+                slug={category.slug}
+                recipes={recipes}
+                variant={index % 2 === 0 ? "white" : "cream"}
+              />
+            ))}
         </>
       )}
     </div>
