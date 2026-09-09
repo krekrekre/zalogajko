@@ -8,6 +8,11 @@ interface ServingMultiplierProps {
   baseServings: number;
 }
 
+/* Amount, unit and name read as one line, so they share one style. The two
+   colour tokens this replaces both resolved to the same navy anyway; only the
+   weight actually set the quantities apart. */
+const ingredientTextClass = "text-base text-[var(--ar-gray-700)] sm:text-[18px]";
+
 // Simple multiplier for amount strings - handles "2", "½", "1 ½", "2-3"
 function multiplyAmount(amount: string | null, mult: number): string {
   if (!amount || mult === 1) return amount || "";
@@ -83,16 +88,16 @@ export function ServingMultiplier({
         {sorted.map((ing) => (
           <li key={ing.id} className="flex flex-wrap gap-x-2 gap-y-0 wrap-anywhere">
             {ing.amount && (
-              <span className="text-base font-semibold text-[var(--color-primary)] sm:text-[18px]">
+              <span className={ingredientTextClass}>
                 {multiplyAmount(ing.amount, mult)}
               </span>
             )}
             {"unit_sr" in ing && (ing as { unit_sr?: string }).unit_sr && (
-              <span className="text-base font-semibold text-[var(--color-primary)] sm:text-[18px]">
+              <span className={ingredientTextClass}>
                 {(ing as { unit_sr: string }).unit_sr}
               </span>
             )}
-            <span className="text-base text-[var(--ar-gray-700)] sm:text-[18px]">{ing.name_sr}</span>
+            <span className={ingredientTextClass}>{ing.name_sr}</span>
           </li>
         ))}
       </ul>

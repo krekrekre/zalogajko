@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { revalidateRecipeCaches } from "@/app/recepti/actions";
-import { Check, Heart, ImagePlus, Plus, Trash2 } from "lucide-react";
+import { Check, ImagePlus, Plus, Trash2 } from "lucide-react";
 
 interface Category {
   id: string;
@@ -33,6 +33,12 @@ const MAX_SERVINGS = 99;
 /** Keeps only digits and caps their count, so the field cannot exceed its digit limit. */
 function clampDigits(value: string, maxDigits: number) {
   return value.replace(/\D/g, "").slice(0, maxDigits);
+}
+
+/** A unit is a word -- "g", "kašika", "prstohvat". The amount field holds the
+ *  number, so digits typed here are dropped rather than silently accepted. */
+function stripDigits(value: string) {
+  return value.replace(/\d/g, "");
 }
 
 function slugify(text: string) {
@@ -909,7 +915,9 @@ export function AddRecipeForm({ categories }: AddRecipeFormProps) {
                   placeholder="g"
                   aria-label={`Jedinica, sastojak ${i + 1}`}
                   value={ing.unit}
-                  onChange={(e) => updateIngredient(i, "unit", e.target.value)}
+                  onChange={(e) =>
+                    updateIngredient(i, "unit", stripDigits(e.target.value))
+                  }
                   onKeyDown={(e) => handleIngredientKeyDown(i, 1, e)}
                   className={inputClassSmall}
                 />
@@ -920,10 +928,15 @@ export function AddRecipeForm({ categories }: AddRecipeFormProps) {
                     ingredientRefs.current[i][2] = el;
                   }}
                   type="text"
-                  placeholder="Brašno"
+                  placeholder="brašno"
                   aria-label={`Naziv, sastojak ${i + 1}`}
+                  autoCapitalize="none"
                   value={ing.name}
-                  onChange={(e) => updateIngredient(i, "name", e.target.value)}
+                  // Lower-cased as it is typed: /sastojci groups recipes by the
+                  // raw name, so "Brašno" and "brašno" would list separately.
+                  onChange={(e) =>
+                    updateIngredient(i, "name", e.target.value.toLowerCase())
+                  }
                   onKeyDown={(e) => handleIngredientKeyDown(i, 2, e)}
                   className={`${inputClassSmall} col-span-2 sm:col-span-1`}
                 />
@@ -1070,24 +1083,20 @@ export function AddRecipeForm({ categories }: AddRecipeFormProps) {
         />
       </Section>
 
-      {/* The cream callout the finished recipe renders these points in. */}
-      <section className="mt-12 border-l-4 border-[var(--ar-primary)] bg-[#f1f1e6] p-5 sm:p-8">
-        <h2 className="flex items-center gap-2.5 text-lg font-semibold uppercase tracking-wide text-[var(--color-primary)] sm:text-xl">
-          <Heart
-            className="h-5 w-5 shrink-0 fill-[var(--ar-primary-ink)] text-[var(--ar-primary-ink)]"
-            aria-hidden
-          />
+      {/* The framed box the finished recipe renders these points in, with the
+          heading set into a gap in its own top border. */}
+      <section className="relative mt-12 border border-[var(--ar-primary-ink)] px-5 pb-6 pt-9 sm:px-8 sm:pb-8">
+        <h2 className="absolute left-1/2 top-0 w-max max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 bg-white px-3 text-center text-[13px] font-bold uppercase leading-tight tracking-[0.12em] text-[var(--ar-primary-ink)]">
           Zašto ćete voleti ovaj recept
         </h2>
-        <p className="mt-3 text-sm text-[var(--ar-gray-600)]">
+        <p className="text-sm text-[var(--ar-gray-600)]">
           Opciono. Do tri kratke tačke.
         </p>
         <div className="mt-5 space-y-3">
           {whyYoullLove.map((val, i) => (
             <div key={i} className="flex items-center gap-3">
-              <Check
-                className="h-4 w-4 shrink-0 text-[var(--ar-primary-ink)]"
-                strokeWidth={3}
+              <span
+                className="h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--ar-primary)]"
                 aria-hidden
               />
               <input
