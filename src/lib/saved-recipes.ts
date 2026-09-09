@@ -43,6 +43,48 @@ export async function getSavedRecipeLists(): Promise<SavedRecipeList[]> {
 }
 
 /**
+ * How many recipes the current user has saved in each of their lists, keyed by
+ * list id. One round trip for every list rather than a count query per list.
+ */
+export async function getSavedRecipeCountsByList(): Promise<Map<string, number>> {
+  const supabase = createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return new Map();
+
+  const { data, error } = await supabase
+    .from(SAVED_RECIPES_TABLE)
+    .select("list_id")
+    .eq("user_id", user.id);
+
+  if (error) return new Map();
+
+  const counts = new Map<string, number>();
+  for (const row of data ?? []) {
+    if (!row.list_id) continue;
+    counts.set(row.list_id, (counts.get(row.list_id) ?? 0) + 1);
+  }
+  return counts;
+}
+
+/**
+ * Delete one of the user's lists. The saved_recipes rows pointing at it go with
+ * it -- saved_recipes.list_id is declared ON DELETE CASCADE -- so this drops
+ * every save in the list, not just the list itself.
+ */
+export async function deleteSavedRecipeList(listId: string): Promise<boolean> {
+  const supabase = createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return false;
+
+  const { error } = await supabase
+    .from(LISTS_TABLE)
+    .delete()
+    .eq("id", listId)
+    .eq("user_id", user.id);
+  return !error;
+}
+
+/**
  * Create a new save list. Returns the new list or null if not logged in / error.
  */
 export async function createSavedRecipeList(name: string): Promise<SavedRecipeList | null> {

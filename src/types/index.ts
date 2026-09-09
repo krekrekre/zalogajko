@@ -23,6 +23,7 @@ export interface Recipe {
   slug: string;
   title_sr: string;
   description_sr: string | null;
+  chef_tip_sr: string | null;
   why_youll_love: string[] | null;
   prep_time_minutes: number;
   cook_time_minutes: number;

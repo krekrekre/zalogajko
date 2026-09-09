@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { revalidateRecipeCaches } from "@/app/recepti/actions";
@@ -21,19 +22,28 @@ type DirectionRow = {
 interface EditRecipeFormProps {
   recipeId: string;
   slug: string;
+  /**
+   * A live recipe cannot be written directly: the edit becomes a revision an
+   * admin has to apply. Anything else the author still edits in place.
+   */
+  isPublished: boolean;
   initialIngredients: IngredientRow[];
   initialDirections: DirectionRow[];
+  initialChefTip?: string | null;
 }
 
 export function EditRecipeForm({
   recipeId,
   slug,
+  isPublished,
   initialIngredients,
   initialDirections,
+  initialChefTip,
 }: EditRecipeFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [revisionSent, setRevisionSent] = useState(false);
 
   const [ingredients, setIngredients] = useState<IngredientRow[]>(
     initialIngredients.length > 0
@@ -45,6 +55,7 @@ export function EditRecipeForm({
       ? initialDirections
       : [{ instruction_sr: "", image_url: null }],
   );
+  const [chefTip, setChefTip] = useState(initialChefTip ?? "");
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
@@ -82,6 +93,34 @@ export function EditRecipeForm({
 
     try {
       const supabase = createClient();
+
+      if (isPublished) {
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+        if (!user) throw new Error("Niste prijavljeni.");
+
+        const { error: revisionError } = await supabase
+          .from("recipe_revisions")
+          .insert({
+            recipe_id: recipeId,
+            author_id: user.id,
+            payload: {
+              ingredients: validIngredients.map((i, sort_order) => ({
+                ...i,
+                sort_order,
+              })),
+              directions: validDirections,
+              chef_tip_sr: chefTip.trim() || null,
+            },
+          });
+        if (revisionError) throw revisionError;
+
+        // Nothing public changed, so no cache to bust.
+        setRevisionSent(true);
+        setLoading(false);
+        return;
+      }
 
       const { error: deleteIngredientsError } = await supabase
         .from("ingredients")
@@ -123,7 +162,10 @@ export function EditRecipeForm({
 
       await supabase
         .from("recipes")
-        .update({ updated_at: new Date().toISOString() })
+        .update({
+          chef_tip_sr: chefTip.trim() || null,
+          updated_at: new Date().toISOString(),
+        })
         .eq("id", recipeId);
 
       await revalidateRecipeCaches();
@@ -137,8 +179,42 @@ export function EditRecipeForm({
     }
   }
 
+  if (revisionSent) {
+    return (
+      <div className="mt-6 border-2 border-[var(--color-orange)] bg-[#f1f1e6] p-6">
+        <h2 className="text-xl font-bold text-[var(--color-primary)]">
+          Izmene su poslate na odobrenje
+        </h2>
+        <p className="mt-2 text-[15px] text-[var(--color-primary)]">
+          Recept ostaje objavljen u postojećem obliku dok administrator ne
+          pregleda izmene.
+        </p>
+        <div className="mt-6 flex flex-wrap gap-3">
+          <Link
+            href={`/recepti/${slug}`}
+            className="rounded-none bg-[var(--color-orange)] px-4 py-2.5 text-sm font-semibold uppercase tracking-wide text-[var(--color-primary)]"
+          >
+            Nazad na recept
+          </Link>
+          <Link
+            href="/moji-recepti/autorski"
+            className="rounded-none border-2 border-[var(--color-orange)] px-4 py-2.5 text-sm font-semibold uppercase tracking-wide text-[var(--color-primary)]"
+          >
+            Moji recepti
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <form onSubmit={handleSave} className="mt-6 space-y-8">
+      {isPublished && (
+        <div className="rounded-none border border-[var(--ar-gray-300)] bg-[#f1f1e6] p-3 text-sm text-[var(--color-primary)]">
+          Ovaj recept je objavljen, pa izmene idu administratoru na odobrenje.
+          Objavljena verzija ostaje na sajtu do tada.
+        </div>
+      )}
       {error && (
         <div className="rounded-none border border-red-200 bg-red-50 p-3 text-sm text-red-700">
           {error}
@@ -277,6 +353,24 @@ export function EditRecipeForm({
             Dodaj korak
           </Button>
         </div>
+      </section>
+
+      <section className="rounded-none border border-[var(--ar-gray-200)] bg-white p-5">
+        <h2 className="text-lg font-semibold text-[var(--ar-gray-700)]">
+          Savet kuvara
+        </h2>
+        <p className="mt-1 text-sm text-[var(--ar-gray-500)]">
+          Opciono. Jedan trik iz iskustva koji čini razliku. Ostavite prazno da
+          uklonite savet.
+        </p>
+        <textarea
+          rows={3}
+          value={chefTip}
+          onChange={(e) => setChefTip(e.target.value)}
+          placeholder="npr. Testo ostavite da odstoji 30 minuta — palačinke će biti znatno mekše."
+          aria-label="Savet kuvara"
+          className="mt-4 min-h-[84px] w-full break-words rounded-none border border-[var(--ar-gray-300)] px-3 py-2 text-sm"
+        />
       </section>
 
       <div className="flex gap-3">

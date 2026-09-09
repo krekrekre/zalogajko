@@ -64,9 +64,14 @@ export function RecipeActions({
         <button
           type="button"
           onClick={scrollToReviews}
-          className="flex w-1/2 cursor-pointer items-center justify-center gap-1.5 border-b border-[var(--ar-gray-200)] px-4 py-3 text-sm font-bold uppercase tracking-wide text-[var(--ar-gray-700)] hover:underline sm:w-auto sm:border-b-0 sm:border-r sm:border-[var(--ar-gray-400)] sm:py-2.5"
+          className="group/rate flex w-1/2 cursor-pointer items-center justify-center gap-1.5 border-b border-[var(--ar-gray-200)] px-4 py-3 text-sm font-bold uppercase tracking-wide text-[var(--ar-gray-700)] hover:underline sm:w-auto sm:border-b-0 sm:border-r sm:border-[var(--ar-gray-400)] sm:py-2.5"
         >
-          <Star className="size-4" strokeWidth={2} />
+          {/* Fills on hover the way the save heart does, previewing the rating
+              the button scrolls to. */}
+          <Star
+            className="size-4 fill-transparent transition-[fill,color] duration-150 group-hover/rate:fill-yellow-400 group-hover/rate:text-yellow-400"
+            strokeWidth={2}
+          />
           Oceni
         </button>
         <button

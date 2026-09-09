@@ -6,9 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { revalidateRecipeCaches } from "@/app/recepti/actions";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Plus, Trash2, ImagePlus } from "lucide-react";
+import { Check, Heart, ImagePlus, Plus, Trash2 } from "lucide-react";
 
 interface Category {
   id: string;
@@ -48,23 +46,55 @@ function slugify(text: string) {
     .replace(/^-|-$/g, "");
 }
 
+/* The form borrows the recipe page's vocabulary: white ground, hairline rules,
+   a teal underline under each heading, and the same boxes the finished recipe
+   is rendered in -- so writing a recipe looks like the recipe it becomes. */
+
+const inputClass =
+  "w-full break-words rounded-none border border-[var(--ar-gray-300)] bg-white px-4 py-2.5 text-[15px] leading-6 text-[var(--color-primary)] placeholder:text-[var(--ar-gray-500)] outline-none transition-colors focus-visible:border-[var(--color-orange)] focus-visible:ring-2 focus-visible:ring-[var(--color-orange)]/25";
+
+const inputClassSmall =
+  "w-full break-words rounded-none border border-[var(--ar-gray-300)] bg-white px-3 py-2 text-sm leading-5 text-[var(--color-primary)] placeholder:text-[var(--ar-gray-500)] outline-none transition-colors focus-visible:border-[var(--color-orange)] focus-visible:ring-2 focus-visible:ring-[var(--color-orange)]/25";
+
+const outlineButtonClass =
+  "inline-flex cursor-pointer items-center justify-center gap-2 rounded-none border-2 border-[var(--color-primary)] bg-white px-5 py-2.5 text-[12px] font-bold uppercase tracking-wider text-[var(--color-primary)] transition-colors hover:border-[var(--ar-primary)] hover:bg-[var(--ar-primary)]";
+
+const removeButtonClass =
+  "inline-flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-none text-[var(--ar-gray-500)] transition-colors hover:bg-[#f1f1e6] hover:text-red-700";
+
+const labelClass = "block text-sm font-bold text-[var(--ar-gray-900)]";
+
+const microLabelClass =
+  "block text-xs font-medium uppercase tracking-wide text-[var(--ar-gray-500)]";
+
+/** The recipe page's stat box: hairline frame under a thick, pale teal rule. */
+const statBoxClass =
+  "border border-[color:color-mix(in_srgb,black_20%,transparent)] border-t-12 border-t-[color:color-mix(in_srgb,#46deb6_20%,transparent)] bg-white p-4 sm:p-6";
+
 function Section({
   title,
+  hint,
   children,
-  className = "",
+  className = "mt-12",
 }: {
   title: string;
+  hint?: string;
   children: React.ReactNode;
   className?: string;
 }) {
   return (
-    <section
-      className={`rounded-none border-2 border-gray-200 bg-white p-6 shadow-sm ${className}`}
-    >
-      <h2 className="mb-4 text-sm font-semibold uppercase tracking-wider text-[var(--color-primary)]">
-        {title}
-      </h2>
-      {children}
+    <section className={className}>
+      <div className="inline-block border-b-4 border-[var(--ar-primary)]">
+        <h2 className="font-display text-[26px] font-bold leading-tight tracking-tight text-[var(--color-primary)] sm:text-[30px]">
+          {title}
+        </h2>
+      </div>
+      {hint && (
+        <p className="mt-3 text-sm leading-relaxed text-[var(--ar-gray-600)]">
+          {hint}
+        </p>
+      )}
+      <div className="mt-5">{children}</div>
     </section>
   );
 }
@@ -74,18 +104,17 @@ function FormField({
   required,
   children,
   id,
+  micro,
 }: {
   label: string;
   required?: boolean;
   children: React.ReactNode;
   id?: string;
+  micro?: boolean;
 }) {
   return (
     <div className="space-y-2">
-      <label
-        htmlFor={id}
-        className="block text-sm font-medium text-[var(--color-primary)]"
-      >
+      <label htmlFor={id} className={micro ? microLabelClass : labelClass}>
         {label}
         {required && <span className="text-red-600"> *</span>}
       </label>
@@ -93,11 +122,6 @@ function FormField({
     </div>
   );
 }
-
-const inputClass =
-  "w-full break-words rounded-none border-2 border-gray-300 bg-[#f1f1e6] px-4 py-3 text-[15px] text-[var(--color-primary)] placeholder:text-gray-500 outline-none transition-all focus:bg-[#f1f1e6] focus-visible:border-[var(--color-orange)] focus-visible:ring-2 focus-visible:ring-[var(--color-orange)]/25";
-const inputClassSmall =
-  "break-words rounded-none border-2 border-gray-300 bg-[#f1f1e6] px-3 py-2 text-sm text-[var(--color-primary)] placeholder:text-gray-500 outline-none transition-all focus:bg-[#f1f1e6] focus-visible:border-[var(--color-orange)] focus-visible:ring-2 focus-visible:ring-[var(--color-orange)]/25";
 
 function CustomSelect({
   value,
@@ -132,10 +156,7 @@ function CustomSelect({
 
   return (
     <div className="space-y-2">
-      <label
-        htmlFor={id}
-        className="block text-sm font-medium text-[var(--color-primary)]"
-      >
+      <label htmlFor={id} className={labelClass}>
         {label}
         {required && <span className="text-red-600"> *</span>}
       </label>
@@ -144,19 +165,23 @@ function CustomSelect({
           id={id}
           type="button"
           onClick={() => setOpen((o) => !o)}
-          className={`${inputClass} w-full cursor-pointer text-left flex items-center justify-between gap-2`}
+          className={`${inputClass} flex cursor-pointer items-center justify-between gap-2 text-left ${
+            open ? "border-[var(--color-orange)]" : ""
+          }`}
           aria-expanded={open}
           aria-haspopup="listbox"
         >
           <span
             className={
-              selected ? "text-[var(--color-primary)]" : "text-gray-500"
+              selected
+                ? "truncate text-[var(--color-primary)]"
+                : "truncate text-[var(--ar-gray-500)]"
             }
           >
             {selected ? selected.label : placeholder}
           </span>
           <svg
-            className={`h-4 w-4 shrink-0 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+            className={`h-4 w-4 shrink-0 text-[var(--ar-gray-500)] transition-transform duration-200 ${open ? "rotate-180" : ""}`}
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -171,7 +196,7 @@ function CustomSelect({
         </button>
         <div
           role="listbox"
-          className={`absolute left-0 right-0 top-full z-50 mt-1 overflow-visible rounded-none border-2 border-gray-200 bg-white py-1 shadow-lg origin-top transition-all duration-200 ease-out ${
+          className={`absolute left-0 right-0 top-full z-50 mt-1 max-h-64 origin-top overflow-y-auto rounded-none border border-[var(--ar-gray-300)] bg-white py-1 shadow-[var(--ar-card-shadow-hover)] transition-all duration-200 ease-out ${
             open
               ? "translate-y-0 opacity-100"
               : "pointer-events-none -translate-y-1 opacity-0"
@@ -185,7 +210,7 @@ function CustomSelect({
               onChange("");
               setOpen(false);
             }}
-            className={`w-full cursor-pointer px-4 py-2.5 text-left text-sm hover:bg-[#f1f1e6] ${!value ? "bg-[#f1f1e6] font-medium" : "text-[var(--color-primary)]"}`}
+            className={`w-full cursor-pointer px-4 py-2.5 text-left text-sm transition-colors hover:bg-[#f1f1e6] ${!value ? "font-semibold text-[var(--color-primary)]" : "text-[var(--ar-gray-600)]"}`}
           >
             {placeholder}
           </button>
@@ -199,7 +224,7 @@ function CustomSelect({
                 onChange(opt.value);
                 setOpen(false);
               }}
-              className={`w-full cursor-pointer px-4 py-2.5 text-left text-sm hover:bg-[#f1f1e6] ${value === opt.value ? "bg-[#f1f1e6] font-medium" : "text-[var(--color-primary)]"}`}
+              className={`w-full cursor-pointer px-4 py-2.5 text-left text-sm transition-colors hover:bg-[#f1f1e6] ${value === opt.value ? "bg-[#f1f1e6] font-semibold text-[var(--color-primary)]" : "text-[var(--color-primary)]"}`}
             >
               {opt.label}
             </button>
@@ -217,6 +242,7 @@ export function AddRecipeForm({ categories }: AddRecipeFormProps) {
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [chefTip, setChefTip] = useState("");
   const [whyYoullLove, setWhyYoullLove] = useState<string[]>([""]);
   const [prepTime, setPrepTime] = useState<number | "">("");
   const [cookTime, setCookTime] = useState<number | "">("");
@@ -480,6 +506,7 @@ export function AddRecipeForm({ categories }: AddRecipeFormProps) {
           slug,
           title_sr: title,
           description_sr: description || null,
+          chef_tip_sr: chefTip.trim() || null,
           why_youll_love: whyArr.length > 0 ? whyArr : null,
           prep_time_minutes: prep,
           cook_time_minutes: cook,
@@ -602,30 +629,33 @@ export function AddRecipeForm({ categories }: AddRecipeFormProps) {
 
   if (submittedForReview) {
     return (
-      <div className="mx-auto mt-8 w-full max-w-[1220px]">
-        <div className="border-2 border-[var(--color-orange)] bg-[#f1f1e6] p-6 sm:p-8">
-          <h2 className="text-xl font-bold text-[var(--color-primary)]">
-            Recept je poslat na odobrenje
-          </h2>
-          <p className="mt-2 text-[15px] text-[var(--color-primary)]">
-            Administrator će ga pregledati pre objavljivanja. Do tada nije
-            vidljiv na sajtu — status možete pratiti na svom profilu.
-          </p>
-          <div className="mt-6 flex flex-wrap gap-3">
-            <Link
-              href="/profil"
-              className="rounded-none bg-[var(--color-orange)] px-4 py-2.5 text-sm font-semibold uppercase tracking-wide text-[var(--color-primary)]"
-            >
-              Moj profil
-            </Link>
-            <button
-              type="button"
-              onClick={() => window.location.reload()}
-              className="cursor-pointer rounded-none border-2 border-[var(--color-orange)] px-4 py-2.5 text-sm font-semibold uppercase tracking-wide text-[var(--color-primary)]"
-            >
-              Dodaj još jedan recept
-            </button>
-          </div>
+      <div className="mt-8 border-l-4 border-[var(--ar-primary)] bg-[#f1f1e6] p-5 sm:p-8">
+        <h2 className="flex items-center gap-2.5 text-lg font-semibold uppercase tracking-wide text-[var(--color-primary)] sm:text-xl">
+          <Check
+            className="h-5 w-5 shrink-0 text-[var(--ar-primary-ink)]"
+            strokeWidth={3}
+            aria-hidden
+          />
+          Recept je poslat na odobrenje
+        </h2>
+        <p className="mt-4 max-w-[60ch] text-base leading-relaxed text-[var(--color-primary)] sm:text-[18px]">
+          Administrator će ga pregledati pre objavljivanja. Do tada nije vidljiv
+          na sajtu — status možete pratiti na svom profilu.
+        </p>
+        <div className="mt-6 flex flex-wrap gap-3">
+          <Link
+            href="/profil"
+            className="inline-block rounded-none border-2 border-[var(--ar-primary)] bg-[var(--ar-primary)] px-6 py-3 text-[12px] font-bold uppercase tracking-wider text-[var(--color-primary)] transition-colors hover:border-[var(--ar-primary-hover)] hover:bg-[var(--ar-primary-hover)]"
+          >
+            Moj profil
+          </Link>
+          <button
+            type="button"
+            onClick={() => window.location.reload()}
+            className={outlineButtonClass}
+          >
+            Dodaj još jedan recept
+          </button>
         </div>
       </div>
     );
@@ -634,7 +664,7 @@ export function AddRecipeForm({ categories }: AddRecipeFormProps) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="mx-auto mt-8 w-full max-w-[1220px] space-y-8"
+      className="w-full"
       onKeyDown={(e) => {
         if (e.key === "Enter") {
           const t = e.target as HTMLElement;
@@ -643,522 +673,559 @@ export function AddRecipeForm({ categories }: AddRecipeFormProps) {
         }
       }}
     >
-      {error && (
-        <div className="rounded-none border-2 border-red-200 bg-red-50 p-4 text-sm text-red-800">
-          {error}
-        </div>
-      )}
-
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-        {/* Left column */}
+      <Section
+        title="Osnovno"
+        hint="Naziv i opis stoje na vrhu objavljenog recepta."
+        className="mt-10"
+      >
         <div className="space-y-6">
-          <Section title="Osnovne informacije">
-            <div className="space-y-4">
-              <FormField label="Naziv recepta" required id="title">
-                <Input
-                  id="title"
-                  type="text"
-                  required
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  placeholder="npr. Palaćinke sa džemom"
-                  className={inputClass}
+          <FormField label="Naziv recepta" required id="title">
+            <input
+              id="title"
+              type="text"
+              required
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="npr. Palaćinke sa džemom"
+              className={`${inputClass} text-[17px]`}
+            />
+          </FormField>
+
+          <FormField label="Opis recepta" required id="description">
+            <textarea
+              id="description"
+              required
+              rows={4}
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              onInput={(e) => {
+                const ta = e.target as HTMLTextAreaElement;
+                ta.style.height = "auto";
+                ta.style.height = `${Math.max(100, ta.scrollHeight)}px`;
+              }}
+              placeholder="Kratak opis jela..."
+              className={`${inputClass} min-h-[100px] resize-none overflow-y-auto`}
+            />
+          </FormField>
+
+          <div className="grid gap-6 sm:grid-cols-2">
+            <CustomSelect
+              id="category"
+              label="Kategorija"
+              required
+              value={categoryId}
+              onChange={setCategoryId}
+              options={mealCategories.map((c) => ({
+                value: c.id,
+                label: c.name_sr,
+              }))}
+              placeholder="Izaberite kategoriju"
+            />
+            <CustomSelect
+              id="cuisine"
+              label="Kuhinja"
+              value={cuisineId}
+              onChange={setCuisineId}
+              options={cuisineCategories.map((c) => ({
+                value: c.id,
+                label: c.name_sr,
+              }))}
+              placeholder="Izaberite kuhinju"
+            />
+          </div>
+        </div>
+      </Section>
+
+      <Section title="Fotografija" hint="Glavna slika jela, u formatu 4:3.">
+        <label
+          htmlFor="image-upload"
+          className="group block w-full max-w-[480px] cursor-pointer"
+        >
+          <input
+            ref={imageInputRef}
+            id="image-upload"
+            type="file"
+            accept="image/jpeg,image/png,image/webp,image/gif"
+            onChange={(e) => setImageFileWithPreview(e.target.files?.[0] ?? null)}
+            className="sr-only"
+          />
+          {imageFile && imagePreviewUrl ? (
+            <>
+              <div className="relative aspect-[4/3] w-full overflow-hidden shadow-[var(--ar-card-shadow)]">
+                <Image
+                  src={imagePreviewUrl}
+                  alt="Pregled"
+                  fill
+                  sizes="480px"
+                  className="object-cover"
+                  unoptimized
                 />
-              </FormField>
-              <FormField label="Težina pripreme" required id="skill_level">
-                <div className="flex flex-wrap gap-2">
-                  {SKILL_LEVELS.map((s) => (
-                    <button
-                      key={s.value}
-                      type="button"
-                      onClick={() =>
-                        setSkillLevel(skillLevel === s.value ? "" : s.value)
-                      }
-                      className={`cursor-pointer rounded-none border-2 px-4 py-2.5 text-sm font-medium transition-colors ${
-                        skillLevel === s.value
-                          ? "border-[var(--color-orange)] bg-[var(--color-orange)] text-[var(--color-primary)]"
-                          : "border-gray-300 bg-[#f1f1e6] text-[var(--color-primary)] hover:border-[var(--color-orange)]/50"
-                      }`}
-                    >
-                      {s.label}
-                    </button>
-                  ))}
-                </div>
-              </FormField>
+              </div>
+              <p className="mt-2 truncate text-sm text-[var(--ar-gray-600)]">
+                {imageFile.name}{" "}
+                <span className="font-medium text-[var(--ar-primary-ink)] underline decoration-[var(--color-accent)] group-hover:no-underline">
+                  Klikni za promenu
+                </span>
+              </p>
+            </>
+          ) : (
+            <div className="flex aspect-[4/3] w-full flex-col items-center justify-center border border-dashed border-[var(--ar-gray-300)] bg-white transition-colors group-hover:border-[var(--ar-primary)] group-focus-within:border-[var(--ar-primary)]">
+              <ImagePlus
+                className="h-8 w-8 text-[var(--ar-gray-500)]"
+                aria-hidden
+              />
+              <span className="mt-3 text-base font-semibold text-[var(--color-primary)]">
+                Klikni da dodaš sliku
+              </span>
+              <span className="mt-1 text-sm text-[var(--ar-gray-500)]">
+                JPG, PNG ili WebP
+              </span>
             </div>
-          </Section>
+          )}
+        </label>
+      </Section>
 
-          <Section title="Slika recepta">
-            <FormField label="Fotografija" required id="image-upload">
-              <label
-                htmlFor="image-upload"
-                className="flex cursor-pointer flex-col items-center justify-center rounded-none border-2 border-dashed border-gray-300 bg-[#f1f1e6] py-10 px-4 transition-colors hover:border-[var(--color-orange)] hover:bg-[var(--color-orange)]/5 focus-within:ring-2 focus-within:ring-[var(--color-orange)]/25"
-              >
-                <input
-                  ref={imageInputRef}
-                  id="image-upload"
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp,image/gif"
-                  onChange={(e) =>
-                    setImageFileWithPreview(e.target.files?.[0] ?? null)
-                  }
-                  className="sr-only"
-                />
-                {imageFile && imagePreviewUrl ? (
-                  <>
-                    <Image
-                      src={imagePreviewUrl}
-                      alt="Pregled"
-                      width={320}
-                      height={128}
-                      className="mb-2 max-h-32 rounded-none object-cover"
-                      unoptimized
-                    />
-                    <span className="text-sm font-medium text-[var(--color-primary)] truncate max-w-full px-2">
-                      {imageFile.name}
-                    </span>
-                    <span className="mt-1 text-xs text-gray-600">
-                      Klikni za promenu
-                    </span>
-                  </>
-                ) : (
-                  <>
-                    <ImagePlus className="mb-2 h-10 w-10 text-gray-500" />
-                    <span className="text-sm font-medium text-[var(--color-primary)]">
-                      Klikni da dodaš sliku
-                    </span>
-                    <span className="mt-1 text-xs text-gray-600">
-                      JPG, PNG ili WebP
-                    </span>
-                  </>
-                )}
-              </label>
+      <Section
+        title="Vreme i porcije"
+        hint="Ovi podaci se prikazuju u okviru na vrhu recepta."
+      >
+        <div className={statBoxClass}>
+          <div className="grid gap-x-10 gap-y-5 sm:grid-cols-3">
+            <FormField label="Aktivno vreme (min)" required id="prep-time" micro>
+              <input
+                id="prep-time"
+                type="number"
+                inputMode="numeric"
+                min={0}
+                max={MAX_MINUTES}
+                placeholder="npr. 20"
+                value={prepTime === "" ? "" : prepTime}
+                onChange={(e) => {
+                  const v = clampDigits(e.target.value, MINUTES_DIGITS);
+                  setPrepTime(v === "" ? "" : parseInt(v, 10));
+                }}
+                className={inputClassSmall}
+              />
             </FormField>
-          </Section>
+            <FormField label="Kuvanje (min)" id="cook-time" micro>
+              <input
+                id="cook-time"
+                type="number"
+                inputMode="numeric"
+                min={0}
+                max={MAX_MINUTES}
+                placeholder="npr. 60"
+                value={cookTime === "" ? "" : cookTime}
+                onChange={(e) => {
+                  const v = clampDigits(e.target.value, MINUTES_DIGITS);
+                  setCookTime(v === "" ? "" : parseInt(v, 10));
+                }}
+                className={inputClassSmall}
+              />
+            </FormField>
+            <FormField label="Porcije" required id="servings" micro>
+              <input
+                id="servings"
+                type="number"
+                inputMode="numeric"
+                min={1}
+                max={MAX_SERVINGS}
+                placeholder="npr. 4"
+                value={servings === "" ? "" : servings}
+                onChange={(e) => {
+                  const v = clampDigits(e.target.value, SERVINGS_DIGITS);
+                  setServings(v === "" ? "" : Math.max(1, parseInt(v, 10)));
+                }}
+                className={inputClassSmall}
+              />
+            </FormField>
+          </div>
 
-          <Section title="Opis">
-            <FormField label="Opis recepta" required id="description">
+          <hr className="my-5 border-[color:color-mix(in_srgb,black_20%,transparent)]" />
+
+          <div className="flex flex-wrap items-center gap-2">
+            <span className={`${microLabelClass} mr-1`}>
+              Težina<span className="text-red-600"> *</span>
+            </span>
+            {SKILL_LEVELS.map((s) => (
+              <button
+                key={s.value}
+                type="button"
+                onClick={() =>
+                  setSkillLevel(skillLevel === s.value ? "" : s.value)
+                }
+                aria-pressed={skillLevel === s.value}
+                className={`cursor-pointer rounded-none px-3 py-1.5 text-sm font-medium transition-colors ${
+                  skillLevel === s.value
+                    ? "bg-[var(--ar-primary)] text-[var(--color-primary)]"
+                    : "border border-[var(--ar-gray-300)] bg-white text-[var(--ar-gray-700)] hover:bg-[var(--ar-gray-200)]"
+                }`}
+              >
+                {s.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </Section>
+
+      <Section
+        title="Sastojci"
+        hint="Enter prelazi na sledeće polje i otvara novi red."
+      >
+        <div className="hidden gap-2 sm:flex">
+          <div className="grid flex-1 grid-cols-[104px_88px_minmax(0,1fr)] gap-2">
+            <span className={microLabelClass}>Količina</span>
+            <span className={microLabelClass}>Jedinica</span>
+            <span className={microLabelClass}>Naziv sastojka</span>
+          </div>
+          <span className="w-9 shrink-0" aria-hidden />
+        </div>
+
+        <div className="mt-2 divide-y divide-[var(--ar-gray-200)] border-y border-[var(--ar-gray-200)]">
+          {ingredients.map((ing, i) => (
+            <div key={i} className="flex items-start gap-2 py-3">
+              <div className="grid flex-1 grid-cols-2 gap-2 sm:grid-cols-[104px_88px_minmax(0,1fr)]">
+                <input
+                  ref={(el) => {
+                    if (!ingredientRefs.current[i])
+                      ingredientRefs.current[i] = [];
+                    ingredientRefs.current[i][0] = el;
+                  }}
+                  type="text"
+                  placeholder="300"
+                  aria-label={`Količina, sastojak ${i + 1}`}
+                  value={ing.amount}
+                  onChange={(e) => updateIngredient(i, "amount", e.target.value)}
+                  onKeyDown={(e) => handleIngredientKeyDown(i, 0, e)}
+                  className={inputClassSmall}
+                />
+                <input
+                  ref={(el) => {
+                    if (!ingredientRefs.current[i])
+                      ingredientRefs.current[i] = [];
+                    ingredientRefs.current[i][1] = el;
+                  }}
+                  type="text"
+                  placeholder="g"
+                  aria-label={`Jedinica, sastojak ${i + 1}`}
+                  value={ing.unit}
+                  onChange={(e) => updateIngredient(i, "unit", e.target.value)}
+                  onKeyDown={(e) => handleIngredientKeyDown(i, 1, e)}
+                  className={inputClassSmall}
+                />
+                <input
+                  ref={(el) => {
+                    if (!ingredientRefs.current[i])
+                      ingredientRefs.current[i] = [];
+                    ingredientRefs.current[i][2] = el;
+                  }}
+                  type="text"
+                  placeholder="Brašno"
+                  aria-label={`Naziv, sastojak ${i + 1}`}
+                  value={ing.name}
+                  onChange={(e) => updateIngredient(i, "name", e.target.value)}
+                  onKeyDown={(e) => handleIngredientKeyDown(i, 2, e)}
+                  className={`${inputClassSmall} col-span-2 sm:col-span-1`}
+                />
+              </div>
+              {ingredients.length > 1 ? (
+                <button
+                  type="button"
+                  onClick={() => removeIngredient(i)}
+                  className={removeButtonClass}
+                  aria-label="Ukloni sastojak"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              ) : (
+                <span className="w-9 shrink-0" aria-hidden />
+              )}
+            </div>
+          ))}
+        </div>
+
+        <button
+          type="button"
+          onClick={addIngredient}
+          className={`${outlineButtonClass} mt-4`}
+        >
+          <Plus className="h-4 w-4" />
+          Dodaj sastojak
+        </button>
+      </Section>
+
+      <Section
+        title="Uputstvo"
+        hint="Enter otvara sledeći korak, Shift+Enter novi red u istom koraku."
+      >
+        <div className="space-y-7">
+          {directions.map((dir, i) => (
+            <div key={i}>
+              <div className="flex items-center justify-between gap-3">
+                <span className="inline-block border-b-2 border-[var(--ar-primary)] pb-1 font-semibold text-[var(--ar-gray-900)]">
+                  {i + 1}. korak
+                </span>
+                {directions.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => removeDirection(i)}
+                    className={removeButtonClass}
+                    aria-label="Ukloni korak"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                )}
+              </div>
+
               <textarea
-                id="description"
-                required
-                rows={4}
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
+                ref={(el) => {
+                  directionRefs.current[i] = el;
+                }}
+                rows={2}
+                placeholder="Opis koraka"
+                aria-label={`Korak ${i + 1}`}
+                value={dir.text}
+                onChange={(e) => updateDirection(i, e.target.value)}
                 onInput={(e) => {
                   const ta = e.target as HTMLTextAreaElement;
                   ta.style.height = "auto";
-                  ta.style.height = `${Math.max(100, ta.scrollHeight)}px`;
+                  ta.style.height = `${Math.max(64, ta.scrollHeight)}px`;
                 }}
-                placeholder="Kratak opis jela..."
-                className={
-                  inputClass + " resize-none overflow-y-auto min-h-[100px]"
-                }
+                onKeyDown={(e) => handleDirectionKeyDown(i, e)}
+                className={`${inputClass} mt-3 min-h-[64px] resize-none overflow-hidden`}
               />
-            </FormField>
-          </Section>
 
-          <Section title="Zašto ćete voleti (opciono)">
-            <p className="mb-2 text-sm text-gray-600">Do 3 tačke.</p>
-            <div className="space-y-2">
-              {whyYoullLove.map((val, i) => (
-                <div key={i} className="flex gap-2 items-center flex-wrap">
+              <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-2">
+                <label className="inline-flex cursor-pointer items-center gap-1.5 text-sm font-medium text-[var(--ar-primary-ink)] underline decoration-[var(--color-accent)] hover:no-underline">
                   <input
-                    ref={(el) => {
-                      whyYoullLoveRefs.current[i] = el;
-                    }}
-                    type="text"
-                    value={val}
-                    onChange={(e) => {
-                      const v = [...whyYoullLove];
-                      v[i] = e.target.value;
-                      setWhyYoullLove(v);
-                    }}
-                    onKeyDown={(e) => handleWhyYoullLoveKeyDown(i, e)}
-                    placeholder={`Tačka ${i + 1}`}
-                    className={inputClass + " flex-1 min-w-[200px]"}
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp,image/gif"
+                    onChange={(e) =>
+                      setDirectionImage(i, e.target.files?.[0] ?? null)
+                    }
+                    className="sr-only"
                   />
-                  {whyYoullLove.length > 1 && (
+                  <ImagePlus className="h-4 w-4" aria-hidden />
+                  {dir.imageFile ? "Promeni sliku koraka" : "Dodaj sliku koraka"}
+                </label>
+                {dir.imageFile && (
+                  <>
+                    <span className="max-w-[220px] truncate text-sm text-[var(--ar-gray-600)]">
+                      {dir.imageFile.name}
+                    </span>
                     <button
                       type="button"
-                      onClick={() =>
-                        setWhyYoullLove((prev) =>
-                          prev.filter((_, j) => j !== i),
-                        )
-                      }
-                      className="shrink-0 cursor-pointer rounded-none p-1.5 text-red-600 hover:bg-red-50"
-                      aria-label="Ukloni"
+                      onClick={() => setDirectionImage(i, null)}
+                      className="cursor-pointer text-sm font-medium text-red-700 underline-offset-2 hover:underline"
                     >
-                      <Trash2 className="h-4 w-4" />
+                      Ukloni
                     </button>
-                  )}
-                  {i === whyYoullLove.length - 1 && whyYoullLove.length < 3 && (
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="icon"
-                      onClick={() => setWhyYoullLove((prev) => [...prev, ""])}
-                      className="shrink-0 cursor-pointer rounded-none border-[var(--color-orange)] text-[var(--color-orange)] hover:bg-[var(--color-orange)]/10"
-                      aria-label="Dodaj tačku"
-                    >
-                      <Plus className="h-4 w-4" />
-                    </Button>
-                  )}
-                </div>
-              ))}
-            </div>
-          </Section>
+                  </>
+                )}
+              </div>
 
-          <Section title="Nutritivne vrednosti (opciono)">
-            <p className="mb-4 text-sm text-gray-500">Po porciji.</p>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <FormField label="Kalorije (kcal)">
-                <Input
-                  type="number"
-                  min={0}
-                  placeholder="0"
-                  value={calories === "" ? "" : calories}
-                  onChange={(e) =>
-                    setCalories(
-                      e.target.value === ""
-                        ? ""
-                        : parseInt(e.target.value) || 0,
-                    )
-                  }
-                  className={inputClass}
-                />
-              </FormField>
-              <FormField label="Masti (g)">
-                <Input
-                  type="number"
-                  min={0}
-                  step={0.1}
-                  placeholder="0"
-                  value={fatG === "" ? "" : fatG}
-                  onChange={(e) =>
-                    setFatG(
-                      e.target.value === ""
-                        ? ""
-                        : parseFloat(e.target.value) || 0,
-                    )
-                  }
-                  className={inputClass}
-                />
-              </FormField>
-              <FormField label="Ugljeni hidrati (g)">
-                <Input
-                  type="number"
-                  min={0}
-                  step={0.1}
-                  placeholder="0"
-                  value={carbsG === "" ? "" : carbsG}
-                  onChange={(e) =>
-                    setCarbsG(
-                      e.target.value === ""
-                        ? ""
-                        : parseFloat(e.target.value) || 0,
-                    )
-                  }
-                  className={inputClass}
-                />
-              </FormField>
-              <FormField label="Proteini (g)">
-                <Input
-                  type="number"
-                  min={0}
-                  step={0.1}
-                  placeholder="0"
-                  value={proteinG === "" ? "" : proteinG}
-                  onChange={(e) =>
-                    setProteinG(
-                      e.target.value === ""
-                        ? ""
-                        : parseFloat(e.target.value) || 0,
-                    )
-                  }
-                  className={inputClass}
-                />
-              </FormField>
+              {dir.imagePreviewUrl && (
+                <div className="relative mt-3 aspect-[4/3] w-full max-w-[320px] overflow-hidden border border-[var(--ar-gray-200)] bg-[var(--ar-gray-100)]">
+                  <Image
+                    src={dir.imagePreviewUrl}
+                    alt={`Korak ${i + 1}`}
+                    fill
+                    sizes="320px"
+                    className="object-cover"
+                    unoptimized
+                  />
+                </div>
+              )}
             </div>
-          </Section>
+          ))}
         </div>
 
-        {/* Right column */}
-        <div className="space-y-6">
-          <Section title="Kategorija i kuhinja">
-            <div className="space-y-4">
-              <CustomSelect
-                id="category"
-                label="Kategorija (max jedna)"
-                required
-                value={categoryId}
-                onChange={setCategoryId}
-                options={mealCategories.map((c) => ({
-                  value: c.id,
-                  label: c.name_sr,
-                }))}
-                placeholder="Izaberite kategoriju"
-              />
-              <CustomSelect
-                id="cuisine"
-                label="Kuhinja (max jedna)"
-                value={cuisineId}
-                onChange={setCuisineId}
-                options={cuisineCategories.map((c) => ({
-                  value: c.id,
-                  label: c.name_sr,
-                }))}
-                placeholder="Izaberite kuhinju"
-              />
-            </div>
-          </Section>
-
-          <Section title="Vreme i porcije">
-            <div className="grid gap-4 sm:grid-cols-3">
-              <FormField label="Priprema (min)" required>
-                <Input
-                  type="number"
-                  inputMode="numeric"
-                  min={0}
-                  max={MAX_MINUTES}
-                  placeholder="npr. 20"
-                  value={prepTime === "" ? "" : prepTime}
-                  onChange={(e) => {
-                    const v = clampDigits(e.target.value, MINUTES_DIGITS);
-                    setPrepTime(v === "" ? "" : parseInt(v, 10));
-                  }}
-                  className={inputClass}
-                />
-              </FormField>
-              <FormField label="Kuvanje (min)">
-                <Input
-                  type="number"
-                  inputMode="numeric"
-                  min={0}
-                  max={MAX_MINUTES}
-                  placeholder="npr. 60"
-                  value={cookTime === "" ? "" : cookTime}
-                  onChange={(e) => {
-                    const v = clampDigits(e.target.value, MINUTES_DIGITS);
-                    setCookTime(v === "" ? "" : parseInt(v, 10));
-                  }}
-                  className={inputClass}
-                />
-              </FormField>
-              <FormField label="Porcije" required>
-                <Input
-                  type="number"
-                  inputMode="numeric"
-                  min={1}
-                  max={MAX_SERVINGS}
-                  placeholder="npr. 4"
-                  value={servings === "" ? "" : servings}
-                  onChange={(e) => {
-                    const v = clampDigits(e.target.value, SERVINGS_DIGITS);
-                    setServings(v === "" ? "" : Math.max(1, parseInt(v, 10)));
-                  }}
-                  className={inputClass}
-                />
-              </FormField>
-            </div>
-          </Section>
-
-          <Section title="Sastojci">
-            <p className="mb-3 text-sm text-gray-600">
-              Količina, jedinica i naziv. Najmanje jedan sastojak. Enter dodaje
-              novi red i prelazi na njega.
-            </p>
-            <div className="space-y-2">
-              {ingredients.map((ing, i) => (
-                <div key={i} className="flex flex-wrap items-center gap-2">
-                  <input
-                    ref={(el) => {
-                      if (!ingredientRefs.current[i])
-                        ingredientRefs.current[i] = [];
-                      ingredientRefs.current[i][0] = el;
-                    }}
-                    type="text"
-                    placeholder="Količina"
-                    value={ing.amount}
-                    onChange={(e) =>
-                      updateIngredient(i, "amount", e.target.value)
-                    }
-                    onKeyDown={(e) => handleIngredientKeyDown(i, 0, e)}
-                    className={`${inputClassSmall} w-24 flex-shrink-0`}
-                  />
-                  <input
-                    ref={(el) => {
-                      if (!ingredientRefs.current[i])
-                        ingredientRefs.current[i] = [];
-                      ingredientRefs.current[i][1] = el;
-                    }}
-                    type="text"
-                    placeholder="Jed."
-                    value={ing.unit}
-                    onChange={(e) =>
-                      updateIngredient(i, "unit", e.target.value)
-                    }
-                    onKeyDown={(e) => handleIngredientKeyDown(i, 1, e)}
-                    className={`${inputClassSmall} w-20 flex-shrink-0`}
-                  />
-                  <input
-                    ref={(el) => {
-                      if (!ingredientRefs.current[i])
-                        ingredientRefs.current[i] = [];
-                      ingredientRefs.current[i][2] = el;
-                    }}
-                    type="text"
-                    placeholder="Naziv sastojka"
-                    value={ing.name}
-                    onChange={(e) =>
-                      updateIngredient(i, "name", e.target.value)
-                    }
-                    onKeyDown={(e) => handleIngredientKeyDown(i, 2, e)}
-                    className={`${inputClassSmall} flex-1 min-w-[120px]`}
-                  />
-                  {ingredients.length > 1 && (
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => removeIngredient(i)}
-                      className="shrink-0 cursor-pointer rounded-none text-red-600 hover:bg-red-50 hover:text-red-700"
-                      aria-label="Ukloni sastojak"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  )}
-                  {i === ingredients.length - 1 && (
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="icon"
-                      onClick={addIngredient}
-                      className="shrink-0 cursor-pointer rounded-none border-[var(--color-orange)] text-[var(--color-orange)] hover:bg-[var(--color-orange)]/10"
-                      aria-label="Dodaj sastojak"
-                    >
-                      <Plus className="h-4 w-4" />
-                    </Button>
-                  )}
-                </div>
-              ))}
-            </div>
-          </Section>
-
-          <Section title="Koraci pripreme">
-            <p className="mb-3 text-sm text-gray-600">
-              Najmanje jedan korak. Enter dodaje novi korak i prelazi na njega.
-              Shift+Enter za novi red u koraku. Opciono dodajte sliku za svaki
-              korak.
-            </p>
-            <div className="space-y-4">
-              {directions.map((dir, i) => (
-                <div key={i} className="flex gap-2 items-start">
-                  <span className="mt-3 text-sm font-semibold text-[var(--color-orange)] w-6 shrink-0">
-                    {i + 1}.
-                  </span>
-                  <div className="flex-1 min-w-0 space-y-2">
-                    <div className="flex gap-2 items-start flex-wrap">
-                      <textarea
-                        ref={(el) => {
-                          directionRefs.current[i] = el;
-                        }}
-                        rows={1}
-                        placeholder="Opis koraka"
-                        value={dir.text}
-                        onChange={(e) => updateDirection(i, e.target.value)}
-                        onInput={(e) => {
-                          const ta = e.target as HTMLTextAreaElement;
-                          ta.style.height = "auto";
-                          ta.style.height = `${Math.max(36, ta.scrollHeight)}px`;
-                        }}
-                        onKeyDown={(e) => handleDirectionKeyDown(i, e)}
-                        className={`${inputClassSmall} flex-1 min-w-[200px] resize-none overflow-hidden h-9 leading-5 py-1.5`}
-                      />
-                      {directions.length > 1 && (
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => removeDirection(i)}
-                          className="shrink-0 cursor-pointer rounded-none h-9 w-9 text-red-600 hover:bg-red-50 hover:text-red-700"
-                          aria-label="Ukloni korak"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      )}
-                      {i === directions.length - 1 && (
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="icon"
-                          onClick={addDirection}
-                          className="shrink-0 cursor-pointer rounded-none h-9 w-9 border-[var(--color-orange)] text-[var(--color-orange)] hover:bg-[var(--color-orange)]/10"
-                          aria-label="Dodaj korak"
-                        >
-                          <Plus className="h-4 w-4" />
-                        </Button>
-                      )}
-                    </div>
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input
-                        type="file"
-                        accept="image/jpeg,image/png,image/webp,image/gif"
-                        onChange={(e) =>
-                          setDirectionImage(i, e.target.files?.[0] ?? null)
-                        }
-                        className="sr-only"
-                      />
-                      <span className="rounded-none border-2 border-dashed border-gray-300 bg-[#f1f1e6] px-3 py-2 text-xs font-medium text-[var(--color-primary)] hover:border-[var(--color-orange)] hover:bg-[var(--color-orange)]/5 transition-colors">
-                        {dir.imageFile ? (
-                          <span className="flex items-center gap-2">
-                            <ImagePlus className="h-4 w-4 text-[var(--color-orange)]" />
-                            {dir.imageFile.name}
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.preventDefault();
-                                setDirectionImage(i, null);
-                              }}
-                              className="cursor-pointer text-red-600 hover:underline"
-                            >
-                              Ukloni
-                            </button>
-                          </span>
-                        ) : (
-                          <>
-                            <ImagePlus className="inline h-4 w-4 mr-1 text-gray-500" />
-                            Dodaj sliku koraka
-                          </>
-                        )}
-                      </span>
-                    </label>
-                    {dir.imagePreviewUrl && (
-                      <Image
-                        src={dir.imagePreviewUrl}
-                        alt={`Korak ${i + 1}`}
-                        width={320}
-                        height={96}
-                        className="mt-1 max-h-24 rounded-none object-cover"
-                        unoptimized
-                      />
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </Section>
-        </div>
-      </div>
-
-      {/* Full width footer */}
-      <div className="flex flex-col gap-4 rounded-none border-2 border-gray-200 bg-white p-6 shadow-sm sm:flex-row sm:items-center sm:justify-center">
-        <Button
-          type="submit"
-          disabled={loading}
-          className="w-full min-w-[200px] cursor-pointer rounded-none border-2 border-[var(--color-primary)] bg-[var(--color-orange)] py-6 text-base font-semibold text-[var(--color-primary)] transition-transform duration-100 hover:scale-[1.02] hover:bg-[var(--color-orange)] hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] disabled:opacity-50 sm:w-auto"
+        <button
+          type="button"
+          onClick={addDirection}
+          className={`${outlineButtonClass} mt-6`}
         >
-          {loading ? "Čuvanje..." : "Sačuvaj recept"}
-        </Button>
+          <Plus className="h-4 w-4" />
+          Dodaj korak
+        </button>
+      </Section>
+
+      <Section
+        title="Savet kuvara"
+        hint="Opciono. Jedan trik iz iskustva koji čini razliku."
+      >
+        <textarea
+          id="chef-tip"
+          rows={3}
+          value={chefTip}
+          onChange={(e) => setChefTip(e.target.value)}
+          onInput={(e) => {
+            const ta = e.target as HTMLTextAreaElement;
+            ta.style.height = "auto";
+            ta.style.height = `${Math.max(84, ta.scrollHeight)}px`;
+          }}
+          placeholder="npr. Testo ostavite da odstoji 30 minuta — palačinke će biti znatno mekše."
+          aria-label="Savet kuvara"
+          className={`${inputClass} min-h-[84px] resize-none overflow-y-auto`}
+        />
+      </Section>
+
+      {/* The cream callout the finished recipe renders these points in. */}
+      <section className="mt-12 border-l-4 border-[var(--ar-primary)] bg-[#f1f1e6] p-5 sm:p-8">
+        <h2 className="flex items-center gap-2.5 text-lg font-semibold uppercase tracking-wide text-[var(--color-primary)] sm:text-xl">
+          <Heart
+            className="h-5 w-5 shrink-0 fill-[var(--ar-primary-ink)] text-[var(--ar-primary-ink)]"
+            aria-hidden
+          />
+          Zašto ćete voleti ovaj recept
+        </h2>
+        <p className="mt-3 text-sm text-[var(--ar-gray-600)]">
+          Opciono. Do tri kratke tačke.
+        </p>
+        <div className="mt-5 space-y-3">
+          {whyYoullLove.map((val, i) => (
+            <div key={i} className="flex items-center gap-3">
+              <Check
+                className="h-4 w-4 shrink-0 text-[var(--ar-primary-ink)]"
+                strokeWidth={3}
+                aria-hidden
+              />
+              <input
+                ref={(el) => {
+                  whyYoullLoveRefs.current[i] = el;
+                }}
+                type="text"
+                value={val}
+                onChange={(e) => {
+                  const v = [...whyYoullLove];
+                  v[i] = e.target.value;
+                  setWhyYoullLove(v);
+                }}
+                onKeyDown={(e) => handleWhyYoullLoveKeyDown(i, e)}
+                placeholder={`Tačka ${i + 1}`}
+                aria-label={`Tačka ${i + 1}`}
+                className={`${inputClassSmall} min-w-0 flex-1`}
+              />
+              {whyYoullLove.length > 1 ? (
+                <button
+                  type="button"
+                  onClick={() =>
+                    setWhyYoullLove((prev) => prev.filter((_, j) => j !== i))
+                  }
+                  className={removeButtonClass}
+                  aria-label="Ukloni"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              ) : (
+                <span className="w-9 shrink-0" aria-hidden />
+              )}
+            </div>
+          ))}
+        </div>
+        {whyYoullLove.length < 3 && (
+          <button
+            type="button"
+            onClick={() => setWhyYoullLove((prev) => [...prev, ""])}
+            className={`${outlineButtonClass} mt-5`}
+          >
+            <Plus className="h-4 w-4" />
+            Dodaj tačku
+          </button>
+        )}
+      </section>
+
+      <Section title="Nutritivne vrednosti" hint="Opciono, po porciji.">
+        <div className="grid gap-5 sm:grid-cols-4">
+          <FormField label="Kalorije (kcal)" id="calories" micro>
+            <input
+              id="calories"
+              type="number"
+              min={0}
+              placeholder="0"
+              value={calories === "" ? "" : calories}
+              onChange={(e) =>
+                setCalories(
+                  e.target.value === "" ? "" : parseInt(e.target.value) || 0,
+                )
+              }
+              className={inputClassSmall}
+            />
+          </FormField>
+          <FormField label="Masti (g)" id="fat" micro>
+            <input
+              id="fat"
+              type="number"
+              min={0}
+              step={0.1}
+              placeholder="0"
+              value={fatG === "" ? "" : fatG}
+              onChange={(e) =>
+                setFatG(
+                  e.target.value === "" ? "" : parseFloat(e.target.value) || 0,
+                )
+              }
+              className={inputClassSmall}
+            />
+          </FormField>
+          <FormField label="Ugljeni hidrati (g)" id="carbs" micro>
+            <input
+              id="carbs"
+              type="number"
+              min={0}
+              step={0.1}
+              placeholder="0"
+              value={carbsG === "" ? "" : carbsG}
+              onChange={(e) =>
+                setCarbsG(
+                  e.target.value === "" ? "" : parseFloat(e.target.value) || 0,
+                )
+              }
+              className={inputClassSmall}
+            />
+          </FormField>
+          <FormField label="Proteini (g)" id="protein" micro>
+            <input
+              id="protein"
+              type="number"
+              min={0}
+              step={0.1}
+              placeholder="0"
+              value={proteinG === "" ? "" : proteinG}
+              onChange={(e) =>
+                setProteinG(
+                  e.target.value === "" ? "" : parseFloat(e.target.value) || 0,
+                )
+              }
+              className={inputClassSmall}
+            />
+          </FormField>
+        </div>
+      </Section>
+
+      <div className="mt-12 border-t border-[var(--ar-gray-200)] pt-6">
+        {error && (
+          <p
+            role="alert"
+            className="mb-5 border-l-4 border-red-600 bg-red-50 px-4 py-3 text-sm font-medium text-red-800"
+          >
+            {error}
+          </p>
+        )}
+        <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+          <button
+            type="submit"
+            disabled={loading}
+            className="inline-block cursor-pointer rounded-none border-2 border-[var(--ar-primary)] bg-[var(--ar-primary)] px-10 py-4 text-[13px] font-bold uppercase tracking-wider text-[var(--color-primary)] transition-colors hover:border-[var(--ar-primary-hover)] hover:bg-[var(--ar-primary-hover)] disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {loading ? "Čuvanje..." : "Sačuvaj recept"}
+          </button>
+          <p className="text-sm text-[var(--ar-gray-600)]">
+            Polja označena{" "}
+            <span className="font-semibold text-red-600">*</span>{" "}
+            su obavezna.
+          </p>
+        </div>
       </div>
     </form>
   );

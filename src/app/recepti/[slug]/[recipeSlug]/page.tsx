@@ -1,7 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { Check, Heart } from "lucide-react";
+import { ChefHat } from "lucide-react";
 import { PLACEHOLDER_IMAGES } from "@/lib/constants";
 import {
   getRecipeBySlug,
@@ -247,6 +247,27 @@ export default async function RecipePage({
                   </p>
                 )}
               </div>
+              {recipe.why_youll_love && recipe.why_youll_love.length > 0 && (
+                // Framed box with the heading sitting in a gap in its own top
+                // border. The heading's background has to match the page for
+                // the border to read as interrupted rather than crossed out.
+                <div className="relative mt-8 border border-[var(--ar-primary-ink)] px-5 pb-6 pt-9 sm:px-8 sm:pb-8">
+                  <h2 className="absolute left-1/2 top-0 w-max max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 bg-white px-3 text-center text-[13px] font-bold uppercase leading-tight tracking-[0.12em] text-[var(--ar-primary-ink)]">
+                    Zašto ćete voleti ovaj recept
+                  </h2>
+                  <ul className="space-y-4 text-base leading-relaxed text-[var(--color-primary)] sm:text-[17px]">
+                    {recipe.why_youll_love.map((item: string, i: number) => (
+                      <li key={i} className="flex items-start gap-3">
+                        <span
+                          className="mt-[0.6em] h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--ar-primary)]"
+                          aria-hidden
+                        />
+                        <span className="min-w-0 break-words">{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
               {Array.isArray(recipe.ingredients) &&
               recipe.ingredients.length > 0 ? (
                 <ServingMultiplier
@@ -298,27 +319,21 @@ export default async function RecipePage({
                   </p>
                 )}
               </div>
-              {recipe.why_youll_love && recipe.why_youll_love.length > 0 && (
-                <div className="mt-12 border-l-4 border-[var(--ar-primary)] bg-[#f1f1e6] p-5 sm:mt-[8vh] sm:p-8">
+              {recipe.chef_tip_sr?.trim() && (
+                // Same left teal rule as the callout below it, but on white --
+                // an aside to the method, without competing with the cream
+                // block for attention.
+                <div className="mt-8 border border-[var(--ar-gray-200)] border-l-4 border-l-[var(--ar-primary)] bg-white p-5 sm:p-6">
                   <h2 className="flex items-center gap-2.5 text-lg font-semibold uppercase tracking-wide text-[var(--color-primary)] sm:text-xl">
-                    <Heart
-                      className="h-5 w-5 shrink-0 fill-[var(--ar-primary-ink)] text-[var(--ar-primary-ink)]"
+                    <ChefHat
+                      className="h-5 w-5 shrink-0 text-[var(--ar-primary-ink)]"
                       aria-hidden
                     />
-                    Zašto ćete voleti ovaj recept
+                    Savet kuvara
                   </h2>
-                  <ul className="mt-5 space-y-3.5 text-base text-[var(--color-primary)] sm:text-[18px]">
-                    {recipe.why_youll_love.map((item: string, i: number) => (
-                      <li key={i} className="flex items-start gap-3">
-                        <Check
-                          className="mt-1 h-4 w-4 shrink-0 text-[var(--ar-primary-ink)]"
-                          strokeWidth={3}
-                          aria-hidden
-                        />
-                        <span className="min-w-0 break-words">{item}</span>
-                      </li>
-                    ))}
-                  </ul>
+                  <p className="mt-3 whitespace-pre-line break-words text-base leading-relaxed text-[var(--color-primary)] sm:text-[18px]">
+                    {recipe.chef_tip_sr}
+                  </p>
                 </div>
               )}
               {recipe.recipe_nutrition && (

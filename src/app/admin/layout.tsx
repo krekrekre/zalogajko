@@ -44,6 +44,12 @@ export default async function AdminLayout({
               Recepti
             </Link>
             <Link
+              href="/admin/recipes/revisions"
+              className="text-[var(--ar-gray-700)] hover:text-[var(--ar-primary)] hover:underline"
+            >
+              Izmene
+            </Link>
+            <Link
               href="/admin/blog"
               className="text-[var(--ar-gray-700)] hover:text-[var(--ar-primary)] hover:underline"
             >

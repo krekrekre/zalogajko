@@ -11,7 +11,9 @@ import { PLACEHOLDER_IMAGES } from "@/lib/constants";
 import {
   getSavedRecipeLists,
   getRecipeSavedListIds,
+  getSavedRecipeCountsByList,
   createSavedRecipeList,
+  deleteSavedRecipeList,
   saveRecipeToList,
   unsaveRecipe,
   unsaveRecipeFromList,
@@ -19,6 +21,15 @@ import {
 } from "@/lib/saved-recipes";
 
 const PRESET_NAMES = ["Omiljeni", "Ideje za večeru", "Želim da probam"];
+
+/** Serbian counts take three forms: 1 recept, 2 recepta, 5 recepata. */
+function recipeWord(n: number) {
+  const mod10 = n % 10;
+  const mod100 = n % 100;
+  if (mod10 === 1 && mod100 !== 11) return "recept";
+  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) return "recepta";
+  return "recepata";
+}
 
 interface SaveRecipeDropdownProps {
   recipeId: string;
@@ -56,6 +67,9 @@ export function SaveRecipeDropdown({
   const [view, setView] = useState<"collections" | "create">("collections");
   const [lists, setLists] = useState<SavedRecipeList[]>([]);
   const [checkedListIds, setCheckedListIds] = useState<Set<string>>(new Set());
+  const [listCounts, setListCounts] = useState<Map<string, number>>(new Map());
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const [newListName, setNewListName] = useState("");
   const [newListDesc, setNewListDesc] = useState("");
   const [saving, setSaving] = useState(false);
@@ -64,12 +78,15 @@ export function SaveRecipeDropdown({
 
   useEffect(() => {
     if (!open) return;
-    Promise.all([getSavedRecipeLists(), getRecipeSavedListIds(recipeId)]).then(
-      ([allLists, savedListIds]) => {
-        setLists(allLists);
-        setCheckedListIds(savedListIds);
-      },
-    );
+    Promise.all([
+      getSavedRecipeLists(),
+      getRecipeSavedListIds(recipeId),
+      getSavedRecipeCountsByList(),
+    ]).then(([allLists, savedListIds, counts]) => {
+      setLists(allLists);
+      setCheckedListIds(savedListIds);
+      setListCounts(counts);
+    });
   }, [open, recipeId]);
 
   useEffect(() => {
@@ -81,6 +98,16 @@ export function SaveRecipeDropdown({
     setView("collections");
     setNewListName("");
     setNewListDesc("");
+    setPendingDeleteId(null);
+  }, []);
+
+  /** Keeps the "(3)" beside a collection in step with what the user just did. */
+  const bumpCount = useCallback((listId: string, delta: number) => {
+    setListCounts((prev) => {
+      const next = new Map(prev);
+      next.set(listId, Math.max(0, (next.get(listId) ?? 0) + delta));
+      return next;
+    });
   }, []);
 
   useEffect(() => {
@@ -133,6 +160,7 @@ export function SaveRecipeDropdown({
           next.delete(existingChecked.id);
           return next;
         });
+        bumpCount(existingChecked.id, -1);
         await unsaveRecipeFromList(recipeId, existingChecked.id);
         return;
       }
@@ -145,15 +173,41 @@ export function SaveRecipeDropdown({
           next.delete(list!.id);
           return next;
         });
+        bumpCount(list.id, -1);
         await unsaveRecipeFromList(recipeId, list.id);
         return;
       }
     }
     if (list) {
       setCheckedListIds((prev) => new Set(prev).add(list!.id));
+      bumpCount(list.id, 1);
       onSaved?.();
       await saveRecipeToList(recipeId, list.id);
     }
+  }
+
+  async function handleDeleteList(list: SavedRecipeList) {
+    setDeletingId(list.id);
+    const ok = await deleteSavedRecipeList(list.id);
+    setDeletingId(null);
+    if (!ok) return;
+
+    // Deleting the list also deleted every save inside it, this recipe's
+    // included -- so drop it from the checked set and tell the parent if that
+    // leaves the recipe saved nowhere.
+    const wasChecked = checkedListIds.has(list.id);
+    const remaining = new Set(checkedListIds);
+    remaining.delete(list.id);
+
+    setLists((prev) => prev.filter((l) => l.id !== list.id));
+    setCheckedListIds(remaining);
+    setListCounts((prev) => {
+      const next = new Map(prev);
+      next.delete(list.id);
+      return next;
+    });
+    setPendingDeleteId(null);
+    if (wasChecked && remaining.size === 0) onUnsaved?.();
   }
 
   async function handleCreateList() {
@@ -166,6 +220,7 @@ export function SaveRecipeDropdown({
       if (ok) {
         setLists((prev) => [...prev, list]);
         setCheckedListIds((prev) => new Set(prev).add(list.id));
+        bumpCount(list.id, 1);
         onSaved?.();
       }
     }
@@ -180,21 +235,32 @@ export function SaveRecipeDropdown({
     const ok = await unsaveRecipe(recipeId);
     setSaving(false);
     if (ok) {
+      for (const listId of checkedListIds) bumpCount(listId, -1);
       setCheckedListIds(new Set());
       closeModal();
       onUnsaved?.();
     }
   }
 
-  function isPresetChecked(name: string): boolean {
-    const match = lists.find((l) => l.name === name);
-    return match ? checkedListIds.has(match.id) : false;
-  }
-
   const anySaved = checkedListIds.size > 0 || isSaved;
   const imgSrc = recipeImageUrl || PLACEHOLDER_IMAGES.default;
 
   const customLists = lists.filter((l) => !PRESET_NAMES.includes(l.name));
+
+  // Presets are only suggestions until something is saved to them, so a preset
+  // with no row behind it has no count and nothing to delete.
+  const collectionRows: Array<{
+    key: string;
+    name: string;
+    list: SavedRecipeList | null;
+  }> = [
+    ...PRESET_NAMES.map((name) => ({
+      key: `preset:${name}`,
+      name,
+      list: lists.find((l) => l.name === name) ?? null,
+    })),
+    ...customLists.map((list) => ({ key: list.id, name: list.name, list })),
+  ];
   const trigger =
     variant === "heart-only" ? (
       <button
@@ -218,7 +284,7 @@ export function SaveRecipeDropdown({
         disabled={saving}
         className={
           className ??
-          `inline-flex w-1/2 cursor-pointer items-center justify-center gap-2 border-b border-r border-[var(--ar-gray-250)] px-4 py-3 text-sm font-semibold uppercase tracking-wide transition-colors disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto sm:border-b-0 sm:border-r sm:px-5 sm:py-2.5 ${
+          `group/save inline-flex w-1/2 cursor-pointer items-center justify-center gap-2 border-b border-r border-[var(--ar-gray-250)] px-4 py-3 text-sm font-semibold uppercase tracking-wide transition-colors disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto sm:border-b-0 sm:border-r sm:px-5 sm:py-2.5 ${
             isSaved
               ? "bg-[var(--ar-primary)] text-[var(--color-primary)] hover:bg-[var(--ar-primary-hover)]"
               : "bg-[var(--ar-primary)] text-[var(--color-primary)] hover:bg-[var(--ar-primary-hover)]"
@@ -227,7 +293,16 @@ export function SaveRecipeDropdown({
       >
         {saving ? "..." : isSaved ? savedLabel : saveLabel}
         <Heart
-          className={heartClassName ?? `size-4 ${isSaved ? "fill-current" : ""}`}
+          className={
+            heartClassName ??
+            // Unsaved, the outline heart fills on hover to preview what the
+            // click does; saved, it is already filled and stays put.
+            `size-4 transition-[fill] duration-150 ${
+              isSaved
+                ? "fill-current"
+                : "fill-transparent group-hover/save:fill-current"
+            }`
+          }
           strokeWidth={2}
         />
       </button>
@@ -251,41 +326,85 @@ export function SaveRecipeDropdown({
 
       <div className="flex-1 overflow-y-auto px-5 py-4">
         <div className="space-y-1">
-          {PRESET_NAMES.map((name) => (
-            <label
-              key={name}
-              className="flex cursor-pointer items-center gap-3 px-2 py-2.5 hover:bg-gray-50"
-            >
-              <input
-                type="checkbox"
-                checked={isPresetChecked(name)}
-                onChange={() => handleToggleList(name)}
-                className="size-[18px] shrink-0 cursor-pointer border-2 border-gray-300 accent-[var(--ar-primary)]"
-              />
-              <span className="text-sm text-gray-800">
-                {name}
-              </span>
-            </label>
-          ))}
-          {customLists.map((list) => (
-            <label
-              key={list.id}
-              className="flex cursor-pointer items-center gap-3 px-2 py-2.5 hover:bg-gray-50"
-            >
-              <input
-                type="checkbox"
-                checked={checkedListIds.has(list.id)}
-                onChange={() => handleToggleList(list)}
-                className="size-[18px] shrink-0 cursor-pointer border-2 border-gray-300 accent-[var(--ar-primary)]"
-              />
-              <span className="text-sm text-gray-800">{list.name}</span>
-            </label>
-          ))}
+          {collectionRows.map((row) => {
+            const list = row.list;
+            const checked = list ? checkedListIds.has(list.id) : false;
+            const count = list ? (listCounts.get(list.id) ?? 0) : 0;
+
+            if (list && pendingDeleteId === list.id) {
+              return (
+                <div
+                  key={row.key}
+                  className="border-l-2 border-red-600 bg-red-50 px-3 py-2.5"
+                >
+                  <p className="text-sm text-gray-800">
+                    Obrisati kolekciju{" "}
+                    <span className="font-bold">{row.name}</span>?
+                    {count > 0 &&
+                      ` Iz nje se uklanja ${count} ${recipeWord(count)}.`}
+                  </p>
+                  <div className="mt-2 flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteList(list)}
+                      disabled={deletingId === list.id}
+                      className="cursor-pointer bg-red-600 px-3 py-1.5 text-xs font-bold uppercase tracking-wide text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      {deletingId === list.id ? "Brisanje..." : "Obriši"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setPendingDeleteId(null)}
+                      className="cursor-pointer px-3 py-1.5 text-xs font-bold uppercase tracking-wide text-gray-700 hover:text-gray-900"
+                    >
+                      Otkaži
+                    </button>
+                  </div>
+                </div>
+              );
+            }
+
+            return (
+              <div
+                key={row.key}
+                className="flex items-center gap-1 hover:bg-gray-50"
+              >
+                <label className="flex min-w-0 flex-1 cursor-pointer items-center gap-3 px-2 py-2.5">
+                  <input
+                    type="checkbox"
+                    checked={checked}
+                    onChange={() => handleToggleList(list ?? row.name)}
+                    className="size-[18px] shrink-0 cursor-pointer border-2 border-gray-300 accent-[var(--ar-primary)]"
+                  />
+                  <span className="min-w-0 truncate text-sm text-gray-800">
+                    {row.name}
+                  </span>
+                  <span className="shrink-0 text-xs font-medium text-gray-500">
+                    ({count})
+                  </span>
+                </label>
+                {list && (
+                  <button
+                    type="button"
+                    onClick={() => setPendingDeleteId(list.id)}
+                    className="mr-1 shrink-0 cursor-pointer p-1.5 text-gray-400 transition-colors hover:bg-red-50 hover:text-red-600"
+                    aria-label={`Obriši kolekciju ${row.name}`}
+                    title="Obriši kolekciju"
+                  >
+                    <Trash2 className="size-4" />
+                  </button>
+                )}
+              </div>
+            );
+          })}
         </div>
 
         <button
           type="button"
-          onClick={() => setView("create")}
+          onClick={() => {
+            setPendingDeleteId(null);
+            setView("create");
+          }}
           className="mt-4 flex w-full cursor-pointer items-center gap-2 border-t border-gray-200 px-2 pt-4 pb-1 text-sm font-semibold uppercase tracking-wide text-gray-700 hover:text-gray-900"
         >
           <Plus className="size-4" />

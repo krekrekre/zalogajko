@@ -19,7 +19,7 @@ export default async function EditRecipePage({
 
   const { data: recipe, error } = await supabase
     .from("recipes")
-    .select("id, slug, title_sr, author_id")
+    .select("id, slug, title_sr, author_id, status, chef_tip_sr")
     .eq("slug", slug)
     .single();
 
@@ -28,7 +28,8 @@ export default async function EditRecipePage({
     redirect(`/recepti/${slug}`);
   }
 
-  const [{ data: ingredients }, { data: directions }] = await Promise.all([
+  const [{ data: ingredients }, { data: directions }, { count: pendingCount }] =
+    await Promise.all([
     supabase
       .from("ingredients")
       .select("amount, unit_sr, name_sr, sort_order")
@@ -39,7 +40,14 @@ export default async function EditRecipePage({
       .select("instruction_sr, image_url, sort_order")
       .eq("recipe_id", recipe.id)
       .order("sort_order"),
+    supabase
+      .from("recipe_revisions")
+      .select("*", { count: "exact", head: true })
+      .eq("recipe_id", recipe.id)
+      .eq("status", "pending"),
   ]);
+
+  const pendingRevisions = pendingCount ?? 0;
 
   return (
     <div className="mx-auto max-w-[1060px] px-6 py-8">
@@ -56,11 +64,20 @@ export default async function EditRecipePage({
         Ovde možete brzo ispraviti sastojke i korake pripreme.
       </p>
 
+      {pendingRevisions > 0 && (
+        <p className="mt-3 border border-[var(--ar-gray-300)] bg-[#f1f1e6] p-3 text-sm text-[var(--color-primary)]">
+          Već imate {pendingRevisions === 1 ? "izmenu koja čeka" : "izmene koje čekaju"}{" "}
+          odobrenje. Novo slanje dodaje još jedan predlog.
+        </p>
+      )}
+
       <EditRecipeForm
         recipeId={recipe.id}
         slug={recipe.slug}
+        isPublished={recipe.status === "published"}
         initialIngredients={ingredients || []}
         initialDirections={directions || []}
+        initialChefTip={recipe.chef_tip_sr}
       />
     </div>
   );
