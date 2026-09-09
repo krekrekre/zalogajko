@@ -39,7 +39,7 @@ function StarRating({ avg }: { avg: number }) {
   const full = Math.min(5, Math.floor(avg));
   return (
     <span
-      className="inline-flex gap-0.5 text-[var(--color-primary)]"
+      className="inline-flex gap-0.5 text-[var(--ar-primary)]"
       aria-hidden
     >
       {[...Array(5)].map((_, i) => (
